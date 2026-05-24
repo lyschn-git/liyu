@@ -24,7 +24,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'PingFang SC','Hira
 .pond-hint{position:absolute;bottom:20%;left:50%;transform:translateX(-50%);z-index:5;text-align:center;pointer-events:none;animation:hintPulse 2s ease-in-out infinite}
 .pond-hint span{display:inline-block;font-size:14px;color:#FF9A5C;background:rgba(255,248,240,0.92);padding:10px 26px;border-radius:24px;letter-spacing:3px;font-weight:600;white-space:nowrap;backdrop-filter:blur(6px);box-shadow:0 3px 16px rgba(255,154,92,0.18);border:1px solid rgba(255,154,92,0.2)}
 @keyframes hintPulse{0%,100%{opacity:.7;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.04)}}
-#scene-reveal{width:100%;height:100%;position:absolute;top:0;left:0;z-index:2;display:none;flex-direction:column;align-items:center;background:#FFF8F0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#scene-reveal{width:100%;height:100%;position:absolute;top:0;left:0;z-index:2;display:none;flex-direction:column;align-items:center;background:#FFF8F0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
 #scene-reveal.show{display:flex}
 .rv-inner{width:100%;min-height:100%;display:flex;flex-direction:column;align-items:center;position:relative;padding:0 24px 80px;box-sizing:border-box}
 
@@ -774,7 +774,7 @@ function wrapText(c,text,x,y,maxW,lh){let line='',curY=y;for(let i=0;i<text.leng
 window.addEventListener('resize',()=>{resizeCanvas();lilyList=[];for(let i=0;i<3;i++)lilyList.push(new LilyPad());});
 koiReady.then(()=>{try{showDebug('初始化中...');initPond();showDebug('');}catch(e){showDebug('initPond错误:'+e.message);}});
 // iOS Safari: prevent elastic bounce, handle URL bar resize
-document.addEventListener('touchmove', function(e){e.preventDefault();}, {passive:false});
+document.addEventListener('touchmove', function(e){if(e.target.closest('#scene-reveal'))return;e.preventDefault();}, {passive:false});
 if(window.visualViewport){window.visualViewport.addEventListener('resize',()=>{try{resizeCanvas();}catch(e){}});}
 }catch(e){console.error('鲤遇主脚本错误:',e);document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#FFF8F0;color:#4A3828;font-size:16px;text-align:center;padding:20px">鲤·遇 加载出错<br><br><small style="color:#B8A898;word-break:break-all">'+(e.stack||e.message)+'<\/small><\/div>';}
 </script>

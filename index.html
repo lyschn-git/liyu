@@ -537,7 +537,7 @@ function triggerReveal() {
   if (isTransitioning) return; isTransitioning = true;
   if (animId) cancelAnimationFrame(animId);
   setTimeout(() => { const cx = W / 2, cy = H * 0.4; ripples.push(new Ripple(cx, cy, 100)); setTimeout(() => ripples.push(new Ripple(cx, cy, 140)), 100); setTimeout(() => ripples.push(new Ripple(cx, cy, 180)), 200); }, 0);
-  spawnPetals(4);
+  setTouchMoment();spawnPetals(4);
   setTimeout(() => { document.getElementById('scene-pond').classList.add('hide'); document.getElementById('scene-reveal').classList.add('show'); try{populateReveal();}catch(e){showDebug('显示错误:'+e.message);}  }, 800);
 }
 
@@ -616,13 +616,38 @@ const GUA_DATA=[
 {name:'既济',fullName:'水火既济',lines:[1,0,1,0,1,0],see:'事情已经做成，一切各就各位，妥帖',feel:'大功告成的踏实感，但别放松警惕',act:'居安思危',quote:'水在火上既济 君子以思患而预防之',tag:'吉',yaoList:[{pos:'初九',text:'曳其轮 濡其尾 无咎'},{pos:'六二',text:'妇丧其茀 勿逐 七日得'},{pos:'九三',text:'高宗伐鬼方 三年克之 小人勿用'},{pos:'六四',text:'繻有衣袽 终日戒'},{pos:'九五',text:'东邻杀牛 不如西邻之禴祭 实受其福'},{pos:'上六',text:'濡其首 厉'}],yaoText:'既济亨 小利贞'},
 {name:'未济',fullName:'火水未济',lines:[0,1,0,1,0,1],see:'事情还没完成，你正站在渡口之前',feel:'未完成意味着还有可能，别急着画句号',act:'慎辨居方',quote:'火在水上未济 君子以慎辨物居方',tag:'平',yaoList:[{pos:'初六',text:'濡其尾 吝'},{pos:'九二',text:'曳其轮 贞吉'},{pos:'六三',text:'未济 征凶 利涉大川'},{pos:'九四',text:'贞吉 悔亡 震用伐鬼方 三年 有赏于大国'},{pos:'六五',text:'贞吉 无悔 君子之光 有孚吉'},{pos:'上九',text:'有孚于饮酒 无咎 濡其首 有孚失是'}],yaoText:'未济亨 小狐汔济'}
 ]
+// ═══════════════════════════════════
+// 缘分逻辑：每人每天不同的偶然
+// 用户种子(首次访问随机生成)+日期→今日卦象
+// 触鱼精确时刻→动爻（锦鲤在这一瞬选择了你）
+// ═══════════════════════════════════
 let guaOffset=0;
-function getTodayGua(){try{const today=new Date();const seed=today.getFullYear()*1000000+(today.getMonth()+1)*10000+today.getDate()*100+today.getHours()+guaOffset;const idx=Math.abs(seed*7+13)%GUA_DATA.length;return GUA_DATA[idx];}catch(e){return{name:'坤',fullName:'坤为地',lines:[0,0,0,0,0,0],see:'你正承受许多，默默承载着周围一切',feel:'柔软不是软弱，是能包容万物的力量',act:'顺势而为',quote:'地势坤 君子以厚德载物',tag:'中吉',yaoText:'含章可贞'};}}
+(function initUserSeed(){
+  try{
+    if(!localStorage.getItem('liyu_seed')){
+      localStorage.setItem('liyu_seed',String(Math.floor(Math.random()*1000000)));
+    }
+  }catch(e){}
+})();
+function getUserSeed(){try{return parseInt(localStorage.getItem('liyu_seed'))||0;}catch(e){return 0;}}
+function getTodayGua(){try{
+  const today=new Date();
+  const userSeed=getUserSeed();
+  const seed=today.getFullYear()*1000000+(today.getMonth()+1)*10000+today.getDate()*10+userSeed+guaOffset;
+  const idx=Math.abs(seed*7+13)%GUA_DATA.length;
+  return GUA_DATA[idx];
+}catch(e){return{name:'坤',fullName:'坤为地',lines:[0,0,0,0,0,0],see:'你正承受许多，默默承载着周围一切',feel:'柔软不是软弱，是能包容万物的力量',act:'顺势而为',quote:'地势坤 君子以厚德载物',tag:'中吉',yaoText:'含章可贞'};}}
 function getDailyInfo(){try{if(!window.__lunarFail&&typeof Lunar!=='undefined'&&Lunar.fromDate){const lunar=Lunar.fromDate(new Date());return{direction:'东南',yi:lunar.getDayYi?lunar.getDayYi().slice(0,4).join(' '):'求财 纳采',ji:lunar.getDayJi?lunar.getDayJi().slice(0,3).join(' '):'动土 开仓'};}}catch(e){}return{direction:'东南',yi:'求财 纳采 出行',ji:'动土 开仓'};}
 function splitWithPunct(text){var ci=text.indexOf('，');if(ci>0&&ci<text.length-1){var line1=text.substring(0,ci+1);var line2=text.substring(ci+1);var last=line2.charAt(line2.length-1);if(!/[。！？…！?]/.test(last)){line2+='。';}return line1+'<br>'+line2;}return text;}
 function populateReveal(){const gua=getTodayGua(),daily=getDailyInfo(),now=new Date();const weekDays=['日','一','二','三','四','五','六'];const dateStr=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} · 星期${weekDays[now.getDay()]}`;document.getElementById('rv-date').textContent=dateStr;document.getElementById('rv-fullname').textContent=gua.fullName;document.getElementById('rv-see').innerHTML=splitWithPunct(gua.see);document.getElementById('rv-feel').innerHTML=splitWithPunct(gua.feel);document.getElementById('rv-act').textContent=gua.act;document.getElementById('rv-quote').textContent=gua.quote;const hexEl=document.getElementById('rv-hexagram');hexEl.innerHTML='';if(gua.lines){gua.lines.forEach(function(yao){const row=document.createElement('div');row.className='yao';if(yao===1){const bar=document.createElement('div');bar.className='yao-yang';row.appendChild(bar);}else{const wrap=document.createElement('div');wrap.className='yao-yin';const l=document.createElement('span'),r=document.createElement('span');wrap.appendChild(l);wrap.appendChild(r);row.appendChild(wrap);}hexEl.appendChild(row);});}var movingIdx=getMovingYao();if(gua.yaoList&&gua.yaoList[movingIdx]){document.getElementById('rv-yaotext').textContent=gua.yaoList[movingIdx].pos+'：'+gua.yaoList[movingIdx].text;}else{document.getElementById('rv-yaotext').textContent=gua.yaoText||'';}document.getElementById('rv-tag').textContent=gua.tag;document.getElementById('rv-direction').textContent=daily.direction;document.getElementById('rv-yi').textContent=daily.yi;document.getElementById('rv-ji').textContent=daily.ji;const rvInner=document.querySelector('#scene-reveal .rv-inner');rvInner.querySelectorAll('.fade-in').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});}
 function resetToPond(){guaOffset++;document.getElementById('scene-reveal').classList.remove('show');document.getElementById('scene-pond').classList.remove('hide');initPond();}
-function getMovingYao(){var now=new Date();var seed=now.getFullYear()*1000000+(now.getMonth()+1)*10000+now.getDate()*100+now.getHours();return Math.abs(seed*7+13)%6;}
+// 动爻由触鱼精确时刻决定——锦鲤在这一瞬选择了你
+var _touchTimestamp=0;
+function setTouchMoment(){_touchTimestamp=Date.now();}
+function getMovingYao(){
+  var ts=_touchTimestamp||Date.now();
+  return Math.abs(ts)%6;
+}
 function generateShareImage(){
 // 确保京华老宋体加载完毕再绘制（用fonts.ready替代async/await，兼容Coze WebView）
 var _doDraw=function(){
@@ -782,26 +807,67 @@ sc.rotate(-0.10);
 sc.drawImage(koiImg,-kw/2,-kh/2,kw,kh);
 sc.restore();}
 
-// ── 气泡（跟随鱼区）──
+// ── 气泡（鱼区，若隐若现）──
 sc.save();
 var bubbles=[
-  {x:sw/2-80,y:1030,r:5,a:0.10},{x:sw/2+120,y:1050,r:4,a:0.08},
-  {x:sw/2-120,y:990,r:3.5,a:0.07},{x:sw/2+50,y:980,r:3,a:0.06}
+  {x:sw/2-60,y:1010,r:4.5,a:0.14},{x:sw/2+120,y:1000,r:4,a:0.11},
+  {x:sw/2-110,y:965,r:3.5,a:0.09},{x:sw/2+70,y:950,r:3,a:0.08},
+  {x:sw/2-30,y:930,r:2.5,a:0.07}
 ];
 for(var bi=0;bi<bubbles.length;bi++){
   var b=bubbles[bi];
   sc.globalAlpha=b.a;sc.fillStyle='#D4A050';
   sc.beginPath();sc.arc(b.x,b.y,b.r,0,Math.PI*2);sc.fill();
   sc.globalAlpha=b.a*0.5;sc.fillStyle='#FFF8F0';
-  sc.beginPath();sc.arc(b.x-b.r*0.3,b.y-b.r*0.3,b.r*0.35,0,Math.PI*2);sc.fill();
+  sc.beginPath();sc.arc(b.x-b.r*0.3,b.y-b.r*0.3,b.r*0.25,0,Math.PI*2);sc.fill();
 }
 sc.restore();
 
-// ── 尾迹水纹 ──
-sc.save();sc.globalAlpha=0.04;sc.strokeStyle='#D4A050';sc.lineWidth=0.8;
-for(var row=0;row<2;row++){var wy=1190+row*14;
+// ── 水波纹（传统纹样线描，鱼身下方）──
+sc.save();sc.strokeStyle="#4AA89A";sc.lineWidth=1;sc.lineCap="round";
+// 传统水波纹：卷曲浪头+层叠波线+飞溅水珠
+function drawWave(ox,oy,w,h,dir){
+  var d=dir||1;
+  sc.globalAlpha=0.10;
+  // 卷曲浪头
+  sc.beginPath();
+  sc.moveTo(ox,oy+h*0.5);
+  sc.quadraticCurveTo(ox+w*0.15*d,oy,ox+w*0.35*d,oy+h*0.2);
+  sc.quadraticCurveTo(ox+w*0.45*d,oy+h*0.05,ox+w*0.5*d,oy+h*0.15);
+  sc.stroke();
+  // 卷曲回环
+  sc.globalAlpha=0.08;
+  sc.beginPath();
+  sc.arc(ox+w*0.28*d,oy+h*0.12,h*0.12,Math.PI*0.8,Math.PI*1.9);
+  sc.stroke();
+  // 层叠波线
+  sc.globalAlpha=0.06;
+  for(var wi=1;wi<=2;wi++){
+    sc.beginPath();
+    var wy=oy+h*0.5+wi*h*0.25;
+    sc.moveTo(ox,wy);
+    sc.quadraticCurveTo(ox+w*0.25*d,wy-h*0.15,ox+w*0.5*d,wy);
+    sc.quadraticCurveTo(ox+w*0.75*d,wy+h*0.15,ox+w*d,wy);
+    sc.stroke();
+  }
+  // 飞溅水珠
+  sc.globalAlpha=0.07;sc.fillStyle="#4AA89A";
+  var dots=[{dx:0.32,dy:0.0,r:1.8},{dx:0.4,dy:-0.08,r:1.2},{dx:0.22,dy:-0.05,r:1}];
+  for(var di=0;di<dots.length;di++){
+    sc.beginPath();sc.arc(ox+dots[di].dx*w,oy+dots[di].dy*h,dots[di].r,0,Math.PI*2);sc.fill();
+  }
+}
+// 鱼身下方主波纹
+drawWave(sw/2-80,1110,140,40,1);
+// 鱼尾侧辅助波纹（更小更淡）
+drawWave(sw/2+40,1095,70,20,1);
+sc.restore();
+
+// ── 尾迹水纹（底部横波，用正弦曲线）──
+sc.save();sc.globalAlpha=0.06;sc.strokeStyle='#4AA89A';sc.lineWidth=0.8;sc.lineCap='round';
+for(var row=0;row<2;row++){var wy=1200+row*16;
 sc.beginPath();for(var wx=0;wx<=sw;wx+=2){
-var wyy=wy+Math.sin(wx*0.01+row*2)*3;
+var wyy=wy+Math.sin(wx*0.012+row*2.5)*4;
 wx===0?sc.moveTo(wx,wyy):sc.lineTo(wx,wyy);}sc.stroke();}
 sc.restore();
 
@@ -809,6 +875,32 @@ sc.restore();
 // 底栏：黄历 + 品牌（舒展，三行间距始终）
 // ═══════════════════════════════════
 sc.font=`300 18px ${F}`;sc.fillStyle='#A89888';
+
+// ── 祥云纹边角（传统线描，云头卷曲+飘带）──
+sc.save();sc.strokeStyle='#C8B8A8';sc.lineWidth=1;sc.lineCap='round';
+function drawXiangYun(cx,cy,s,dir){
+  var d=dir||1;
+  sc.globalAlpha=0.08;
+  // 云头：卷曲的如意形
+  sc.beginPath();
+  sc.arc(cx,cy,s*0.4,Math.PI*1.1,Math.PI*0.1,true);
+  sc.stroke();
+  sc.beginPath();
+  sc.arc(cx+d*s*0.25,cy-s*0.12,s*0.22,Math.PI*1.3,Math.PI*0.3,true);
+  sc.stroke();
+  // 飘带：从云头延伸的流畅曲线
+  sc.globalAlpha=0.06;
+  sc.beginPath();
+  sc.moveTo(cx+d*s*0.55,cy+s*0.05);
+  sc.quadraticCurveTo(cx+d*s*0.9,cy-s*0.15,cx+d*s*1.3,cy+s*0.1);
+  sc.quadraticCurveTo(cx+d*s*1.6,cy+s*0.25,cx+d*s*1.9,cy+s*0.15);
+  sc.stroke();
+}
+// 左上角祥云
+drawXiangYun(35,42,22,1);
+// 右下角祥云
+drawXiangYun(sw-35,sh-48,22,-1);
+sc.restore();
 var hlStr='财神'+daily.direction+' · 宜'+daily.yi.split(' ').slice(0,2).join(' ');
 sc.fillText(hlStr,sw/2,sh-70);
 

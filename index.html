@@ -47,10 +47,10 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'KingHwaOldSong','S
 .gua-name-wrap::before{right:100%;margin-right:8px}
 .gua-name-wrap::after{left:100%;margin-left:8px;background:linear-gradient(to left,rgba(255,154,92,0.35),rgba(255,154,92,0))}
 .reveal-see{width:100%;max-width:340px;margin-top:30px;flex-shrink:0;text-align:center}
-.see-label{display:inline-block;font-size:15px;color:#C8A898;letter-spacing:5px;font-weight:600;margin-bottom:10px}
+.see-label{display:inline-block;font-size:15px;color:#C8A898;letter-spacing:5px;font-weight:600;margin-bottom:10px;font-family:'STSong','Songti SC','SimSun',serif}
 .see-text{font-size:16px;color:#3A2818;line-height:1.8;letter-spacing:1px;font-weight:500}
 .reveal-feel{width:100%;max-width:340px;margin-top:26px;flex-shrink:0;text-align:center}
-.feel-label{display:inline-block;font-size:15px;color:#4AA89A;letter-spacing:5px;font-weight:600;margin-bottom:10px}
+.feel-label{display:inline-block;font-size:15px;color:#4AA89A;letter-spacing:5px;font-weight:600;margin-bottom:10px;font-family:'STSong','Songti SC','SimSun',serif}
 .feel-text{font-size:16px;color:#3A2818;line-height:1.8;letter-spacing:1px;font-weight:500}
 .reveal-act{width:100%;text-align:center;margin-top:28px;flex-shrink:0}
 .reveal-act span{font-size:21px;font-weight:700;letter-spacing:4px;color:#FF9A5C;text-shadow:0 1px 8px rgba(255,154,92,0.2);display:inline-block;line-height:1.5}
@@ -663,6 +663,7 @@ sc.textAlign='center';
 // 层级靠字号、字重、颜色区分
 // ═══════════════════════════════════
 const F='"KingHwaOldSong","STSong",serif';
+const FS='"STSong","Songti SC","SimSun",serif';
 
 // ═══════════════════════════════════
 // 背景：宣纸温润底
@@ -740,7 +741,7 @@ sc.fillText(gua.fullName,sw/2,nameY);
 
 // ── 你此刻 ──
 var textY=nameY+56;
-sc.font=`600 24px ${F}`;sc.fillStyle='#C8A898';
+sc.font=`600 24px ${FS}`;sc.fillStyle='#C8A898';
 sc.fillText('你 此 刻',sw/2,textY);
 textY+=46;
 sc.font=`500 32px ${F}`;sc.fillStyle='#3A2818';
@@ -750,7 +751,7 @@ textY=drawSplitText(sc,gua.see,sw/2,textY,50);
 textY+=40;
 
 // ── 你心里 ──
-sc.font=`600 24px ${F}`;sc.fillStyle='#4AA89A';
+sc.font=`600 24px ${FS}`;sc.fillStyle='#4AA89A';
 sc.fillText('你 心 里',sw/2,textY);
 textY+=46;
 sc.font=`500 32px ${F}`;sc.fillStyle='#3A2818';
@@ -807,17 +808,23 @@ sc.rotate(-0.10);
 sc.drawImage(koiImg,-kw/2,-kh/2,kw,kh);
 sc.restore();}
 
-// ── 涟漪（鱼身周围的同心水纹）──
-sc.save();sc.strokeStyle="#4AA89A";sc.lineWidth=0.8;
-// 涟漪1：鱼身下方，大圈
-sc.globalAlpha=0.07;
-sc.beginPath();sc.ellipse(kcx+10,kcy+80,85,20,-0.15,0,Math.PI*2);sc.stroke();
-// 涟漪2：鱼身下方，中圈
-sc.globalAlpha=0.05;
-sc.beginPath();sc.ellipse(kcx+5,kcy+65,60,14,-0.1,0,Math.PI*2);sc.stroke();
-// 涟漪3：鱼尾处，小圈
-sc.globalAlpha=0.04;
-sc.beginPath();sc.ellipse(kcx-30,kcy+50,35,8,0.1,0,Math.PI*2);sc.stroke();
+// ── 涟漪（鱼身周围的柔波纹）──
+sc.save();sc.lineCap='round';
+// 鱼身下方：渐淡层叠弧线，由近到远alpha递减
+var rp=kcy+50;
+sc.strokeStyle='#4AA89A';
+// 第一层：最近，最显
+sc.lineWidth=1.2;sc.globalAlpha=0.10;
+sc.beginPath();sc.moveTo(kcx-90,rp);sc.quadraticCurveTo(kcx-40,rp+14,kcx+10,rp+4);sc.quadraticCurveTo(kcx+60,rp-8,kcx+100,rp+2);sc.stroke();
+// 第二层
+sc.lineWidth=0.9;sc.globalAlpha=0.06;
+sc.beginPath();sc.moveTo(kcx-75,rp+18);sc.quadraticCurveTo(kcx-20,rp+30,kcx+20,rp+20);sc.quadraticCurveTo(kcx+65,rp+10,kcx+85,rp+22);sc.stroke();
+// 第三层：最远最淡
+sc.lineWidth=0.7;sc.globalAlpha=0.035;
+sc.beginPath();sc.moveTo(kcx-60,rp+34);sc.quadraticCurveTo(kcx-10,rp+44,kcx+30,rp+36);sc.quadraticCurveTo(kcx+60,rp+28,kcx+75,rp+38);sc.stroke();
+// 鱼尾处：一小弧
+sc.lineWidth=0.8;sc.globalAlpha=0.06;
+sc.beginPath();sc.moveTo(kcx-80,rp-30);sc.quadraticCurveTo(kcx-50,rp-18,kcx-20,rp-28);sc.stroke();
 sc.restore();
 
 // ── 光斑（鱼区上方的柔光散景）──
@@ -836,11 +843,12 @@ for(var bi=0;bi<bokeh.length;bi++){
 }
 sc.restore();
 
-// ── 底部水纹线（简洁横波）──
-sc.save();sc.globalAlpha=0.05;sc.strokeStyle='#4AA89A';sc.lineWidth=0.6;sc.lineCap='round';
-for(var row=0;row<3;row++){var wy=1212+row*13;
-sc.beginPath();for(var wx=0;wx<=sw;wx+=2){
-var wyy=wy+Math.sin(wx*0.008+row*1.8)*3;
+// ── 底部水纹线（层叠柔波）──
+sc.save();sc.lineCap='round';
+var waveColors=['rgba(74,168,154,0.06)','rgba(74,168,154,0.04)','rgba(212,160,80,0.03)'];
+for(var row=0;row<3;row++){var wy=1208+row*12;sc.strokeStyle=waveColors[row];sc.lineWidth=0.7+row*0.2;
+sc.beginPath();for(var wx=0;wx<=sw;wx+=3){
+var wyy=wy+Math.sin(wx*0.006+row*2.1)*4+Math.sin(wx*0.015+row*0.8)*1.5;
 wx===0?sc.moveTo(wx,wyy):sc.lineTo(wx,wyy);}sc.stroke();}
 sc.restore();
 

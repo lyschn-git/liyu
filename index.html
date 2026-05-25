@@ -48,17 +48,17 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'KingHwaOldSong','S
 .yao-yin span{width:14px;height:5px;background:#4AA89A;border-radius:2.5px}
 .reveal-see{width:100%;max-width:340px;margin-top:44px;flex-shrink:0;text-align:center}
 .see-label{display:inline-block;font-size:16px;color:#C8A898;letter-spacing:6px;font-weight:600;margin-bottom:14px}
-.see-text{font-size:17px;color:#3A2818;line-height:2.4;letter-spacing:1px;font-weight:500}
+.see-text{font-size:17px;color:#3A2818;line-height:2.0;letter-spacing:1px;font-weight:500}
 .reveal-feel{width:100%;max-width:340px;margin-top:38px;flex-shrink:0;text-align:center}
 .feel-label{display:inline-block;font-size:16px;color:#4AA89A;letter-spacing:6px;font-weight:600;margin-bottom:14px}
-.feel-text{font-size:17px;color:#3A2818;line-height:2.4;letter-spacing:1px;font-weight:500}
+.feel-text{font-size:17px;color:#3A2818;line-height:2.0;letter-spacing:1px;font-weight:500}
 .reveal-act{width:100%;text-align:center;margin-top:40px;flex-shrink:0}
 .reveal-act span{font-size:22px;font-weight:700;letter-spacing:4px;color:#FF9A5C;text-shadow:0 1px 8px rgba(255,154,92,0.2);display:inline-block;line-height:1.6}
 .reveal-quote{width:100%;max-width:340px;margin-top:32px;flex-shrink:0;text-align:center;position:relative;padding:10px 0}
 .reveal-quote::before,.reveal-quote::after{content:'✦';position:absolute;font-size:9px}
 .reveal-quote::before{left:8px;top:4px;color:rgba(255,154,92,0.25)}
 .reveal-quote::after{right:8px;bottom:4px;color:rgba(123,196,184,0.25)}
-.reveal-quote p{font-size:15px;color:#8A7868;line-height:2;letter-spacing:2px;font-family:'KingHwaOldSong','STSong',serif}
+.reveal-quote p{font-size:15px;color:#8A7868;line-height:1.8;letter-spacing:2px;font-family:'KingHwaOldSong','STSong',serif}
 .reveal-yaotext{width:100%;max-width:340px;margin-top:30px;flex-shrink:0;display:flex;justify-content:center}
 .reveal-yaotext span{font-size:14px;color:#A89888;line-height:1.8;writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:2px;height:80px;font-family:'KingHwaOldSong','STSong',serif}
 .reveal-daily{width:100%;max-width:340px;margin-top:34px;flex-shrink:0;background:rgba(123,196,184,0.04);border-radius:12px;padding:10px 16px;border:1px solid rgba(123,196,184,0.08)}
@@ -80,8 +80,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'KingHwaOldSong','S
 #share-canvas{display:none}
 #share-img{max-width:92%;max-height:68vh;border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,0.5);-webkit-touch-callout:default;touch-callout:default;-webkit-user-select:auto;user-select:auto;display:block;touch-action:auto}
 .share-tip{color:rgba(255,255,255,.9);font-size:14px;margin-top:18px;letter-spacing:3px;font-weight:500}
-.share-save{color:#fff;font-size:14px;margin-top:14px;cursor:pointer;padding:10px 32px;border:1px solid rgba(255,255,255,.35);border-radius:22px;background:rgba(255,255,255,.1);letter-spacing:2px;font-weight:500;backdrop-filter:blur(4px);touch-action:auto}
-.share-save:active{background:rgba(255,255,255,.2)}
+
+
 .share-close{color:rgba(255,255,255,.5);font-size:12px;margin-top:12px;cursor:pointer;padding:6px 22px;border:1px solid rgba(255,255,255,.2);border-radius:16px;background:transparent;letter-spacing:1px;touch-action:auto}
 .fade-in{animation:fadeIn .6s cubic-bezier(.23,1,.32,1) forwards}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -134,7 +134,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'KingHwaOldSong','S
     <canvas id="share-canvas" width="750" height="1334"></canvas>
     <img id="share-img" style="-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;touch-callout:default" />
     <div class="share-tip">请截图保存 · 或长按图片保存</div>
-    <button class="share-save" onclick="saveShareImage()">保存图片</button>
+    
     <button class="share-close" onclick="closeShare()">关闭</button>
   </div>
 </div>
@@ -700,9 +700,9 @@ sc.fillText(gua.fullName,sw/2,nameY);
 var textY=nameY+56;
 sc.font=`600 24px ${F}`;sc.fillStyle='#C8A898';
 sc.fillText('你 此 刻',sw/2,textY);
-textY+=38;
+textY+=46;
 sc.font=`500 32px ${F}`;sc.fillStyle='#3A2818';
-textY=wrapTextSafe(sc,gua.see,sw/2,textY,540,50);
+textY=wrapTextSafe(sc,gua.see,sw/2,textY,460,50);
 
 // ── 间隔 ──
 textY+=40;
@@ -710,9 +710,9 @@ textY+=40;
 // ── 你心里 ──
 sc.font=`600 24px ${F}`;sc.fillStyle='#4AA89A';
 sc.fillText('你 心 里',sw/2,textY);
-textY+=38;
+textY+=46;
 sc.font=`500 32px ${F}`;sc.fillStyle='#3A2818';
-textY=wrapTextSafe(sc,gua.feel,sw/2,textY,540,50);
+textY=wrapTextSafe(sc,gua.feel,sw/2,textY,460,50);
 
 // ── 间隔 ──
 textY+=40;
@@ -810,17 +810,7 @@ try{_fontPromise=document.fonts.load('48px KingHwaOldSong');}catch(e){_fontPromi
 if(_fontPromise&&_fontPromise.then){_fontPromise.then(function(){setTimeout(_doDraw,150);}).catch(function(){setTimeout(_doDraw,300);});}
 else{setTimeout(_doDraw,500);}
 }
-function saveShareImage(){
-var c=document.getElementById('share-canvas');
-var dataURL;
-try{dataURL=c.toDataURL('image/png');}catch(e){try{dataURL=c.toDataURL('image/jpeg',0.9);}catch(e2){return;}}
-// 更新share-img确保图片可见，支持长按保存
-var img=document.getElementById('share-img');
-if(img)img.src=dataURL;
-// 提示用户长按保存
-var tip=document.querySelector('.share-tip');
-if(tip)tip.textContent='长按上方图片保存到相册';
-}
+
 function closeShare(){document.getElementById('share-overlay').classList.remove('show');}
 function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath();}
 function wrapText(c,text,x,y,maxW,lh){let line='',curY=y;for(let i=0;i<text.length;i++){const test=line+text[i];if(c.measureText(test).width>maxW&&i>0){c.fillText(line,x,curY);line=text[i];curY+=lh;}else line=test;}c.fillText(line,x,curY);return curY;}

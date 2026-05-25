@@ -9,10 +9,10 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <title>鲤·遇 · 有意义的偶然</title>
+<link rel="stylesheet" href="https://fontsapi.zeoseven.com/309/main.result.css">
 <style>
-@import url("https://fontsapi.zeoseven.com/309/main.result.css");
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
-html,body{width:100%;height:100%;overflow:hidden;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:#FFF8F0;-webkit-overflow-scrolling:touch;touch-action:none;position:fixed;top:0;left:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'KingHwaOldSong','STSong','PingFang SC','Hiragino Sans GB','Microsoft YaHei',serif;background:#FFF8F0;-webkit-overflow-scrolling:touch;touch-action:none;position:fixed;top:0;left:0}
 #app{width:100%;height:100%;position:relative;overflow:hidden;position:fixed;top:0;left:0}
 #scene-pond{width:100%;height:100%;position:absolute;top:0;left:0;z-index:1;transition:opacity 1s ease,transform 1s ease}
 #scene-pond.hide{opacity:0;transform:scale(1.05);pointer-events:none}
@@ -30,15 +30,15 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'PingFang SC','Hira
 
 .rv-koi-deco{position:absolute;top:40px;right:8px;width:44px;height:44px;opacity:0.55;pointer-events:none}
 .rv-inner::after{content:'';position:fixed;bottom:0;left:0;width:100%;height:3px;background:linear-gradient(to right,rgba(123,196,184,0),rgba(123,196,184,0.12),rgba(255,154,92,0.06),rgba(123,196,184,0.12),rgba(123,196,184,0));pointer-events:none}
-.reveal-date{width:100%;text-align:center;padding-top:20px;flex-shrink:0}
+.reveal-date{width:100%;text-align:center;padding-top:28px;flex-shrink:0}
 .reveal-date span{font-size:12px;color:#B8A898;letter-spacing:3px;display:inline-block;background:rgba(255,154,92,0.05);padding:4px 16px;border-radius:12px}
-.reveal-guaname{width:100%;text-align:center;margin-top:22px;flex-shrink:0}
-.gua-name-wrap{display:inline-block;position:relative;padding:8px 26px}
+.reveal-guaname{width:100%;text-align:center;margin-top:36px;flex-shrink:0}
+.gua-name-wrap{display:inline-block;position:relative;padding:12px 26px}
 .gua-name-wrap span{font-size:28px;color:#4A3828;letter-spacing:8px;font-weight:600;font-family:'KingHwaOldSong','STSong',serif}
 .gua-name-wrap::before,.gua-name-wrap::after{content:'';position:absolute;top:50%;width:26px;height:1.5px;border-radius:1px;background:linear-gradient(to right,rgba(255,154,92,0.35),rgba(255,154,92,0))}
 .gua-name-wrap::before{right:100%;margin-right:8px}
 .gua-name-wrap::after{left:100%;margin-left:8px;background:linear-gradient(to left,rgba(255,154,92,0.35),rgba(255,154,92,0))}
-.reveal-symbol{width:100%;text-align:center;margin-top:14px;flex-shrink:0}
+.reveal-symbol{width:100%;text-align:center;margin-top:42px;flex-shrink:0}
 .hexagram{display:inline-flex;flex-direction:column-reverse;gap:6px;border:1.5px solid rgba(123,196,184,0.18);border-radius:14px;padding:12px 20px;background:rgba(123,196,184,0.04);position:relative}
 .hexagram::before{display:none}
 .hexagram::after{display:none}
@@ -46,30 +46,30 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'PingFang SC','Hira
 .yao-yang{width:40px;height:5px;background:#4AA89A;border-radius:2.5px}
 .yao-yin{display:flex;gap:7px}
 .yao-yin span{width:14px;height:5px;background:#4AA89A;border-radius:2.5px}
-.reveal-see{width:100%;max-width:340px;margin-top:32px;flex-shrink:0;text-align:center}
-.see-label{display:inline-block;font-size:16px;color:#FF9A5C;letter-spacing:4px;font-weight:600;background:rgba(255,154,92,0.07);padding:4px 16px;border-radius:10px;margin-bottom:10px}
-.see-text{font-size:17px;color:#3A2818;line-height:2.2;letter-spacing:1px;font-weight:500}
-.reveal-feel{width:100%;max-width:340px;margin-top:28px;flex-shrink:0;text-align:center}
-.feel-label{display:inline-block;font-size:16px;color:#4AA89A;letter-spacing:4px;font-weight:600;background:rgba(123,196,184,0.07);padding:4px 16px;border-radius:10px;margin-bottom:10px}
-.feel-text{font-size:17px;color:#3A2818;line-height:2.2;letter-spacing:1px;font-weight:500}
-.reveal-act{width:100%;text-align:center;margin-top:30px;flex-shrink:0}
+.reveal-see{width:100%;max-width:340px;margin-top:44px;flex-shrink:0;text-align:center}
+.see-label{display:inline-block;font-size:16px;color:#C8A898;letter-spacing:6px;font-weight:600;margin-bottom:14px}
+.see-text{font-size:17px;color:#3A2818;line-height:2.4;letter-spacing:1px;font-weight:500}
+.reveal-feel{width:100%;max-width:340px;margin-top:38px;flex-shrink:0;text-align:center}
+.feel-label{display:inline-block;font-size:16px;color:#4AA89A;letter-spacing:6px;font-weight:600;margin-bottom:14px}
+.feel-text{font-size:17px;color:#3A2818;line-height:2.4;letter-spacing:1px;font-weight:500}
+.reveal-act{width:100%;text-align:center;margin-top:40px;flex-shrink:0}
 .reveal-act span{font-size:22px;font-weight:700;letter-spacing:4px;color:#FF9A5C;text-shadow:0 1px 8px rgba(255,154,92,0.2);display:inline-block;line-height:1.6}
-.reveal-quote{width:100%;max-width:340px;margin-top:24px;flex-shrink:0;text-align:center;position:relative;padding:10px 0}
+.reveal-quote{width:100%;max-width:340px;margin-top:32px;flex-shrink:0;text-align:center;position:relative;padding:10px 0}
 .reveal-quote::before,.reveal-quote::after{content:'✦';position:absolute;font-size:9px}
 .reveal-quote::before{left:8px;top:4px;color:rgba(255,154,92,0.25)}
 .reveal-quote::after{right:8px;bottom:4px;color:rgba(123,196,184,0.25)}
 .reveal-quote p{font-size:15px;color:#8A7868;line-height:2;letter-spacing:2px;font-family:'KingHwaOldSong','STSong',serif}
-.reveal-yaotext{width:100%;max-width:340px;margin-top:20px;flex-shrink:0;display:flex;justify-content:center}
+.reveal-yaotext{width:100%;max-width:340px;margin-top:30px;flex-shrink:0;display:flex;justify-content:center}
 .reveal-yaotext span{font-size:14px;color:#A89888;line-height:1.8;writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:2px;height:80px;font-family:'KingHwaOldSong','STSong',serif}
-.reveal-daily{width:100%;max-width:340px;margin-top:24px;flex-shrink:0;background:rgba(123,196,184,0.04);border-radius:12px;padding:10px 16px;border:1px solid rgba(123,196,184,0.08)}
+.reveal-daily{width:100%;max-width:340px;margin-top:34px;flex-shrink:0;background:rgba(123,196,184,0.04);border-radius:12px;padding:10px 16px;border:1px solid rgba(123,196,184,0.08)}
 .reveal-daily p{font-size:13px;color:#7A6858;letter-spacing:1px;line-height:2}
-.reveal-daily .daily-label{color:#4AA89A;font-weight:500}
-.reveal-tag{margin-top:22px;flex-shrink:0;text-align:center}
-.reveal-tag-card{display:inline-block;background:linear-gradient(135deg,#FF7B5C,#FF5555,#D03030);border-radius:12px;padding:10px 28px;box-shadow:0 3px 12px rgba(208,48,48,0.15);text-align:center;position:relative;overflow:hidden}
+.reveal-daily .daily-label{color:#A89888;font-weight:400}
+.reveal-tag{margin-top:32px;flex-shrink:0;text-align:center}
+.reveal-tag-card{display:inline-block;background:linear-gradient(to right,#FF9A5C,#E8704A);border-radius:18px;padding:8px 24px;box-shadow:0 2px 8px rgba(232,112,74,0.15);text-align:center;position:relative;overflow:hidden}
 .reveal-tag-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radialGradient(circle at 30% 30%,rgba(255,255,255,0.1),transparent 50%);pointer-events:none}
-.reveal-tag-card .tag-main{font-size:17px;color:#FFD700;font-weight:700;letter-spacing:4px;position:relative}
-.reveal-tag-card .tag-sub{font-size:9px;color:rgba(255,215,0,0.4);margin-top:3px;letter-spacing:2px;position:relative}
-.reveal-actions{width:100%;padding:24px 0 20px;display:flex;justify-content:center;gap:14px;flex-shrink:0;margin-top:auto}
+.reveal-tag-card .tag-main{font-size:17px;color:#FFF8F0;font-weight:700;letter-spacing:4px;position:relative}
+.reveal-tag-card .tag-sub{font-size:9px;color:rgba(255,248,240,0.6);margin-top:3px;letter-spacing:2px;position:relative}
+.reveal-actions{width:100%;padding:32px 0 28px;display:flex;justify-content:center;gap:14px;flex-shrink:0;margin-top:auto}
 .btn-action{border:none;border-radius:22px;padding:11px 28px;font-size:13px;font-weight:600;letter-spacing:2px;cursor:pointer;transition:all .15s ease;color:#fff;position:relative;overflow:hidden}
 .btn-action:active{transform:scale(.95)}
 .btn-orange{background:linear-gradient(to bottom,#FFB870,#FF9A5C);box-shadow:0 3px 10px rgba(255,154,92,0.25)}
@@ -126,13 +126,10 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'PingFang SC','Hira
       <div class="reveal-tag fade-in d9"><div class="reveal-tag-card"><div class="tag-main" id="rv-tag"></div><div class="tag-sub">— 鲤遇吉运 —</div></div></div>
       <div class="reveal-actions fade-in d9">
         <button class="btn-action btn-orange" onclick="resetToPond()">再来一卦</button>
-        <!-- 日签功能待部署公网后启用
         <button class="btn-action btn-green" onclick="generateShareImage()">生成日签</button>
-        -->
       </div>
     </div>
   </div>
-  <!-- share-overlay 待部署公网后启用
   <div id="share-overlay">
     <canvas id="share-canvas" width="750" height="1334"></canvas>
     <img id="share-img" style="-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;touch-callout:default" />
@@ -140,7 +137,6 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'PingFang SC','Hira
     <button class="share-save" onclick="saveShareImage()">保存图片</button>
     <button class="share-close" onclick="closeShare()">关闭</button>
   </div>
-  -->
 </div>
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.js" onerror="window.__lunarFail=true"></script>
 <script>
@@ -627,146 +623,203 @@ function populateReveal(){const gua=getTodayGua(),daily=getDailyInfo(),now=new D
 function resetToPond(){guaOffset++;document.getElementById('scene-reveal').classList.remove('show');document.getElementById('scene-pond').classList.remove('hide');initPond();}
 function getMovingYao(){var now=new Date();var seed=now.getFullYear()*1000000+(now.getMonth()+1)*10000+now.getDate()*100+now.getHours();return Math.abs(seed*7+13)%6;}
 function generateShareImage(){
+// 确保京华老宋体加载完毕再绘制（用fonts.ready替代async/await，兼容Coze WebView）
+var _doDraw=function(){
 const gua=getTodayGua(),daily=getDailyInfo(),now=new Date();
 const weekDays=['日','一','二','三','四','五','六'];
 const dateStr=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} · 星期${weekDays[now.getDay()]}`;
-const c=document.getElementById('share-canvas'),sc=c.getContext('2d'),sw=750,sh=1550;
+const c=document.getElementById('share-canvas'),sc=c.getContext('2d'),sw=750,sh=1400;
 c.width=sw;c.height=sh;
-
-// === 背景 ===
-sc.fillStyle='#FFF8F0';sc.fillRect(0,0,sw,sh);
-var atm=sc.createRadialGradient(sw/2,0,0,sw/2,0,600);
-atm.addColorStop(0,'rgba(255,180,120,0.10)');atm.addColorStop(0.5,'rgba(255,200,150,0.04)');atm.addColorStop(1,'rgba(255,248,240,0)');
-sc.fillStyle=atm;sc.fillRect(0,0,sw,700);
-var btm=sc.createRadialGradient(sw/2,sh,0,sw/2,sh,500);
-btm.addColorStop(0,'rgba(123,196,184,0.06)');btm.addColorStop(1,'rgba(255,248,240,0)');
-sc.fillStyle=btm;sc.fillRect(0,sh-500,sw,500);
-
 sc.textAlign='center';
 
-// === 顶部日期（淡，不抢）===
-sc.font='300 20px "PingFang SC","Microsoft YaHei",sans-serif';sc.fillStyle='#C8B8A8';
-sc.fillText(dateStr,sw/2,85);
+// ═══════════════════════════════════
+// 字体：仅京华老宋体（免费商用）
+// 层级靠字号、字重、颜色区分
+// ═══════════════════════════════════
+const F='"KingHwaOldSong","STSong",serif';
 
-// === 卦象符号（留白中的氛围感）===
-var hexY=150;
-sc.fillStyle='rgba(74,168,154,0.55)';
-var yaoW=56,yaoGap=16,yaoH=6,yinGap=16;
+// ═══════════════════════════════════
+// 背景：宣纸温润底
+// ═══════════════════════════════════
+sc.fillStyle='#FFF8F0';sc.fillRect(0,0,sw,sh);
+var atm=sc.createRadialGradient(sw/2,0,0,sw/2,0,650);
+atm.addColorStop(0,'rgba(255,185,120,0.07)');atm.addColorStop(0.6,'rgba(255,200,150,0.02)');atm.addColorStop(1,'rgba(255,248,240,0)');
+sc.fillStyle=atm;sc.fillRect(0,0,sw,650);
+var btm=sc.createRadialGradient(sw/2,sh,0,sw/2,sh,600);
+btm.addColorStop(0,'rgba(255,180,60,0.07)');btm.addColorStop(0.5,'rgba(255,154,92,0.03)');btm.addColorStop(1,'rgba(255,248,240,0)');
+sc.fillStyle=btm;sc.fillRect(0,sh-600,sw,600);
+
+// ═══════════════════════════════════
+// 改进的自动换行：避免单字成行
+// ═══════════════════════════════════
+function wrapTextSafe(ctx,text,x,y,maxW,lh){
+var line='',lines=[];
+for(var i=0;i<text.length;i++){
+var test=line+text[i];
+if(ctx.measureText(test).width>maxW&&line){
+// 如果剩余只有1个字，合并到上一行
+if(text.length-i===1){line+=text[i];lines.push(line);line='';break;}
+lines.push(line);line=text[i];
+}else{line=test;}
+}
+if(line)lines.push(line);
+for(var j=0;j<lines.length;j++){ctx.fillText(lines[j],x,y+j*lh);}
+return y+lines.length*lh;
+}
+
+// ═══════════════════════════════════
+// 排版：上紧下松，图文分域
+// 画布 750×1400，分四区：
+//   头区 0-80   ：日期
+//   文字区 80-860：卦象+解读（紧凑有节奏）
+//   图像区 860-1220：锦鲤独占，不压字
+//   底栏 1220-1400：黄历+品牌（舒展不挤）
+// ═══════════════════════════════════
+
+// ── 日期 ──
+sc.font=`300 20px ${F}`;sc.fillStyle='#C8B8A8';
+sc.fillText(dateStr,sw/2,88);
+
+// ── 卦象 ──
+var hexY=148;
+sc.fillStyle='rgba(74,168,154,0.45)';
+var yaoW=54,yaoGap=18,yaoH=5,yinGap=16;
 for(var i=gua.lines.length-1;i>=0;i--){
 var yy=hexY+(gua.lines.length-1-i)*(yaoH+yaoGap);
-if(gua.lines[i]===1){roundRect(sc,sw/2-yaoW/2,yy,yaoW,yaoH,3);sc.fill();}
-else{var hw=(yaoW-yinGap)/2;roundRect(sc,sw/2-yaoW/2,yy,hw,yaoH,3);sc.fill();roundRect(sc,sw/2+yinGap/2,yy,hw,yaoH,3);sc.fill();}
+if(gua.lines[i]===1){roundRect(sc,sw/2-yaoW/2,yy,yaoW,yaoH,2.5);sc.fill();}
+else{var hw=(yaoW-yinGap)/2;roundRect(sc,sw/2-yaoW/2,yy,hw,yaoH,2.5);sc.fill();roundRect(sc,sw/2+yinGap/2,yy,hw,yaoH,2.5);sc.fill();}
 }
 var hexH=gua.lines.length*(yaoH+yaoGap)-yaoGap;
 
-// === 卦名（给上下文，不是主角）===
-sc.font='600 52px "KingHwaOldSong","STSong",serif';sc.fillStyle='#3A2818';
-sc.fillText(gua.fullName,sw/2,hexY+hexH+75);
+// ── 卦名 ──
+var nameY=hexY+hexH+60;
+sc.font=`600 52px ${F}`;sc.fillStyle='#3A2818';
+sc.fillText(gua.fullName,sw/2,nameY);
 
-// === 行动语（一句话情绪锚点）===
-var actY=hexY+hexH+145;
-sc.font='800 58px "PingFang SC","Microsoft YaHei",sans-serif';sc.fillStyle='#FF7B5C';
-sc.shadowColor='rgba(255,123,92,0.12)';sc.shadowBlur=24;
-sc.fillText(gua.act,sw/2,actY);
+// ── 你此刻 ──
+var textY=nameY+56;
+sc.font=`600 24px ${F}`;sc.fillStyle='#C8A898';
+sc.fillText('你 此 刻',sw/2,textY);
+textY+=38;
+sc.font=`500 32px ${F}`;sc.fillStyle='#3A2818';
+textY=wrapTextSafe(sc,gua.see,sw/2,textY,540,50);
+
+// ── 间隔 ──
+textY+=40;
+
+// ── 你心里 ──
+sc.font=`600 24px ${F}`;sc.fillStyle='#4AA89A';
+sc.fillText('你 心 里',sw/2,textY);
+textY+=38;
+sc.font=`500 32px ${F}`;sc.fillStyle='#3A2818';
+textY=wrapTextSafe(sc,gua.feel,sw/2,textY,540,50);
+
+// ── 间隔 ──
+textY+=40;
+
+// ── 行动语 ──
+sc.font=`800 44px ${F}`;sc.fillStyle='#FF7B5C';
+sc.shadowColor='rgba(255,123,92,0.08)';sc.shadowBlur=16;
+sc.fillText(gua.act,sw/2,textY);
 sc.shadowColor='transparent';sc.shadowBlur=0;
 
-// === 运签标签 ===
+// ── 运签标签 ──
 var tagText=gua.tag;
-sc.font='600 20px "PingFang SC","Microsoft YaHei",sans-serif';
+sc.font=`600 20px ${F}`;
 var tagTW=sc.measureText(tagText).width;
-var tagW=tagTW+44,tagH=38,tagX=sw/2-tagW/2,tagY=actY+30;
+var tagW=tagTW+44,tagH=36,tagX=sw/2-tagW/2,tagY=textY+32;
 var tagGrad=sc.createLinearGradient(tagX,tagY,tagX+tagW,tagY+tagH);
 tagGrad.addColorStop(0,'#FF9A5C');tagGrad.addColorStop(1,'#E8704A');
-sc.fillStyle=tagGrad;roundRect(sc,tagX,tagY,tagW,tagH,19);sc.fill();
-sc.font='600 19px "PingFang SC","Microsoft YaHei",sans-serif';sc.fillStyle='#FFF8F0';
-sc.fillText(tagText,sw/2,tagY+26);
+sc.fillStyle=tagGrad;roundRect(sc,tagX,tagY,tagW,tagH,18);sc.fill();
+sc.font=`600 18px ${F}`;sc.fillStyle='#FFF8F0';
+sc.fillText(tagText,sw/2,tagY+25);
 
-// === 分隔线 ===
-var sepY=tagY+68;
+// ── 分隔线 ──
+var sepY=tagY+54;
 sc.strokeStyle='rgba(184,168,152,0.18)';sc.lineWidth=0.5;
-sc.beginPath();sc.moveTo(sw/2-90,sepY);sc.lineTo(sw/2+90,sepY);sc.stroke();
+sc.beginPath();sc.moveTo(sw/2-120,sepY);sc.lineTo(sw/2+120,sepY);sc.stroke();
 
-// === 你此刻（核心！读者最关心）===
-var textY=sepY+60;
-sc.font='600 30px "PingFang SC","Microsoft YaHei",sans-serif';sc.fillStyle='#C8A898';
-sc.fillText('你 此 刻',sw/2,textY);
-textY+=50;
-sc.font='500 34px "PingFang SC","Microsoft YaHei",sans-serif';sc.fillStyle='#3A2818';
-textY=wrapText(sc,gua.see,sw/2,textY,560,52);
-
-// === 大间距呼吸 ===
-textY+=56;
-
-// === 你心里（核心！读者最关心）===
-sc.font='600 30px "PingFang SC","Microsoft YaHei",sans-serif';sc.fillStyle='#6AAC9E';
-sc.fillText('你 心 里',sw/2,textY);
-textY+=50;
-sc.font='500 34px "PingFang SC","Microsoft YaHei",sans-serif';sc.fillStyle='#3A2818';
-textY=wrapText(sc,gua.feel,sw/2,textY,560,52);
-
-// === 分隔线 ===
-textY+=56;
-sc.strokeStyle='rgba(184,168,152,0.18)';sc.lineWidth=0.5;
-sc.beginPath();sc.moveTo(sw/2-90,textY);sc.lineTo(sw/2+90,textY);sc.stroke();
-
-// === 爻辞+大象传（古文层，清晰可读）===
-textY+=44;
+// ── 爻辞+大象传 ──
+textY=sepY+38;
 var mIdx=getMovingYao();var yaoStr='';
 if(gua.yaoList&&gua.yaoList[mIdx]){yaoStr=gua.yaoList[mIdx].pos+'：'+gua.yaoList[mIdx].text;}else if(gua.yaoText){yaoStr=gua.yaoText;}
-if(yaoStr){sc.font='400 24px "KingHwaOldSong","STSong",serif';sc.fillStyle='#8A7868';sc.fillText(yaoStr,sw/2,textY);textY+=38;}
-sc.font='400 24px "KingHwaOldSong","STSong",serif';sc.fillStyle='#A89888';
-textY=wrapText(sc,gua.quote,sw/2,textY+6,480,38);
+if(yaoStr){sc.font=`400 22px ${F}`;sc.fillStyle='#8A7868';sc.fillText(yaoStr,sw/2,textY);textY+=36;}
+sc.font=`400 22px ${F}`;sc.fillStyle='#A89888';
+textY=wrapTextSafe(sc,gua.quote,sw/2,textY+8,440,36);
 
-// === 锦鲤（底部主角，半透明游鱼）===
-if(koiImg){sc.save();sc.globalAlpha=0.15;
-var kw=180,kh=kw*koiImg.height/koiImg.width;
-sc.drawImage(koiImg,sw/2-kw/2,sh-280,kw,kh);sc.restore();}
+// ═══════════════════════════════════
+// 锦鲤：右下角游动，独占图像区
+// 鱼身控制在 860-1200 区域，与底栏留出间隙
+// ═══════════════════════════════════
+if(koiImg){sc.save();
+var kw=220,kh=kw*koiImg.height/koiImg.width;
+var kcx=sw/2+30,kcy=1070;
+// 金色光晕（收敛，不溢出鱼区）
+var koiGlow=sc.createRadialGradient(kcx,kcy,0,kcx,kcy,kw*0.55);
+koiGlow.addColorStop(0,'rgba(255,180,60,0.10)');koiGlow.addColorStop(0.5,'rgba(255,154,92,0.03)');koiGlow.addColorStop(1,'rgba(255,248,240,0)');
+sc.fillStyle=koiGlow;sc.fillRect(kcx-kw,kcy-kh,kw*2,kh*2);
+// 锦鲤本体
+sc.globalAlpha=0.85;
+sc.translate(kcx,kcy);
+sc.rotate(-0.10);
+sc.drawImage(koiImg,-kw/2,-kh/2,kw,kh);
+sc.restore();}
 
-// === 底部水波纹 ===
-sc.save();sc.globalAlpha=0.06;sc.strokeStyle='#7BC4B8';sc.lineWidth=1;
-for(var row=0;row<4;row++){var wy=sh-110+row*12;
+// ── 气泡（跟随鱼区）──
+sc.save();
+var bubbles=[
+  {x:sw/2-80,y:1030,r:5,a:0.10},{x:sw/2+120,y:1050,r:4,a:0.08},
+  {x:sw/2-120,y:990,r:3.5,a:0.07},{x:sw/2+50,y:980,r:3,a:0.06}
+];
+for(var bi=0;bi<bubbles.length;bi++){
+  var b=bubbles[bi];
+  sc.globalAlpha=b.a;sc.fillStyle='#D4A050';
+  sc.beginPath();sc.arc(b.x,b.y,b.r,0,Math.PI*2);sc.fill();
+  sc.globalAlpha=b.a*0.5;sc.fillStyle='#FFF8F0';
+  sc.beginPath();sc.arc(b.x-b.r*0.3,b.y-b.r*0.3,b.r*0.35,0,Math.PI*2);sc.fill();
+}
+sc.restore();
+
+// ── 尾迹水纹 ──
+sc.save();sc.globalAlpha=0.04;sc.strokeStyle='#D4A050';sc.lineWidth=0.8;
+for(var row=0;row<2;row++){var wy=1190+row*14;
 sc.beginPath();for(var wx=0;wx<=sw;wx+=2){
-var wyy=wy+Math.sin(wx*0.012+row*1.5)*4;
-wx===0?sc.moveTo(wx,wyy):sc.lineTo(wx,wyy);}sc.stroke();}sc.restore();
+var wyy=wy+Math.sin(wx*0.01+row*2)*3;
+wx===0?sc.moveTo(wx,wyy):sc.lineTo(wx,wyy);}sc.stroke();}
+sc.restore();
 
-// === 黄历 ===
-sc.font='300 16px "PingFang SC","Microsoft YaHei",sans-serif';sc.fillStyle='#B8A898';
+// ═══════════════════════════════════
+// 底栏：黄历 + 品牌（舒展，三行间距始终）
+// ═══════════════════════════════════
+sc.font=`300 18px ${F}`;sc.fillStyle='#A89888';
 var hlStr='财神'+daily.direction+' · 宜'+daily.yi.split(' ').slice(0,2).join(' ');
-sc.fillText(hlStr,sw/2,sh-66);
+sc.fillText(hlStr,sw/2,sh-70);
 
-// === 品牌 ===
-sc.font='600 18px "KingHwaOldSong","STSong",serif';sc.fillStyle='#B8A898';
-sc.fillText('鲤 · 遇',sw/2,sh-36);
-sc.font='300 13px "PingFang SC","Microsoft YaHei",sans-serif';sc.fillStyle='#D0C0B0';
-sc.fillText('有意义的偶然',sw/2,sh-14);
+sc.font=`600 22px ${F}`;sc.fillStyle='#A89888';
+sc.fillText('鲤 · 遇',sw/2,sh-42);
+sc.font=`300 16px ${F}`;sc.fillStyle='#C0B0A0';
+sc.fillText('有意义的偶然',sw/2,sh-20);
 
 // === 转为图片 ===
 try{document.getElementById('share-img').src=c.toDataURL('image/png');}catch(e){document.getElementById('share-img').src=c.toDataURL('image/jpeg',0.9);}
 document.getElementById('share-overlay').classList.add('show');
+};// end _doDraw
+// 显式触发字体加载，等就绪后绘制（兼容Coze WebView）
+var _fontPromise;
+try{_fontPromise=document.fonts.load('48px KingHwaOldSong');}catch(e){_fontPromise=null;}
+if(_fontPromise&&_fontPromise.then){_fontPromise.then(function(){setTimeout(_doDraw,150);}).catch(function(){setTimeout(_doDraw,300);});}
+else{setTimeout(_doDraw,500);}
 }
 function saveShareImage(){
 var c=document.getElementById('share-canvas');
 var dataURL;
 try{dataURL=c.toDataURL('image/png');}catch(e){try{dataURL=c.toDataURL('image/jpeg',0.9);}catch(e2){return;}}
-// Strategy 1: <a download>
-try{
-c.toBlob(function(blob){
-if(!blob)return;
-var url=URL.createObjectURL(blob);
-var a=document.createElement('a');
-a.href=url;a.download='鲤遇日签_'+new Date().getHours()+'时.png';
-document.body.appendChild(a);a.click();document.body.removeChild(a);
-setTimeout(function(){URL.revokeObjectURL(url);},5000);
-},'image/png');
-}catch(e){}
-// Strategy 2: open in new tab
-try{
-var w=window.open('');
-if(w){w.document.write('<html><head><title>鲤遇日签<\/title><style>body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh}img{max-width:100%;max-height:100vh}<\/style><\/head><body><img src="'+dataURL+'"><\/body><\/html>');w.document.close();}
-}catch(e){}
-// Strategy 3: update tip to emphasize screenshot
+// 更新share-img确保图片可见，支持长按保存
+var img=document.getElementById('share-img');
+if(img)img.src=dataURL;
+// 提示用户长按保存
 var tip=document.querySelector('.share-tip');
-if(tip)tip.textContent='请截图保存 · 或长按图片保存';
+if(tip)tip.textContent='长按上方图片保存到相册';
 }
 function closeShare(){document.getElementById('share-overlay').classList.remove('show');}
 function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath();}

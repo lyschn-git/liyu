@@ -30,15 +30,17 @@ canvas{display:block;width:100%;height:100%}
   <div style="font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:12px;color:rgba(180,130,80,0.5);margin-top:16px">双指触摸可暂停</div>
 </div>
 <!-- 排行榜弹窗 -->
-<div id="rankOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:15;background:rgba(255,248,240,0.95);overflow-y:auto;-webkit-overflow-scrolling:touch">
+<div id="rankOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:15;background:rgba(255,248,240,0.95);overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y">
   <div style="max-width:340px;margin:0 auto;padding:40px 20px 30px;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif">
     <div style="text-align:center;font-size:22px;color:#FF9A5C;margin-bottom:6px">🏆 龙门英雄榜</div>
     <div id="rankList" style="margin:16px 0;min-height:100px"></div>
     <!-- 提交分数区 -->
     <div id="submitArea" style="display:none;margin-top:16px;text-align:center">
-      <div style="font-size:14px;color:rgba(180,130,80,0.7);margin-bottom:8px">留下你的名字</div>
-      <input id="nameInput" maxlength="12" placeholder="输入昵称" style="width:140px;height:36px;border-radius:18px;border:1.5px solid rgba(255,154,92,0.4);text-align:center;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:15px;color:#3A2818;outline:none;background:#FFF8F0" />
-      <div id="submitBtn" style="display:inline-block;width:80px;height:36px;border-radius:18px;background:linear-gradient(135deg,#FF9A5C,#FF7E3A);color:#fff;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(255,122,58,0.35);line-height:36px;margin-left:8px">提交</div>
+      <div id="scoreHint" style="font-size:15px;color:#FF9A5C;margin-bottom:8px;font-weight:600">你本次：0关</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px">
+        <input id="nameInput" maxlength="12" placeholder="输入昵称" style="width:140px;height:36px;border-radius:18px;border:1.5px solid rgba(255,154,92,0.4);text-align:center;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:15px;color:#3A2818;outline:none;background:#FFF8F0;-webkit-user-select:auto;user-select:auto" />
+        <div id="submitBtn" style="display:inline-block;width:80px;height:36px;border-radius:18px;background:linear-gradient(135deg,#FF9A5C,#FF7E3A);color:#fff;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(255,122,58,0.35);line-height:36px;flex-shrink:0">提交</div>
+      </div>
     </div>
     <div id="rankClose" style="text-align:center;margin-top:20px;width:100px;height:36px;border-radius:18px;background:rgba(123,196,184,0.12);border:1.5px solid rgba(123,196,184,0.4);color:#5EAEA0;font-size:14px;cursor:pointer;line-height:36px;margin-left:auto;margin-right:auto">关闭</div>
   </div>
@@ -114,6 +116,7 @@ var SIGN_TEXTS=[
 var STATE={MENU:0,PLAY:1,OVER:2,WIN:3,PAUSE:4};
 var state=STATE.MENU;
 var score=0,bestScore=0;
+var lastScore=0; // 缓存本次成绩，供排行榜提交
 var WIN_SCORE=36; // 三十六计，通关
 try{bestScore=parseInt(localStorage.getItem('ylm_best'))||0;}catch(e){}
 
@@ -249,7 +252,7 @@ function initGame(){
   gateSpeed=W*0.0020;
   gateGap=koi.h*5.5;    // 新手间隙
   gateSpacing=W*0.24;   // 紧凑间距
-  score=0;overTimer=0;
+  score=0;overTimer=0;lastScore=0;
   resumeGraceLeft=0;
   invincibleFrames=0;
   nextGateX=W*1.5; // 第一根门柱推更远
@@ -414,6 +417,7 @@ function update(){
       // 通关判定
       if(score>=WIN_SCORE){
         state=STATE.WIN;
+        lastScore=score;
         overTimer=0;
         winShareImg=null;
         if(score>bestScore){bestScore=score;try{localStorage.setItem('ylm_best',bestScore);}catch(e){}}
@@ -497,6 +501,7 @@ function findSafeY(){
 function die(){
   koi.alive=false;
   state=STATE.OVER;
+  lastScore=score;
   overTimer=0;
   if(score>bestScore){
     bestScore=score;
@@ -1324,14 +1329,22 @@ document.getElementById('btn2').addEventListener('touchend',function(e){
 });
 
 // ── 排行榜按钮 ──
+var _rankSubmitting=false; // 防双触锁
 function openRank(){
   var overlay=document.getElementById('rankOverlay');
   overlay.style.display='block';
   var rankList=document.getElementById('rankList');
   rankList.innerHTML='<div style="text-align:center;color:rgba(180,130,80,0.5);padding:20px">加载中...</div>';
-  // 显示提交区
+  // 显示提交区（有成绩才能提交）
   var submitArea=document.getElementById('submitArea');
-  submitArea.style.display='block';
+  if(lastScore>0){
+    submitArea.style.display='block';
+    // 更新成绩提示
+    var scoreHint=document.getElementById('scoreHint');
+    if(scoreHint) scoreHint.textContent='你本次：'+lastScore+'关';
+  } else {
+    submitArea.style.display='none';
+  }
   // 拉取排行榜
   fetchLeaderboard(function(list){
     if(list.length===0){
@@ -1356,32 +1369,41 @@ function closeRank(){
   document.getElementById('rankOverlay').style.display='none';
 }
 
+function doSubmitScore(){
+  if(_rankSubmitting) return; // 防双触
+  var name=document.getElementById('nameInput').value.trim();
+  if(!name){document.getElementById('nameInput').focus();return;}
+  if(lastScore<=0) return;
+  _rankSubmitting=true;
+  var btn=document.getElementById('submitBtn');
+  btn.style.opacity='0.5';
+  submitScore(name,lastScore).then(function(d){
+    _rankSubmitting=false;
+    btn.style.opacity='1';
+    if(d.ok){
+      document.getElementById('submitArea').style.display='none';
+      lastScore=0; // 提交后清零，防止重复
+      openRank(); // 刷新排行榜
+    } else {
+      var hint=document.getElementById('scoreHint');
+      if(hint) hint.textContent='提交失败，再试一次';
+    }
+  }).catch(function(){
+    _rankSubmitting=false;
+    btn.style.opacity='1';
+    var hint=document.getElementById('scoreHint');
+    if(hint) hint.textContent='网络异常，再试一次';
+  });
+}
+
 document.getElementById('btn3').addEventListener('click',function(){ openRank(); });
 document.getElementById('btn3').addEventListener('touchend',function(e){ e.preventDefault(); openRank(); });
 document.getElementById('rankClose').addEventListener('click',function(){ closeRank(); });
 document.getElementById('rankClose').addEventListener('touchend',function(e){ e.preventDefault(); closeRank(); });
-document.getElementById('submitBtn').addEventListener('click',function(){
-  var name=document.getElementById('nameInput').value.trim();
-  if(!name) return;
-  var sc=state===STATE.OVER?score:(state===STATE.WIN?WIN_SCORE:score);
-  submitScore(name,sc).then(function(d){
-    if(d.ok){
-      document.getElementById('submitArea').style.display='none';
-      openRank(); // 刷新排行榜
-    }
-  });
-});
 document.getElementById('submitBtn').addEventListener('touchend',function(e){
   e.preventDefault();
-  var name=document.getElementById('nameInput').value.trim();
-  if(!name) return;
-  var sc=state===STATE.OVER?score:(state===STATE.WIN?WIN_SCORE:score);
-  submitScore(name,sc).then(function(d){
-    if(d.ok){
-      document.getElementById('submitArea').style.display='none';
-      openRank(); // 刷新排行榜
-    }
-  });
+  e.stopPropagation();
+  doSubmitScore();
 });
 // ── 暂停恢复按钮 ──
 document.getElementById('resumeBtn').addEventListener('click',function(){

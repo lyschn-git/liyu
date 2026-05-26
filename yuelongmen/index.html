@@ -9,7 +9,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <title>锦鲤跃龙门 · 鲤·遇</title>
-<link href="https://fonts.font.im/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<link href="https://fonts.font.im/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;">>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 html,body{width:100%;height:100%;overflow:hidden;background:#FFF8F0;position:fixed;top:0;left:0;touch-action:none}
@@ -860,14 +860,8 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
-// 字体加载后启动
-var _loopStarted=false;function _startLoop(){if(_loopStarted)return;_loopStarted=true;loop();}
-var _fontTimer=setTimeout(function(){_startLoop();},3000);
-if(document.fonts&&document.fonts.ready){
-  document.fonts.ready.then(function(){clearTimeout(_fontTimer);_startLoop();});
-}else{
-  setTimeout(loop,500);
-}
+// 立即启动游戏，不等待字体加载
+loop();
 
 // ── 结算页按钮（HTML层）──
 document.getElementById('btn1').addEventListener('click',function(){

@@ -921,7 +921,7 @@ koiReady.then(()=>{try{showDebug('初始化中...');initPond();showDebug('');}ca
 // iOS Safari: prevent elastic bounce, handle URL bar resize
 document.addEventListener('touchmove', function(e){if(e.target.closest('#scene-reveal'))return;e.preventDefault();}, {passive:false});
 if(window.visualViewport){window.visualViewport.addEventListener('resize',()=>{try{resizeCanvas();}catch(e){}});}
-}catch(e){console.error('鲤遇主脚本错误:',e);document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#FFF8F0;color:#4A3828;font-size:16px;text-align:center;padding:20px">鲤·遇 加载出错<br><br><small style="color:#B8A898;word-break:break-all">'+(e.stack||e.message)+'<\/small><\/div>';}
+}catch(e){console.error('鲤遇主脚本错误:',e);document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#FFF8F0;color:#4A3828;font-size:16px;text-align:center;padding:20px">鲤·遇 加载出错<br><br><small style="color:#B8A898;word-break:break-all">'+(e.stack||e.message)+'</small></div>';}
 </script>
 </body>
 </html>

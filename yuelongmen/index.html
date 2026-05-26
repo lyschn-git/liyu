@@ -131,7 +131,7 @@ function initGameParams(){
   waterY=H*0.82;
   gateSpeed=W*0.0025;   // 降速
   gateGap=koi.h*4.5;    // 更大间隙，新手友好
-  gateSpacing=W*0.5;    // 间距拉大
+  gateSpacing=W*0.4;    // 间距紧凑，节奏不停
   score=0;
 
   gates=[];
@@ -236,9 +236,9 @@ function update(){
   }
 
   // 难度递增（更温和）
-  if(score>8){gateGap=koi.h*3.5;gateSpacing=W*0.46;}
-  if(score>20){gateGap=koi.h*3.0;gateSpacing=W*0.42;gateSpeed=W*0.0028;}
-  if(score>35){gateGap=koi.h*2.6;gateSpacing=W*0.38;gateSpeed=W*0.003;}
+  if(score>8){gateGap=koi.h*4.0;gateSpacing=W*0.38;}
+  if(score>20){gateGap=koi.h*3.5;gateSpacing=W*0.35;gateSpeed=W*0.0028;}
+  if(score>35){gateGap=koi.h*3.0;gateSpacing=W*0.32;gateSpeed=W*0.003;}
 
   // 碰撞检测
   var kx=koi.x,ky=koi.y,kw=koi.w*0.6,kh=koi.h*0.6; // 碰撞体略小

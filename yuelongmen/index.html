@@ -104,6 +104,7 @@ try{bestScore=parseInt(localStorage.getItem('ylm_best'))||0;}catch(e){}
 // ── 暂停恢复grace ──
 var RESUME_GRACE=150; // 2.5秒@60fps
 var resumeGraceLeft=0;
+var invincibleFrames=0; // 恢复后短暂无敌
 var lastTapTime=0; // 双击检测
 
 // ── 通关口彩 ──
@@ -205,6 +206,7 @@ function initGame(){
   gateSpacing=W*0.30;   // 更紧凑间距
   score=0;overTimer=0;
   resumeGraceLeft=0;
+  invincibleFrames=0;
   nextGateX=W*1.5; // 第一根门柱推更远
   graceFrames=GRACE_TOTAL;
   graceBaseY=waterY*0.45;
@@ -293,6 +295,17 @@ function update(){
     for(var i=0;i<clouds.length;i++){clouds[i].x+=clouds[i].speed;if(clouds[i].x>W+60)clouds[i].x=-60;}
     // 更新闪光粒子
     for(var i=sparkles.length-1;i>=0;i--){var s=sparkles[i];s.x+=s.vx;s.y+=s.vy;s.life--;s.alpha=s.life/s.maxLife;if(s.life<=0)sparkles.splice(i,1);}
+    // grace即将结束(最后10帧)，将鱼推到安全位置
+    if(resumeGraceLeft<=10){
+      var safeY=findSafeY();
+      if(safeY!==null){
+        koi.y+=(safeY-koi.y)*0.3; // 平滑过渡到安全区
+      }
+    }
+    // grace结束瞬间给0.5秒无敌
+    if(resumeGraceLeft===1){
+      invincibleFrames=30;
+    }
     return;
   }
 
@@ -393,15 +406,21 @@ function update(){
   if(score>20){gateGap=koi.h*3.8;gateSpacing=W*0.22;gateSpeed=W*0.0025;}
   if(score>30){gateGap=koi.h*3.4;gateSpacing=W*0.20;gateSpeed=W*0.0028;}
 
+  // 无敌帧倒计时
+  if(invincibleFrames>0) invincibleFrames--;
+
   var kx=koi.x,ky=koi.y,kw=koi.w*0.6,kh=koi.h*0.6;
   if(ky-kh<0){die();return;}
   if(ky+kh>waterY){die();return;}
+  // 无敌期间跳过门柱碰撞
+  if(invincibleFrames<=0){
   for(var i=0;i<gates.length;i++){
     var g=gates[i];
     if(kx+kw>g.x&&kx-kw<g.x+g.w){
       if(ky-kh<g.topH){die();return;}
       if(ky+kh>g.botY){die();return;}
     }
+  }
   }
 
   for(var i=floatingTexts.length-1;i>=0;i--){
@@ -413,6 +432,19 @@ function update(){
   }
 
   if(state===STATE.OVER) overTimer++;
+}
+
+// 找到鱼当前位置附近的安全Y坐标（门柱间隙中间）
+function findSafeY(){
+  var kx=koi.x,kw=koi.w*0.6;
+  for(var i=0;i<gates.length;i++){
+    var g=gates[i];
+    if(kx+kw>g.x-5&&kx-kw<g.x+g.w+5){
+      // 鱼在这根门柱附近，返回间隙中间
+      return (g.topH+g.botY)/2;
+    }
+  }
+  return null; // 不在门柱附近，无需调整
 }
 
 function die(){

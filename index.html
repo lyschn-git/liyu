@@ -78,7 +78,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'KingHwaOldSong','S
 #share-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.78);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-touch-callout:default;touch-callout:default;-webkit-user-select:auto;user-select:auto;touch-action:auto}
 #share-overlay.show{display:flex}
 #share-canvas{display:none}
-#share-img{max-width:92%;max-height:68vh;border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,0.5);-webkit-touch-callout:default;touch-callout:default;-webkit-user-select:auto;user-select:auto;display:block;touch-action:auto}
+#share-img{max-width:92%;max-height:68vh;border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,0.5);-webkit-touch-callout:default;touch-callout:default;-webkit-user-select:auto;user-select:auto;display:block;touch-action:auto}
 .share-tip{color:rgba(255,255,255,.9);font-size:14px;margin-top:18px;letter-spacing:3px;font-weight:500}
 
 
@@ -901,6 +901,20 @@ sc.font=`600 22px ${F}`;sc.fillStyle='#A89888';
 sc.fillText('鲤 · 遇',sw/2,sh-42);
 sc.font=`300 16px ${F}`;sc.fillStyle='#C0B0A0';
 sc.fillText('有意义的偶然',sw/2,sh-20);
+
+// === 圆角裁剪（卡片质感） ===
+sc.save();
+sc.globalCompositeOperation='destination-in';
+sc.beginPath();
+var cr=30; // 圆角半径
+sc.moveTo(cr,0);
+sc.lineTo(sw-cr,0);sc.arcTo(sw,0,sw,cr,cr);
+sc.lineTo(sw,sh-cr);sc.arcTo(sw,sh,sw-cr,sh,cr);
+sc.lineTo(cr,sh);sc.arcTo(0,sh,0,sh-cr,cr);
+sc.lineTo(0,cr);sc.arcTo(0,0,cr,0,cr);
+sc.closePath();
+sc.fill();
+sc.restore();
 
 // === 转为图片 ===
 try{document.getElementById('share-img').src=c.toDataURL('image/png');}catch(e){document.getElementById('share-img').src=c.toDataURL('image/jpeg',0.9);}

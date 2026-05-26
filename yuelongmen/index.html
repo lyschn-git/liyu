@@ -103,8 +103,8 @@ var graceBaseY=0;
 var koi={
   x:0,y:0,vy:0,
   w:0,h:0,
-  gravity:0.26,
-  flapPower:-4.5,  // 温和跳跃
+  gravity:0.20,       // 更慢下落，更从容
+  flapPower:-4.0,     // 更温和跳跃
   rotation:0,
   alive:true
 };
@@ -177,8 +177,8 @@ function initGame(){
   koi.y=waterY*0.5;
   koi.vy=0;koi.rotation=0;koi.alive=true;
   gates=[];floatingTexts=[];sparkles=[];
-  gateSpeed=W*0.0025;
-  gateGap=koi.h*5.0;    // 更大间隙，新手友好
+  gateSpeed=W*0.0020;   // 更慢速度
+  gateGap=koi.h*5.5;    // 更大间隙，新手友好
   gateSpacing=W*0.4;
   score=0;overTimer=0;
   nextGateX=W*1.5; // 第一根门柱推更远
@@ -317,9 +317,9 @@ function update(){
     gates.shift();addGate();
   }
 
-  if(score>8){gateGap=koi.h*4.5;gateSpacing=W*0.38;}
-  if(score>20){gateGap=koi.h*4.0;gateSpacing=W*0.35;gateSpeed=W*0.0028;}
-  if(score>35){gateGap=koi.h*3.5;gateSpacing=W*0.32;gateSpeed=W*0.003;}
+  if(score>8){gateGap=koi.h*5.0;gateSpacing=W*0.40;}
+  if(score>20){gateGap=koi.h*4.5;gateSpacing=W*0.38;gateSpeed=W*0.0022;}
+  if(score>35){gateGap=koi.h*4.0;gateSpacing=W*0.35;gateSpeed=W*0.0025;}
 
   var kx=koi.x,ky=koi.y,kw=koi.w*0.6,kh=koi.h*0.6;
   if(ky-kh<0){die();return;}

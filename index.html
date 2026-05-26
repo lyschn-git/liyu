@@ -904,9 +904,10 @@ sc.fillText('有意义的偶然',sw/2,sh-20);
 
 // === 圆角裁剪（卡片质感） ===
 sc.save();
+// 先裁剪内容到圆角矩形
 sc.globalCompositeOperation='destination-in';
 sc.beginPath();
-var cr=30; // 圆角半径
+var cr=30;
 sc.moveTo(cr,0);
 sc.lineTo(sw-cr,0);sc.arcTo(sw,0,sw,cr,cr);
 sc.lineTo(sw,sh-cr);sc.arcTo(sw,sh,sw-cr,sh,cr);
@@ -914,6 +915,10 @@ sc.lineTo(cr,sh);sc.arcTo(0,sh,0,sh-cr,cr);
 sc.lineTo(0,cr);sc.arcTo(0,0,cr,0,cr);
 sc.closePath();
 sc.fill();
+// 再用深色填满透明角落（微信转JPG时不会变黑块）
+sc.globalCompositeOperation='destination-over';
+sc.fillStyle='#1C1C1E';
+sc.fillRect(0,0,sw,sh);
 sc.restore();
 
 // === 转为图片 ===

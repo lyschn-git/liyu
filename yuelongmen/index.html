@@ -365,7 +365,8 @@ function update(){
       if(score%10===0&&score>0) ft=FORTUNE_10[Math.floor(Math.random()*FORTUNE_10.length)];
       else if(score%5===0&&score>0) ft=FORTUNE_5[Math.floor(Math.random()*FORTUNE_5.length)];
       else ft=FORTUNE_1[Math.floor(Math.random()*FORTUNE_1.length)];
-      floatingTexts.push({text:ft,x:koi.x+koi.w,y:koi.y-koi.h*0.5,life:70,alpha:1,scale:1.5});
+      var big=(score%10===0&&score>0)?1:(score%5===0&&score>0)?0.8:0;
+      floatingTexts.push({text:ft,x:koi.x+koi.w,y:koi.y-koi.h*0.5,life:80,alpha:1,scale:2.0+big*0.5,big:big});
       // 过门闪光
       for(var j=0;j<6;j++){
         sparkles.push({
@@ -407,7 +408,7 @@ function update(){
     floatingTexts[i].y-=0.8;
     floatingTexts[i].life--;
     floatingTexts[i].alpha=Math.min(1,floatingTexts[i].life/20);
-    floatingTexts[i].scale=Math.max(1,floatingTexts[i].scale-0.02);
+    floatingTexts[i].scale=Math.max(1,floatingTexts[i].scale-0.025);
     if(floatingTexts[i].life<=0) floatingTexts.splice(i,1);
   }
 
@@ -472,10 +473,11 @@ function draw(){
     sc.translate(ft.x,ft.y);
     sc.scale(ft.scale,ft.scale);
     // 文字光晕
-    sc.shadowColor=CLR.orange;
-    sc.shadowBlur=8;
-    sc.font='bold 16px "ZCOOL KuaiLe","STSong",serif';
-    sc.fillStyle=CLR.orangeDark;
+    var fSize=ft.big>0.5?32:ft.big>0?28:24;
+    sc.shadowColor='rgba(255,154,92,0.6)';
+    sc.shadowBlur=ft.big>0?18:12;
+    sc.font='bold '+fSize+'px "ZCOOL KuaiLe","STSong",serif';
+    sc.fillStyle=ft.big>0?CLR.orange:CLR.orangeDark;
     sc.textAlign='center';
     sc.fillText(ft.text,0,0);
     sc.shadowBlur=0;

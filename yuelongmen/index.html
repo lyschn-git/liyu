@@ -21,12 +21,27 @@ canvas{display:block;width:100%;height:100%}
 <div id="overBtns" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none">
   <div id="btn1" style="position:absolute;pointer-events:auto;width:160px;height:40px;border-radius:20px;background:linear-gradient(135deg,#FF9A5C,#FF7E3A);color:#fff;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(255,122,58,0.35);display:flex;align-items:center;justify-content:center">再来一局</div>
   <div id="btn2" style="position:absolute;pointer-events:auto;width:160px;height:36px;border-radius:18px;background:rgba(123,196,184,0.12);border:1.5px solid rgba(123,196,184,0.4);color:#5EAEA0;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">看看今日卦象</div>
+  <div id="btn3" style="position:absolute;pointer-events:auto;width:160px;height:36px;border-radius:18px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#fff;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(255,165,0,0.3);display:flex;align-items:center;justify-content:center">挑战排行 🏆</div>
 </div>
 <img id="win-share-img" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:5;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;touch-callout:default;object-fit:contain;background:#1C1C1E" />
 <div id="pauseOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9;background:rgba(255,248,240,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center">
   <div style="font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:24px;color:#FF9A5C;margin-bottom:30px">⏸ 暂停</div>
   <div id="resumeBtn" style="width:160px;height:44px;border-radius:22px;background:linear-gradient(135deg,#FF9A5C,#FF7E3A);color:#fff;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:17px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(255,122,58,0.35);display:flex;align-items:center;justify-content:center">继续冲刺 ✨</div>
   <div style="font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:12px;color:rgba(180,130,80,0.5);margin-top:16px">双指触摸可暂停</div>
+</div>
+<!-- 排行榜弹窗 -->
+<div id="rankOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:15;background:rgba(255,248,240,0.95);overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <div style="max-width:340px;margin:0 auto;padding:40px 20px 30px;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif">
+    <div style="text-align:center;font-size:22px;color:#FF9A5C;margin-bottom:6px">🏆 龙门英雄榜</div>
+    <div id="rankList" style="margin:16px 0;min-height:100px"></div>
+    <!-- 提交分数区 -->
+    <div id="submitArea" style="display:none;margin-top:16px;text-align:center">
+      <div style="font-size:14px;color:rgba(180,130,80,0.7);margin-bottom:8px">留下你的名字</div>
+      <input id="nameInput" maxlength="12" placeholder="输入昵称" style="width:140px;height:36px;border-radius:18px;border:1.5px solid rgba(255,154,92,0.4);text-align:center;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:15px;color:#3A2818;outline:none;background:#FFF8F0" />
+      <div id="submitBtn" style="display:inline-block;width:80px;height:36px;border-radius:18px;background:linear-gradient(135deg,#FF9A5C,#FF7E3A);color:#fff;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(255,122,58,0.35);line-height:36px;margin-left:8px">提交</div>
+    </div>
+    <div id="rankClose" style="text-align:center;margin-top:20px;width:100px;height:36px;border-radius:18px;background:rgba(123,196,184,0.12);border:1.5px solid rgba(123,196,184,0.4);color:#5EAEA0;font-size:14px;cursor:pointer;line-height:36px;margin-left:auto;margin-right:auto">关闭</div>
+  </div>
 </div>
 <script>
 // ═══════════════════════════════════════════════
@@ -46,6 +61,7 @@ function resize(){
 }
 resize();
 window.addEventListener('resize',resize);
+fetchStats(); // 页面加载时拉取玩家统计
 
 // ── 颜色常量（Q萌暖色系）──
 var CLR={
@@ -117,6 +133,35 @@ var WIN_FORTUNES=[
 
 // ── 通关分享图相关 ──
 var winShareImg=null;
+
+// ── API相关 ──
+var API_BASE='https://api.liyu.yisan.run';
+var gamePlayerCount=0; // 玩家计数缓存
+
+function fetchStats(){
+  fetch(API_BASE+'/api/stats').then(function(r){return r.json();}).then(function(d){
+    if(d.ok) gamePlayerCount=d.playerCount||0;
+  }).catch(function(){});
+}
+
+function reportPlay(){
+  fetch(API_BASE+'/api/play',{method:'POST'}).catch(function(){});
+}
+
+function submitScore(name,sc){
+  return fetch(API_BASE+'/api/score',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name:name,score:sc})
+  }).then(function(r){return r.json();}).catch(function(){return {ok:false};});
+}
+
+function fetchLeaderboard(cb){
+  fetch(API_BASE+'/api/stats').then(function(r){return r.json();}).then(function(d){
+    if(d.ok) cb(d.leaderboard||[]);
+    else cb([]);
+  }).catch(function(){cb([]);});
+}
 
 // ── 开局漂浮期 ──
 var graceFrames=0;
@@ -215,6 +260,7 @@ function initGame(){
   document.getElementById('pauseOverlay').style.display='none';
   document.getElementById('win-share-img').style.display='none';
   document.getElementById('win-share-img').src='';
+  document.getElementById('rankOverlay').style.display='none';
   // 添加初始门柱
   for(var i=0;i<4;i++){
     addGate();
@@ -241,6 +287,7 @@ function flap(){
     initGame();
     state=STATE.PLAY;
     koi.vy=koi.flapPower*0.5; // 第一跳温和一点
+    reportPlay(); // 上报开局
     return;
   }
   if(state===STATE.OVER||state===STATE.WIN||state===STATE.PAUSE){
@@ -898,6 +945,14 @@ function drawMenu(){
     sc.fillText('最佳: '+bestScore,W/2,H*0.72);
   }
 
+  // 玩家计数
+  if(gamePlayerCount>0){
+    sc.font='13px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+    sc.fillStyle='rgba(123,196,184,0.6)';
+    sc.textAlign='center';
+    sc.fillText('已有 '+gamePlayerCount+' 人跃龙门',W/2,H*0.76);
+  }
+
   // 品牌（更温馨）
   sc.font='12px "ZCOOL KuaiLe","PingFang SC",sans-serif';
   sc.fillStyle='rgba(180,130,80,0.4)';
@@ -1205,11 +1260,14 @@ function drawOver(){
     var ob=document.getElementById('overBtns');
     var b1=document.getElementById('btn1');
     var b2=document.getElementById('btn2');
+    var b3=document.getElementById('btn3');
     ob.style.display='block';
     b1.style.left=(W/2-80)+'px';
-    b1.style.top=(H*0.58-20)+'px';
+    b1.style.top=(H*0.56-20)+'px';
     b2.style.left=(W/2-80)+'px';
-    b2.style.top=(H*0.66-18)+'px';
+    b2.style.top=(H*0.63-18)+'px';
+    b3.style.left=(W/2-80)+'px';
+    b3.style.top=(H*0.70-18)+'px';
   }
 
   // 品牌
@@ -1263,6 +1321,67 @@ document.getElementById('btn1').addEventListener('touchend',function(e){
 document.getElementById('btn2').addEventListener('touchend',function(e){
   e.preventDefault();
   window.location.href='https://liyu.yisan.run/';
+});
+
+// ── 排行榜按钮 ──
+function openRank(){
+  var overlay=document.getElementById('rankOverlay');
+  overlay.style.display='block';
+  var rankList=document.getElementById('rankList');
+  rankList.innerHTML='<div style="text-align:center;color:rgba(180,130,80,0.5);padding:20px">加载中...</div>';
+  // 显示提交区
+  var submitArea=document.getElementById('submitArea');
+  submitArea.style.display='block';
+  // 拉取排行榜
+  fetchLeaderboard(function(list){
+    if(list.length===0){
+      rankList.innerHTML='<div style="text-align:center;color:rgba(180,130,80,0.5);padding:20px">暂无记录，做第一个跃龙门的人！</div>';
+      return;
+    }
+    var html='';
+    for(var i=0;i<list.length;i++){
+      var item=list[i];
+      var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+      var nameColor=i<3?'#FF9A5C':'#8A7868';
+      html+='<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(180,130,80,0.1)">';
+      html+='<div style="width:28px;text-align:center;font-size:14px;color:rgba(180,130,80,0.5)">'+(medal||(i+1))+'</div>';
+      html+='<div style="flex:1;font-size:15px;color:'+nameColor+';margin-left:8px">'+item.name+'</div>';
+      html+='<div style="font-size:14px;color:#FF9A5C;font-weight:600">'+item.score+'关</div>';
+      html+='</div>';
+    }
+    rankList.innerHTML=html;
+  });
+}
+function closeRank(){
+  document.getElementById('rankOverlay').style.display='none';
+}
+
+document.getElementById('btn3').addEventListener('click',function(){ openRank(); });
+document.getElementById('btn3').addEventListener('touchend',function(e){ e.preventDefault(); openRank(); });
+document.getElementById('rankClose').addEventListener('click',function(){ closeRank(); });
+document.getElementById('rankClose').addEventListener('touchend',function(e){ e.preventDefault(); closeRank(); });
+document.getElementById('submitBtn').addEventListener('click',function(){
+  var name=document.getElementById('nameInput').value.trim();
+  if(!name) return;
+  var sc=state===STATE.OVER?score:(state===STATE.WIN?WIN_SCORE:score);
+  submitScore(name,sc).then(function(d){
+    if(d.ok){
+      document.getElementById('submitArea').style.display='none';
+      openRank(); // 刷新排行榜
+    }
+  });
+});
+document.getElementById('submitBtn').addEventListener('touchend',function(e){
+  e.preventDefault();
+  var name=document.getElementById('nameInput').value.trim();
+  if(!name) return;
+  var sc=state===STATE.OVER?score:(state===STATE.WIN?WIN_SCORE:score);
+  submitScore(name,sc).then(function(d){
+    if(d.ok){
+      document.getElementById('submitArea').style.display='none';
+      openRank(); // 刷新排行榜
+    }
+  });
 });
 // ── 暂停恢复按钮 ──
 document.getElementById('resumeBtn').addEventListener('click',function(){

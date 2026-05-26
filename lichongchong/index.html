@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta property="og:title" content="鲤冲冲 · 锦鲤赛跑">
+<meta property="og:description" content="养锦鲤，选策略，来一场好运赛跑">
+<title>鲤冲冲 · 锦鲤赛跑</title>
+<link href="https://fonts.font.im/css2?family=ZCOOL+KuaiLe&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#FFFBF5;position:fixed;top:0;left:0;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<canvas id="gc"></canvas>
+<script>
+// ═══════════════════════════════════════════════
+// 鲤冲冲 · MVP v1.0
+// 锦鲤赛跑+养成游戏
+// 一三剑宗 · 鲤·遇系列
+// ═══════════════════════════════════════════════
+
+var c = document.getElementById('gc'), sc = c.getContext('2d');
+var W, H, dpr;
+
+function resize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 3);
+  W = window.innerWidth;
+  H = window.innerHeight;
+  c.width = W * dpr;
+  c.height = H * dpr;
+  c.style.width = W + 'px';
+  c.style.height = H + 'px';
+  sc.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── 品牌配色 ──
+var CLR = {
+  bg: '#FFFBF5',
+  orange: '#F97316',
+  orangeLight: '#FB923C',
+  orangeDark: '#EA580C',
+  gray: '#1F2937',
+  grayLight: '#4B5563',
+  water: '#7BC4B8',
+  waterDeep: '#5AADA0',
+  waterLight: 'rgba(123,196,184,0.3)',
+  gold: '#FBBF24',
+  red: '#EF4444',
+  white: '#FFFBF5',
+  shadow: 'rgba(0,0,0,0.1)'
+};
+
+// ── 字体 ──
+var FONT_ZK = "'ZCOOL KuaiLe', 'PingFang SC', sans-serif";
+var FONT_JH = "'ZCOOL KuaiLe', 'PingFang SC', sans-serif";
+
+// ── 游戏状态 ──
+var STATE = { MENU: 0, SELECT_FISH: 1, RACE: 2, DRAW: 3, RESULT: 4, FEED: 5, GUIDE: 6 };
+var state = STATE.MENU;
+
+// ── 用户数据 ──
+var userData = {
+  fish: [],
+  fishScales: 50,
+  feed: 10
+};
+
+// ── 当前锦鲤 ──
+var currentFish = null;
+var opponentFish = null;
+var selectedFishIndex = -1;
+
+// ── 赛跑数据 ──
+var race = {
+  // 滚动赛道: 用距离代替屏幕坐标
+  playerDist: 0,
+  opponentDist: 0,
+  cameraX: 0,
+  TRACK_LEN: 0, // 赛道总长度(初始化时设置)
+  playerSpeed: 0,
+  opponentSpeed: 0,
+  playerStamina: 100,
+  opponentStamina: 100,
+  playerBoost: 0,
+  opponentBoost: 0,
+  playerBurst: 0,
+  opponentBurst: 0,
+  raceTime: 0,
+  phase: 0,
+  finished: false,
+  winner: null,
+  playerProgress: 0,
+  opponentProgress: 0,
+  // 策略点机制
+  strategyPoints: [0.25, 0.5, 0.75], // 25%, 50%, 75%
+  nextStrategyIdx: 0,
+  paused: false
+};
+
+// ── 动画数据 ──
+var anim = {
+  menuKoiY: 0,
+  menuKoiDir: 1,
+  bubbles: [],
+  waveOffset: 0,
+  floatingTexts: [],
+  drawResult: null,
+  drawAnimFrame: 0,
+  resultAnimFrame: 0,
+  shakeX: 0
+};
+
+// ── 锦鲤图片（从跃龙门提取）──
+var koiB64 = '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';
+var koiImg = new Image();
+var koiLoaded = false;
+var offCanvas, offCtx;
+
+koiImg.onload = function() {
+  koiLoaded = true;
+  offCanvas = document.createElement('canvas');
+  offCanvas.width = koiImg.width;
+  offCanvas.height = koiImg.height;
+  offCtx = offCanvas.getContext('2d');
+};
+koiImg.src = 'data:image/png;base64,' + koiB64;
+
+// ── 锦鲤品种配置 ──
+var FISH_TYPES = [
+  { name: '红鲤', rarity: 'common', color: '#F97316', colorLight: '#FB923C', tintColor: null, prob: 0.60 },
+  { name: '金鲤', rarity: 'rare', color: '#FBBF24', colorLight: '#FDE68A', tintColor: 'rgba(255,215,0,0.35)', prob: 0.25 },
+  { name: '墨鲤', rarity: 'epic', color: '#1F2937', colorLight: '#6B7280', tintColor: 'rgba(20,30,80,0.5)', prob: 0.12 },
+  { name: '化龙鲤', rarity: 'legend', color: '#8B5CF6', colorLight: '#C4B5FD', tintColor: 'rgba(128,0,255,0.35)', prob: 0.03 }
+];
+
+// ── 口彩 ──
+var FORTUNE_WIN = ['时来运转 +', '一马当先', '鱼跃龙门', '锦鲤附体'];
+var FORTUNE_CLOSE = ['差一点点，下次一定', '胜负乃兵家常事'];
+var FORTUNE_LOSE = ['厚积薄发，好戏在后头', '静待时机，好运将至'];
+
+// ── 初始化气泡 ──
+function initBubbles() {
+  anim.bubbles = [];
+  for (var i = 0; i < 15; i++) {
+    anim.bubbles.push({
+      x: Math.random() * W,
+      y: H * 0.5 + Math.random() * H * 0.4,
+      r: 3 + Math.random() * 6,
+      speed: 0.3 + Math.random() * 0.5,
+      wobble: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+// ── 加载数据 ──
+function loadData() {
+  try {
+    var saved = localStorage.getItem('lichong_data');
+    if (saved) {
+      userData = JSON.parse(saved);
+    }
+  } catch (e) {}
+  
+  // 初始赠送一条红鲤
+  if (userData.fish.length === 0) {
+    userData.fish.push(createRandomFish('红鲤', 'common'));
+  }
+}
+
+// ── 保存数据 ──
+function saveData() {
+  try {
+    localStorage.setItem('lichong_data', JSON.stringify(userData));
+  } catch (e) {}
+}
+
+// ── 创建锦鲤 ──
+function createRandomFish(name, rarity) {
+  var colors = {
+    'common': { main: '#EF4444', light: '#FCA5A5' },
+    'rare': { main: '#FBBF24', light: '#FDE68A' },
+    'epic': { main: '#1F2937', light: '#6B7280' },
+    'legend': { main: '#8B5CF6', light: '#C4B5FD' }
+  };
+  
+  var c = colors[rarity] || colors['common'];
+  
+  // 随机分配属性，总和10点
+  var total = 10;
+  var spd = Math.floor(Math.random() * (total - 2)) + 1;
+  var luk = Math.floor(Math.random() * (total - spd - 1)) + 1;
+  var sta = total - spd - luk;
+  
+  return {
+    name: name,
+    rarity: rarity,
+    mainColor: c.main,
+    lightColor: c.light,
+    speed: spd,
+    luck: luk,
+    stamina: sta,
+    level: 1,
+    exp: 0,
+    expToNext: 10
+  };
+}
+
+// ── 创建AI对手 ──
+function createOpponent() {
+  var rand = Math.random();
+  var cumulative = 0;
+  var opponent = null;
+  
+  for (var i = 0; i < FISH_TYPES.length; i++) {
+    cumulative += FISH_TYPES[i].prob;
+    if (rand < cumulative) {
+      opponent = createRandomFish(FISH_TYPES[i].name, FISH_TYPES[i].rarity);
+      break;
+    }
+  }
+  if (!opponent) {
+    opponent = createRandomFish('红鲤', 'common');
+  }
+  
+  // AI性格加成
+  var aiType = Math.random();
+  if (aiType < 0.33) {
+    // 激进型：速度+2
+    opponent.speed += 2;
+  } else if (aiType < 0.66) {
+    // 持久型：耐力+2
+    opponent.stamina += 2;
+  } else {
+    // 赌狗型：运气+2
+    opponent.luck += 2;
+  }
+  
+  // 限制属性总和，防止太强
+  var total = opponent.speed + opponent.luck + opponent.stamina;
+  if (total > 15) {
+    var scale = 15 / total;
+    opponent.speed = Math.floor(opponent.speed * scale);
+    opponent.luck = Math.floor(opponent.luck * scale);
+    opponent.stamina = 15 - opponent.speed - opponent.luck;
+  }
+  
+  opponent.isAI = true;
+  opponent.aiType = aiType < 0.33 ? 'aggressive' : (aiType < 0.66 ? 'endurance' : 'gambler');
+  
+  return opponent;
+}
+
+// ── 抽鱼 ──
+function drawFish() {
+  if (userData.fishScales < 10) {
+    addFloatingText('鱼鳞不足！需要10鱼鳞', W/2, H/2, '#EF4444');
+    return;
+  }
+  
+  userData.fishScales -= 10;
+  
+  var rand = Math.random();
+  var cumulative = 0;
+  var newFish = null;
+  
+  for (var i = 0; i < FISH_TYPES.length; i++) {
+    cumulative += FISH_TYPES[i].prob;
+    if (rand < cumulative) {
+      newFish = createRandomFish(FISH_TYPES[i].name, FISH_TYPES[i].rarity);
+      break;
+    }
+  }
+  if (!newFish) {
+    newFish = createRandomFish('红鲤', 'common');
+  }
+  
+  userData.fish.push(newFish);
+  saveData();
+  
+  anim.drawResult = newFish;
+  anim.drawAnimFrame = 0;
+  state = STATE.DRAW;
+}
+
+// ── 绘制锦鲤（PNG+Canvas调色）──
+function drawKoi(x, y, size, fish, dir, frame) {
+  dir = dir || 1;
+  frame = frame || 0;
+  
+  if (!koiLoaded) return;
+  
+  sc.save();
+  sc.translate(x, y);
+  if (dir < 0) sc.scale(-1, 1);
+  
+  var scale = size / 100;
+  var kw = koiImg.width * scale;
+  var kh = koiImg.height * scale;
+  
+  if (fish.tintColor) {
+    offCtx.clearRect(0, 0, offCanvas.width, offCanvas.height);
+    offCtx.drawImage(koiImg, 0, 0);
+    offCtx.globalCompositeOperation = 'source-atop';
+    offCtx.fillStyle = fish.tintColor;
+    offCtx.fillRect(0, 0, offCanvas.width, offCanvas.height);
+    offCtx.globalCompositeOperation = 'source-over';
+    sc.drawImage(offCanvas, -kw/2, -kh/2, kw, kh);
+  } else {
+    sc.drawImage(koiImg, -kw/2, -kh/2, kw, kh);
+  }
+  
+  sc.restore();
+}
+
+// ── 绘制小锦鲤图标 ──
+function drawKoiIcon(x, y, size, color, lightColor, tintColor) {
+  if (!koiLoaded) {
+    // 降级到手绘风格
+    sc.save();
+    sc.translate(x, y);
+    var s = size / 30;
+    sc.beginPath();
+    sc.ellipse(0, 0, 25*s, 15*s, 0, 0, Math.PI * 2);
+    var grad = sc.createRadialGradient(-5*s, -5*s, 0, 0, 0, 25*s);
+    grad.addColorStop(0, lightColor);
+    grad.addColorStop(1, color);
+    sc.fillStyle = grad;
+    sc.fill();
+    sc.beginPath();
+    sc.arc(10*s, -2*s, 5*s, 0, Math.PI * 2);
+    sc.fillStyle = '#FFF';
+    sc.fill();
+    sc.beginPath();
+    sc.arc(11*s, -2*s, 2*s, 0, Math.PI * 2);
+    sc.fillStyle = '#1F2937';
+    sc.fill();
+    sc.beginPath();
+    sc.ellipse(3*s, 4*s, 5*s, 3*s, 0, 0, Math.PI * 2);
+    sc.fillStyle = 'rgba(255,150,150,0.5)';
+    sc.fill();
+    sc.restore();
+    return;
+  }
+  
+  sc.save();
+  sc.translate(x, y);
+  
+  var scale = size / 60;
+  var kw = koiImg.width * scale;
+  var kh = koiImg.height * scale;
+  
+  if (tintColor) {
+    offCtx.clearRect(0, 0, offCanvas.width, offCanvas.height);
+    offCtx.drawImage(koiImg, 0, 0);
+    offCtx.globalCompositeOperation = 'source-atop';
+    offCtx.fillStyle = tintColor;
+    offCtx.fillRect(0, 0, offCanvas.width, offCanvas.height);
+    offCtx.globalCompositeOperation = 'source-over';
+    sc.drawImage(offCanvas, -kw/2, -kh/2, kw, kh);
+  } else {
+    sc.drawImage(koiImg, -kw/2, -kh/2, kw, kh);
+  }
+  
+  sc.restore();
+}
+
+// ── 绘制水波背景 ──
+function drawWaterBg() {
+  // 水域
+  sc.fillStyle = CLR.waterLight;
+  sc.fillRect(0, H * 0.35, W, H * 0.65);
+  
+  // 水波纹
+  sc.strokeStyle = 'rgba(123,196,184,0.3)';
+  sc.lineWidth = 2;
+  for (var i = 0; i < 5; i++) {
+    sc.beginPath();
+    for (var x = 0; x <= W; x += 10) {
+      var y = H * 0.38 + i * 30 + Math.sin((x + anim.waveOffset + i * 20) * 0.02) * 5;
+      if (x === 0) sc.moveTo(x, y);
+      else sc.lineTo(x, y);
+    }
+    sc.stroke();
+  }
+  
+  // 气泡
+  sc.fillStyle = 'rgba(123,196,184,0.2)';
+  for (var b of anim.bubbles) {
+    sc.beginPath();
+    sc.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    sc.fill();
+  }
+}
+
+// ── 添加飘字 ──
+function addFloatingText(text, x, y, color) {
+  anim.floatingTexts.push({
+    text: text,
+    x: x,
+    y: y,
+    color: color || CLR.orange,
+    alpha: 1,
+    vy: -2
+  });
+}
+
+// ── 更新飘字 ──
+function updateFloatingTexts() {
+  for (var i = anim.floatingTexts.length - 1; i >= 0; i--) {
+    var ft = anim.floatingTexts[i];
+    ft.y += ft.vy;
+    ft.alpha -= 0.02;
+    if (ft.alpha <= 0) {
+      anim.floatingTexts.splice(i, 1);
+    }
+  }
+}
+
+// ── 绘制飘字 ──
+function drawFloatingTexts() {
+  for (var ft of anim.floatingTexts) {
+    sc.globalAlpha = ft.alpha;
+    sc.fillStyle = ft.color;
+    sc.font = 'bold 20px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText(ft.text, ft.x + anim.shakeX, ft.y);
+  }
+  sc.globalAlpha = 1;
+}
+
+// ── 主界面 ──
+function drawMenu() {
+  // 背景
+  sc.fillStyle = CLR.bg;
+  sc.fillRect(0, 0, W, H);
+  
+  // 顶部信息栏
+  sc.fillStyle = CLR.orange;
+  sc.fillRect(0, 0, W, 60);
+  
+  sc.fillStyle = '#FFF';
+  sc.font = '24px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('鲤冲冲', W/2, 42);
+  
+  // 鱼鳞数量
+  sc.font = '14px ' + FONT_ZK;
+  sc.textAlign = 'left';
+  sc.fillText('粮 ' + userData.fishScales, 20, 38);
+  sc.textAlign = 'right';
+  sc.fillText('食 ' + userData.feed, W - 20, 38);
+  
+  // 品牌
+  sc.fillStyle = CLR.grayLight;
+  sc.font = '12px ' + FONT_JH;
+  sc.textAlign = 'center';
+  sc.fillText('一三剑宗 · 鲤·遇系列', W/2, H - 20);
+  
+  // 水域
+  drawWaterBg();
+  
+  // 菜单锦鲤游动
+  anim.menuKoiY = H * 0.5 + Math.sin(Date.now() * 0.002) * 20;
+  var menuKoiX = (Date.now() * 0.05) % (W + 100) - 50;
+  var menuKoiDir = Math.sin(Date.now() * 0.001) > 0 ? 1 : -1;
+  
+  if (userData.fish.length > 0) {
+    drawKoi(menuKoiX, anim.menuKoiY, 60, userData.fish[0], menuKoiDir > 0 ? -1 : 1, Date.now() * 0.1);
+  }
+  
+  // 功能按钮
+  var btnY = H * 0.65;
+  var btnSize = Math.min(70, (W - 60) / 4);
+  var gap = 15;
+  var totalW = btnSize * 2 + gap;
+  var startX = (W - totalW) / 2;
+  
+  var buttons = [
+    { text: '◇ 赛跑', action: 'race' },
+    { text: '养 养成', action: 'feed' },
+    { text: '◇ 抽鱼', action: 'draw', badge: '10' },
+    { text: '鉴 图鉴', action: 'guide' }
+  ];
+  
+  for (var i = 0; i < 2; i++) {
+    for (var j = 0; j < 2; j++) {
+      var idx = i * 2 + j;
+      var btn = buttons[idx];
+      var bx = startX + j * (btnSize + gap);
+      var by = btnY + i * (btnSize + gap + 10);
+      
+      // 按钮阴影
+      sc.fillStyle = CLR.shadow;
+      sc.beginPath();
+      sc.roundRect(bx + 3, by + 3, btnSize, btnSize, 15);
+      sc.fill();
+      
+      // 按钮背景
+      var isOrange = idx === 0 || idx === 2;
+      sc.fillStyle = isOrange ? CLR.orange : '#7BC4B8';
+      sc.beginPath();
+      sc.roundRect(bx, by, btnSize, btnSize, 15);
+      sc.fill();
+      
+      // 按钮文字
+      sc.fillStyle = '#FFF';
+      sc.font = '14px ' + FONT_ZK;
+      sc.textAlign = 'center';
+      var lines = btn.text.split(' ');
+      sc.fillText(lines[0], bx + btnSize/2, by + btnSize/2 - 5);
+      sc.fillText(lines[1], bx + btnSize/2, by + btnSize/2 + 15);
+      
+      // 存储按钮区域
+      btn.x = bx;
+      btn.y = by;
+      btn.w = btnSize;
+      btn.h = btnSize;
+    }
+  }
+  
+  // 底部提示
+  sc.fillStyle = CLR.grayLight;
+  sc.font = '12px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('点击按钮开始游戏', W/2, H - 50);
+  
+  drawFloatingTexts();
+}
+
+// ── 选鱼界面 ──
+function drawSelectFish() {
+  sc.fillStyle = CLR.bg;
+  sc.fillRect(0, 0, W, H);
+  
+  // 顶部
+  sc.fillStyle = CLR.orange;
+  sc.fillRect(0, 0, W, 60);
+  sc.fillStyle = '#FFF';
+  sc.font = '20px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('选择参赛锦鲤', W/2, 40);
+  
+  // 返回按钮
+  sc.fillStyle = 'rgba(255,255,255,0.3)';
+  sc.beginPath();
+  sc.arc(30, 30, 20, 0, Math.PI * 2);
+  sc.fill();
+  sc.fillStyle = '#FFF';
+  sc.font = '20px sans-serif';
+  sc.fillText('←', 30, 36);
+  
+  // 锦鲤列表
+  var startY = 80;
+  var itemH = 90;
+  
+  for (var i = 0; i < userData.fish.length; i++) {
+    var fish = userData.fish[i];
+    var fy = startY + i * itemH;
+    
+    // 选中状态
+    if (i === selectedFishIndex) {
+      sc.fillStyle = 'rgba(249,115,22,0.2)';
+      sc.fillRect(10, fy, W - 20, itemH - 5);
+      sc.strokeStyle = CLR.orange;
+      sc.lineWidth = 2;
+      sc.strokeRect(10, fy, W - 20, itemH - 5);
+    }
+    
+    // 锦鲤图标
+    drawKoiIcon(50, fy + itemH/2 - 10, 50, fish.mainColor, fish.lightColor, fish.tintColor);
+    
+    // 名称和稀有度
+    sc.fillStyle = CLR.gray;
+    sc.font = '16px ' + FONT_ZK;
+    sc.textAlign = 'left';
+    sc.fillText(fish.name, 90, fy + 30);
+    
+    // 稀有度标签
+    var rarityColors = { common: '#9CA3AF', rare: '#3B82F6', epic: '#8B5CF6', legend: '#F59E0B' };
+    sc.fillStyle = rarityColors[fish.rarity] || '#9CA3AF';
+    sc.font = '12px ' + FONT_ZK;
+    var rarityText = { common: '普通', rare: '稀有', epic: '史诗', legend: '传说' };
+    sc.fillText(rarityText[fish.rarity], 90, fy + 50);
+    
+    // 属性
+    sc.fillStyle = CLR.grayLight;
+    sc.font = '12px ' + FONT_ZK;
+    sc.textAlign = 'right';
+    sc.fillText('速:' + fish.speed + ' 运:' + fish.luck + ' 耐:' + fish.stamina, W - 20, fy + 40);
+    sc.fillText('等级:' + fish.level, W - 20, fy + 58);
+  }
+  
+  // 开始比赛按钮
+  if (selectedFishIndex >= 0) {
+    var btnW = Math.min(200, W - 40);
+    var btnX = (W - btnW) / 2;
+    var btnY = H - 100;
+    
+    sc.fillStyle = CLR.orange;
+    sc.beginPath();
+    sc.roundRect(btnX, btnY, btnW, 50, 25);
+    sc.fill();
+    
+    sc.fillStyle = '#FFF';
+    sc.font = '18px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('开始比赛', W/2, btnY + 33);
+  }
+  
+  drawFloatingTexts();
+}
+
+// ── 赛跑界面 ──
+function drawRace() {
+  sc.fillStyle = CLR.bg;
+  sc.fillRect(0, 0, W, H);
+  
+  // 顶部信息
+  sc.fillStyle = CLR.orange;
+  sc.fillRect(0, 0, W, 50);
+  sc.fillStyle = '#FFF';
+  sc.font = '16px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('锦鲤赛跑', W/2, 32);
+  
+  // 玩家名称
+  sc.textAlign = 'left';
+  sc.font = '14px ' + FONT_ZK;
+  sc.fillText(currentFish.name, 10, 32);
+  
+  // 对手名称
+  sc.textAlign = 'right';
+  sc.fillText(opponentFish.name, W - 10, 32);
+  
+  // 赛道区域
+  var trackY = 100;
+  var trackH = 180;
+  
+  // 计算屏幕坐标
+  var cameraX = race.cameraX;
+  var playerScreenX = W * 0.3; // 玩家固定在屏幕左侧1/3处
+  var opponentScreenX = playerScreenX + (race.opponentDist - race.playerDist); // 相对距离差
+  
+  // 水域背景（视差滚动）
+  sc.fillStyle = CLR.waterLight;
+  sc.fillRect(0, trackY, W, trackH);
+  
+  // 远处的山/云（慢速视差）
+  var bgOffset = (cameraX * 0.2) % W;
+  sc.fillStyle = 'rgba(123,196,184,0.3)';
+  for (var mx = -bgOffset; mx < W + 200; mx += 200) {
+    sc.beginPath();
+    sc.moveTo(mx, trackY + 40);
+    sc.lineTo(mx + 100, trackY);
+    sc.lineTo(mx + 200, trackY + 40);
+    sc.fill();
+  }
+  
+  // 中间的水草（中等视差）
+  var midOffset = (cameraX * 0.5) % 150;
+  sc.fillStyle = 'rgba(90,173,160,0.4)';
+  for (var gx = -midOffset; gx < W + 150; gx += 150) {
+    sc.beginPath();
+    sc.moveTo(gx, trackY + trackH);
+    sc.quadraticCurveTo(gx + 10, trackY + trackH - 40, gx + 5, trackY + trackH - 70);
+    sc.quadraticCurveTo(gx + 15, trackY + trackH - 40, gx + 20, trackY + trackH);
+    sc.fill();
+  }
+  
+  // 水波纹（快速视差）
+  sc.strokeStyle = 'rgba(255,255,255,0.2)';
+  sc.lineWidth = 1;
+  var waveOffset = (cameraX * 0.8) % 50;
+  for (var wy = trackY + 20; wy < trackY + trackH; wy += 30) {
+    sc.beginPath();
+    for (var wx = -waveOffset; wx < W; wx += 5) {
+      var waveY = wy + Math.sin((wx + Date.now() * 0.01) * 0.05) * 3;
+      if (wx === -waveOffset) sc.moveTo(wx, waveY);
+      else sc.lineTo(wx, waveY);
+    }
+    sc.stroke();
+  }
+  
+  // 起点线（世界坐标0）
+  var startLineX = 0 - cameraX;
+  if (startLineX > -50 && startLineX < W + 50) {
+    sc.fillStyle = '#7BC4B8';
+    sc.fillRect(startLineX, trackY, 8, trackH);
+    sc.fillStyle = '#FFF';
+    sc.font = '12px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('起点', startLineX + 4, trackY - 5);
+  }
+  
+  // 策略点标记（发光水门）
+  var gateColors = ['#F97316', '#8B5CF6', '#FBBF24']; // 橙紫黄
+  for (var gi = 0; gi < race.strategyPoints.length; gi++) {
+    var gateWorldX = race.strategyPoints[gi] * race.TRACK_LEN;
+    var gateScreenX = gateWorldX - cameraX;
+    
+    // 只绘制屏幕内可见的水门
+    if (gateScreenX > -50 && gateScreenX < W + 50) {
+      // 检查是否已过
+      var passed = gi < race.nextStrategyIdx;
+      
+      // 计算亮度（接近时变亮）
+      var distToGate = gateWorldX - race.playerDist;
+      var glowIntensity = 0;
+      if (!passed) {
+        if (distToGate < W && distToGate > 0) {
+          glowIntensity = 1 - (distToGate / W);
+        } else if (distToGate <= 0) {
+          glowIntensity = 1;
+        }
+      }
+      
+      // 水门主体
+      var color = gateColors[gi % gateColors.length];
+      sc.fillStyle = passed ? 'rgba(150,150,150,0.3)' : color;
+      sc.fillRect(gateScreenX - 3, trackY, 6, trackH);
+      
+      // 发光效果
+      if (!passed && glowIntensity > 0) {
+        sc.save();
+        sc.globalAlpha = glowIntensity * 0.5;
+        sc.shadowColor = color;
+        sc.shadowBlur = 20;
+        sc.fillRect(gateScreenX - 3, trackY, 6, trackH);
+        sc.restore();
+      }
+      
+      // 标签
+      sc.fillStyle = passed ? '#9CA3AF' : color;
+      sc.font = '10px ' + FONT_ZK;
+      sc.textAlign = 'center';
+      sc.fillText((gi + 1) + '号策略点', gateScreenX, trackY - 5);
+    }
+  }
+  
+  // 终点线
+  var endLineX = race.TRACK_LEN - cameraX;
+  if (endLineX > -50 && endLineX < W + 50) {
+    sc.fillStyle = CLR.gold;
+    sc.fillRect(endLineX - 4, trackY, 8, trackH);
+    // 终点旗子
+    sc.fillStyle = '#FFF';
+    sc.font = 'bold 14px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('终点', endLineX, trackY - 5);
+    // 格子旗效果
+    sc.fillStyle = '#1F2937';
+    for (var fi = 0; fi < 5; fi++) {
+      if (fi % 2 === 0) {
+        sc.fillRect(endLineX - 4, trackY + fi * 10, 8, 10);
+      }
+    }
+  }
+  
+  // 进度条
+  var progressY = trackY + trackH + 10;
+  var progressW = W - 40;
+  var progressX = 20;
+  
+  sc.fillStyle = '#E5E7EB';
+  sc.beginPath();
+  sc.roundRect(progressX, progressY, progressW, 8, 4);
+  sc.fill();
+  
+  // 玩家进度
+  sc.fillStyle = CLR.orange;
+  sc.beginPath();
+  sc.roundRect(progressX, progressY, progressW * Math.min(1, race.playerProgress / 100), 8, 4);
+  sc.fill();
+  
+  // 对手进度
+  sc.fillStyle = '#3B82F6';
+  sc.beginPath();
+  sc.roundRect(progressX, progressY, progressW * Math.min(1, race.opponentProgress / 100), 8, 4);
+  sc.fill();
+  
+  // 玩家锦鲤（固定屏幕位置）
+  var playerY = trackY + trackH * 0.65;
+  var playerBob = Math.sin(Date.now() * 0.008) * 4;
+  
+  // 玩家橙色光晕
+  sc.save();
+  sc.shadowColor = CLR.orange;
+  sc.shadowBlur = 15;
+  drawKoi(playerScreenX, playerY + playerBob, 55, currentFish, 1, Date.now() * 0.1);
+  sc.restore();
+  
+  // 玩家标签
+  sc.fillStyle = CLR.orange;
+  sc.beginPath();
+  sc.roundRect(playerScreenX - 20, playerY - 55 + playerBob, 40, 18, 8);
+  sc.fill();
+  sc.fillStyle = '#FFF';
+  sc.font = 'bold 12px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('你', playerScreenX, playerY - 43 + playerBob);
+  
+  // 玩家速度特效
+  if (race.playerBoost > 0 || race.playerBurst > 0) {
+    for (var i = 0; i < 4; i++) {
+      sc.beginPath();
+      sc.arc(playerScreenX - 25 - i * 12, playerY + playerBob + (i - 1.5) * 6, 4, 0, Math.PI * 2);
+      sc.fillStyle = 'rgba(255,255,255,' + (0.6 - i * 0.12) + ')';
+      sc.fill();
+    }
+  }
+  
+  // 对手锦鲤
+  var opponentY = trackY + trackH * 0.35;
+  var opponentBob = Math.sin(Date.now() * 0.008 + 1.5) * 4;
+  
+  // 对手蓝色光晕
+  sc.save();
+  sc.shadowColor = '#3B82F6';
+  sc.shadowBlur = 12;
+  drawKoi(opponentScreenX, opponentY + opponentBob, 55, opponentFish, 1, Date.now() * 0.1);
+  sc.restore();
+  
+  // 对手标签
+  sc.fillStyle = '#6B7280';
+  sc.beginPath();
+  sc.roundRect(opponentScreenX - 28, opponentY - 55 + opponentBob, 56, 18, 8);
+  sc.fill();
+  sc.fillStyle = '#FFF';
+  sc.font = 'bold 12px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('对手', opponentScreenX, opponentY - 43 + opponentBob);
+  
+  // 对手速度特效
+  if (race.opponentBoost > 0 || race.opponentBurst > 0) {
+    for (var i = 0; i < 4; i++) {
+      sc.beginPath();
+      sc.arc(opponentScreenX - 25 - i * 12, opponentY + opponentBob + (i - 1.5) * 6, 4, 0, Math.PI * 2);
+      sc.fillStyle = 'rgba(255,255,255,' + (0.6 - i * 0.12) + ')';
+      sc.fill();
+    }
+  }
+  
+  // 耐力条
+  var staminaY = trackY + trackH + 30;
+  var staminaW = Math.min(280, W - 40);
+  var staminaX = (W - staminaW) / 2;
+  
+  sc.fillStyle = '#E5E7EB';
+  sc.beginPath();
+  sc.roundRect(staminaX, staminaY, staminaW, 18, 9);
+  sc.fill();
+  
+  var staminaPercent = race.playerStamina / 100;
+  var staminaColor = staminaPercent > 0.5 ? '#7BC4B8' : (staminaPercent > 0.25 ? '#FBBF24' : '#EF4444');
+  sc.fillStyle = staminaColor;
+  sc.beginPath();
+  sc.roundRect(staminaX, staminaY, staminaW * staminaPercent, 18, 9);
+  sc.fill();
+  
+  sc.fillStyle = '#FFF';
+  sc.font = 'bold 11px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('耐力 ' + Math.round(race.playerStamina) + '%', W/2, staminaY + 13);
+  
+  // 策略点暂停时显示按钮
+  if (race.paused) {
+    // 半透明遮罩
+    sc.fillStyle = 'rgba(0,0,0,0.4)';
+    sc.fillRect(0, 0, W, H);
+    
+    // 提示
+    sc.fillStyle = '#FFF';
+    sc.font = 'bold 24px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('选择策略!', W/2, H/2 - 100);
+    
+    var btnY = H/2 - 30;
+    var btnW = Math.min(100, (W - 80) / 3);
+    var btnH = 80;
+    var btnGap = 20;
+    var totalBtnW = btnW * 3 + btnGap * 2;
+    var btnStartX = (W - totalBtnW) / 2;
+    
+    var buttons = [
+      { text: '冲', sub: '速度+40%', color: CLR.orange, action: 'rush' },
+      { text: '稳', sub: '恢复+10%', color: '#7BC4B8', action: 'steady' },
+      { text: '爆', sub: '运%触发', color: '#8B5CF6', action: 'burst' }
+    ];
+    
+    for (var i = 0; i < 3; i++) {
+      var bx = btnStartX + i * (btnW + btnGap);
+      var btn = buttons[i];
+      
+      sc.fillStyle = btn.color;
+      sc.beginPath();
+      sc.roundRect(bx, btnY, btnW, btnH, 15);
+      sc.fill();
+      
+      sc.fillStyle = '#FFF';
+      sc.font = 'bold 28px ' + FONT_ZK;
+      sc.textAlign = 'center';
+      sc.fillText(btn.text, bx + btnW/2, btnY + 35);
+      sc.font = '11px ' + FONT_ZK;
+      sc.fillText(btn.sub, bx + btnW/2, btnY + 55);
+      
+      btn.x = bx;
+      btn.y = btnY;
+      btn.w = btnW;
+      btn.h = btnH;
+    }
+  } else {
+    // 非暂停时不在策略点，底部不显示按钮
+  }
+  
+  // 返回按钮
+  sc.fillStyle = 'rgba(75,85,99,0.1)';
+  sc.beginPath();
+  sc.arc(30, H - 30, 20, 0, Math.PI * 2);
+  sc.fill();
+  sc.fillStyle = CLR.grayLight;
+  sc.font = '20px sans-serif';
+  sc.textAlign = 'center';
+  sc.fillText('x', 30, H - 24);
+  
+  drawFloatingTexts();
+}
+
+// ── 抽鱼界面 ──
+function drawDrawFish() {
+  sc.fillStyle = 'rgba(0,0,0,0.8)';
+  sc.fillRect(0, 0, W, H);
+  
+  var result = anim.drawResult;
+  var frame = anim.drawAnimFrame;
+  
+  // 抽奖动画
+  if (frame < 60) {
+    // 快速切换动画
+    var flashType = Math.floor(frame / 5) % FISH_TYPES.length;
+    var flashFish = FISH_TYPES[flashType];
+    
+    sc.fillStyle = '#FFF';
+    sc.font = '16px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('抽奖中...', W/2, H/2);
+    
+    drawKoi(W/2, H/2 + 50, 80, flashFish, 1, frame * 2);
+  } else {
+    // 展示结果
+    var scale = Math.min(1, (frame - 60) / 20);
+    result.tintColor = result.tintColor || FISH_TYPES.find(function(f) { return f.name === result.name; }).tintColor;
+    
+    // 光芒效果
+    if (frame > 60) {
+      sc.save();
+      sc.globalAlpha = 0.3;
+      for (var i = 0; i < 8; i++) {
+        var angle = (i / 8) * Math.PI * 2 + frame * 0.05;
+        var rayX = W/2 + Math.cos(angle) * 100 * scale;
+        var rayY = H/2 + 50 + Math.sin(angle) * 100 * scale;
+        sc.beginPath();
+        sc.moveTo(W/2, H/2 + 50);
+        sc.lineTo(rayX, rayY);
+        sc.strokeStyle = result.mainColor;
+        sc.lineWidth = 3;
+        sc.stroke();
+      }
+      sc.restore();
+    }
+    
+    // 锦鲤
+    drawKoi(W/2, H/2 + 50, 80 * scale, result, 1, Date.now() * 0.1);
+    
+    // 名称
+    sc.fillStyle = '#FFF';
+    sc.font = 'bold 28px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('获得 ' + result.name + '!', W/2, H/2 - 40);
+    
+    // 稀有度
+    var rarityColors = { common: '#9CA3AF', rare: '#3B82F6', epic: '#8B5CF6', legend: '#F59E0B' };
+    sc.fillStyle = rarityColors[result.rarity];
+    sc.font = '18px ' + FONT_ZK;
+    var rarityText = { common: '普通', rare: '稀有', epic: '史诗', legend: '传说' };
+    sc.fillText(rarityText[result.rarity], W/2, H/2 - 10);
+    
+    // 属性
+    sc.fillStyle = '#FFF';
+    sc.font = '14px ' + FONT_ZK;
+    sc.fillText('速:' + result.speed + ' 运:' + result.luck + ' 耐:' + result.stamina, W/2, H/2 + 140);
+    
+    // 确定按钮
+    if (frame > 80) {
+      var btnW = 150;
+      var btnH = 50;
+      var btnX = (W - btnW) / 2;
+      var btnY = H - 120;
+      
+      sc.fillStyle = CLR.orange;
+      sc.beginPath();
+      sc.roundRect(btnX, btnY, btnW, btnH, 25);
+      sc.fill();
+      
+      sc.fillStyle = '#FFF';
+      sc.font = '18px ' + FONT_ZK;
+      sc.fillText('太棒了！', W/2, btnY + 33);
+    }
+  }
+  
+  anim.drawAnimFrame++;
+}
+
+// ── 结算界面 ──
+function drawResult() {
+  sc.fillStyle = CLR.bg;
+  sc.fillRect(0, 0, W, H);
+  
+  var result = race.winner;
+  var playerWon = result === 'player';
+  var close = Math.abs(race.playerProgress - race.opponentProgress) < 5;
+  
+  // 顶部
+  sc.fillStyle = playerWon ? CLR.gold : (close ? '#3B82F6' : CLR.gray);
+  sc.fillRect(0, 0, W, 120);
+  
+  sc.fillStyle = '#FFF';
+  sc.font = 'bold 32px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText(playerWon ? '★ 胜利!' : (close ? '惜败' : '失败'), W/2, 60);
+  
+  // 口彩
+  var fortunes = playerWon ? FORTUNE_WIN : (close ? FORTUNE_CLOSE : FORTUNE_LOSE);
+  var fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+  sc.font = '18px ' + FONT_JH;
+  sc.fillText(fortune, W/2, 100);
+  
+  // 比赛结果
+  var resultY = 150;
+  
+  // 玩家结果
+  sc.fillStyle = playerWon ? 'rgba(251,191,36,0.2)' : 'rgba(239,68,68,0.1)';
+  sc.beginPath();
+  sc.roundRect(20, resultY, W/2 - 30, 100, 15);
+  sc.fill();
+  
+  drawKoiIcon(W/4, resultY + 35, 40, currentFish.mainColor, currentFish.lightColor);
+  sc.fillStyle = CLR.gray;
+  sc.font = '16px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText(currentFish.name, W/4, resultY + 75);
+  sc.font = '20px ' + FONT_ZK;
+  sc.fillText(Math.round(race.playerProgress) + '%', W/4, resultY + 95);
+  
+  // VS
+  sc.fillStyle = CLR.grayLight;
+  sc.font = '24px ' + FONT_ZK;
+  sc.fillText('VS', W/2, resultY + 55);
+  
+  // 对手结果
+  sc.fillStyle = !playerWon ? 'rgba(251,191,36,0.2)' : 'rgba(239,68,68,0.1)';
+  sc.beginPath();
+  sc.roundRect(W/2 + 10, resultY, W/2 - 30, 100, 15);
+  sc.fill();
+  
+  drawKoiIcon(W * 3/4, resultY + 35, 40, opponentFish.mainColor, opponentFish.lightColor, opponentFish.tintColor);
+  sc.fillStyle = CLR.gray;
+  sc.font = '16px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText(opponentFish.name, W * 3/4, resultY + 75);
+  sc.font = '20px ' + FONT_ZK;
+  sc.fillText(Math.round(race.opponentProgress) + '%', W * 3/4, resultY + 95);
+  
+  // 奖励
+  var rewardY = resultY + 130;
+  sc.fillStyle = CLR.gray;
+  sc.font = '16px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('获得奖励:', W/2, rewardY);
+  
+  var scaleReward = playerWon ? 30 : (close ? 15 : 5);
+  var expReward = 10;
+  
+  sc.fillStyle = CLR.orange;
+  sc.font = '24px ' + FONT_ZK;
+  sc.fillText('◆ ' + scaleReward + ' 鱼鳞', W/2 - 60, rewardY + 40);
+  
+  sc.fillStyle = '#7BC4B8';
+  sc.fillText('+ ' + expReward + ' 经验', W/2 + 60, rewardY + 40);
+  
+  // 按钮
+  var btnY = H - 150;
+  var btnW = Math.min(300, W - 40);
+  var btnX = (W - btnW) / 2;
+  
+  // 再来一局
+  sc.fillStyle = CLR.orange;
+  sc.beginPath();
+  sc.roundRect(btnX, btnY, btnW, 50, 25);
+  sc.fill();
+  sc.fillStyle = '#FFF';
+  sc.font = '18px ' + FONT_ZK;
+  sc.fillText('再来一局', W/2, btnY + 33);
+  
+  // 返回主界面
+  sc.fillStyle = 'rgba(75,85,99,0.1)';
+  sc.beginPath();
+  sc.roundRect(btnX, btnY + 60, btnW, 45, 22);
+  sc.fill();
+  sc.fillStyle = CLR.grayLight;
+  sc.font = '16px ' + FONT_ZK;
+  sc.fillText('返回主界面', W/2, btnY + 90);
+  
+  drawFloatingTexts();
+}
+
+// ── 养成界面 ──
+function drawFeed() {
+  sc.fillStyle = CLR.bg;
+  sc.fillRect(0, 0, W, H);
+  
+  // 顶部
+  sc.fillStyle = CLR.orange;
+  sc.fillRect(0, 0, W, 60);
+  sc.fillStyle = '#FFF';
+  sc.font = '20px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('养成锦鲤', W/2, 40);
+  
+  // 返回
+  sc.fillStyle = 'rgba(255,255,255,0.3)';
+  sc.beginPath();
+  sc.arc(30, 30, 20, 0, Math.PI * 2);
+  sc.fill();
+  sc.fillStyle = '#FFF';
+  sc.font = '20px sans-serif';
+  sc.fillText('←', 30, 36);
+  
+  if (selectedFishIndex < 0) selectedFishIndex = 0;
+  var fish = userData.fish[selectedFishIndex];
+  
+  // 锦鲤展示
+  var koiY = 140;
+  drawKoi(W/2, koiY, 100, fish, 1, Date.now() * 0.1);
+  
+  // 名称和等级
+  sc.fillStyle = CLR.gray;
+  sc.font = 'bold 24px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText(fish.name, W/2, koiY - 60);
+  
+  var rarityColors = { common: '#9CA3AF', rare: '#3B82F6', epic: '#8B5CF6', legend: '#F59E0B' };
+  sc.fillStyle = rarityColors[fish.rarity];
+  sc.font = '14px ' + FONT_ZK;
+  var rarityText = { common: '普通', rare: '稀有', epic: '史诗', legend: '传说' };
+  sc.fillText(rarityText[fish.rarity] + ' · 等级' + fish.level, W/2, koiY - 35);
+  
+  // 属性条
+  var attrY = koiY + 80;
+  var attrW = W - 80;
+  var attrH = 30;
+  
+  // 经验条
+  var expPercent = fish.exp / fish.expToNext;
+  sc.fillStyle = '#E5E7EB';
+  sc.beginPath();
+  sc.roundRect(40, attrY, attrW, attrH, 15);
+  sc.fill();
+  sc.fillStyle = '#7BC4B8';
+  sc.beginPath();
+  sc.roundRect(40, attrY, attrW * expPercent, attrH, 15);
+  sc.fill();
+  sc.fillStyle = CLR.gray;
+  sc.font = '12px ' + FONT_ZK;
+  sc.fillText('经验: ' + fish.exp + '/' + fish.expToNext, W/2, attrY + 20);
+  
+  // 属性展示
+  var statY = attrY + 60;
+  var stats = [
+    { name: '速度', value: fish.speed, icon: '速', color: '#EF4444' },
+    { name: '运气', value: fish.luck, icon: '运', color: '#8B5CF6' },
+    { name: '耐力', value: fish.stamina, icon: '耐', color: '#3B82F6' }
+  ];
+  
+  for (var i = 0; i < 3; i++) {
+    var sx = 40 + i * (attrW/3 + 5);
+    var st = stats[i];
+    
+    sc.fillStyle = st.color;
+    sc.beginPath();
+    sc.roundRect(sx, statY, attrW/3 - 10, 80, 12);
+    sc.fill();
+    
+    sc.fillStyle = '#FFF';
+    sc.font = '24px sans-serif';
+    sc.textAlign = 'center';
+    sc.fillText(st.icon, sx + (attrW/3 - 10)/2, statY + 30);
+    sc.font = 'bold 20px ' + FONT_ZK;
+    sc.fillText(st.value, sx + (attrW/3 - 10)/2, statY + 58);
+    sc.font = '12px ' + FONT_ZK;
+    sc.fillText(st.name, sx + (attrW/3 - 10)/2, statY + 75);
+  }
+  
+  // 喂养按钮
+  if (userData.feed > 0) {
+    var feedBtnW = 150;
+    var feedBtnH = 50;
+    var feedBtnX = (W - feedBtnW) / 2;
+    var feedBtnY = H - 120;
+    
+    sc.fillStyle = '#7BC4B8';
+    sc.beginPath();
+    sc.roundRect(feedBtnX, feedBtnY, feedBtnW, feedBtnH, 25);
+    sc.fill();
+    
+    sc.fillStyle = '#FFF';
+    sc.font = '18px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('食 喂食 (+10经验)', W/2, feedBtnY + 33);
+    
+    sc.fillStyle = CLR.grayLight;
+    sc.font = '12px ' + FONT_ZK;
+    sc.fillText('剩余饲料: ' + userData.feed, W/2, feedBtnY + 60);
+  } else {
+    sc.fillStyle = CLR.grayLight;
+    sc.font = '16px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('饲料不足！', W/2, H - 100);
+  }
+  
+  // 锦鲤切换
+  if (userData.fish.length > 1) {
+    var arrowY = H - 50;
+    sc.fillStyle = 'rgba(75,85,99,0.1)';
+    sc.beginPath();
+    sc.arc(50, arrowY, 25, 0, Math.PI * 2);
+    sc.fill();
+    sc.beginPath();
+    sc.arc(W - 50, arrowY, 25, 0, Math.PI * 2);
+    sc.fill();
+    
+    sc.fillStyle = CLR.grayLight;
+    sc.font = '24px sans-serif';
+    sc.textAlign = 'center';
+    sc.fillText('◀', 50, arrowY + 8);
+    sc.fillText('▶', W - 50, arrowY + 8);
+    
+    sc.fillStyle = CLR.gray;
+    sc.font = '12px ' + FONT_ZK;
+    sc.fillText((selectedFishIndex + 1) + '/' + userData.fish.length, W/2, arrowY + 5);
+  }
+  
+  drawFloatingTexts();
+}
+
+// ── 图鉴界面 ──
+function drawGuide() {
+  sc.fillStyle = CLR.bg;
+  sc.fillRect(0, 0, W, H);
+  
+  // 顶部
+  sc.fillStyle = CLR.orange;
+  sc.fillRect(0, 0, W, 60);
+  sc.fillStyle = '#FFF';
+  sc.font = '20px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('锦鲤图鉴', W/2, 40);
+  
+  // 返回
+  sc.fillStyle = 'rgba(255,255,255,0.3)';
+  sc.beginPath();
+  sc.arc(30, 30, 20, 0, Math.PI * 2);
+  sc.fill();
+  sc.fillStyle = '#FFF';
+  sc.font = '20px sans-serif';
+  sc.fillText('←', 30, 36);
+  
+  // 图鉴列表
+  var startY = 80;
+  var itemW = (W - 50) / 3;
+  var itemH = 110;
+  
+  for (var i = 0; i < FISH_TYPES.length; i++) {
+    var ft = FISH_TYPES[i];
+    var col = i % 3;
+    var row = Math.floor(i / 3);
+    var ix = 15 + col * (itemW + 10);
+    var iy = startY + row * (itemH + 10);
+    
+    // 检查是否拥有
+    var hasThis = userData.fish.some(function(f) { return f.rarity === ft.rarity; });
+    
+    // 背景
+    sc.fillStyle = hasThis ? '#FFF' : '#E5E7EB';
+    sc.beginPath();
+    sc.roundRect(ix, iy, itemW, itemH, 12);
+    sc.fill();
+    sc.strokeStyle = hasThis ? ft.color : '#D1D5DB';
+    sc.lineWidth = 2;
+    sc.stroke();
+    
+    // 锦鲤图标
+    var iconColor = hasThis ? ft.color : '#9CA3AF';
+    var iconLight = hasThis ? ft.lightColor : '#D1D5DB';
+    var iconTint = hasThis ? ft.tintColor : null;
+    drawKoiIcon(ix + itemW/2, iy + 40, 40, iconColor, iconLight, iconTint);
+    
+    // 名称
+    sc.fillStyle = hasThis ? CLR.gray : '#9CA3AF';
+    sc.font = '12px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText(ft.name, ix + itemW/2, iy + 85);
+    
+    // 稀有度
+    var rarityColors = { common: '#9CA3AF', rare: '#3B82F6', epic: '#8B5CF6', legend: '#F59E0B' };
+    sc.fillStyle = hasThis ? rarityColors[ft.rarity] : '#D1D5DB';
+    sc.font = '10px ' + FONT_ZK;
+    var rarityText = { common: '普通', rare: '稀有', epic: '史诗', legend: '传说' };
+    sc.fillText(rarityText[ft.rarity], ix + itemW/2, iy + 100);
+    
+    // 拥有标记
+    if (hasThis) {
+      sc.fillStyle = '#10B981';
+      sc.font = '14px sans-serif';
+      sc.fillText('✓', ix + itemW - 15, iy + 20);
+    }
+  }
+  
+  // 收集进度
+  var collected = new Set(userData.fish.map(function(f) { return f.rarity; })).size;
+  sc.fillStyle = CLR.gray;
+  sc.font = '14px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('已收集: ' + collected + '/' + FISH_TYPES.length, W/2, H - 30);
+  
+  drawFloatingTexts();
+}
+
+// ── 更新赛跑逻辑 ──
+function updateRace() {
+  if (race.finished) return;
+  
+  // 如果在策略点暂停，不更新位置
+  if (race.paused) return;
+  
+  race.raceTime++;
+  
+  // 玩家基础速度
+  var baseSpeed = 0.8 + currentFish.speed * 0.1;
+  
+  // 应用加速效果
+  if (race.playerBoost > 0) {
+    baseSpeed *= 1.4;
+    race.playerBoost--;
+    race.playerStamina -= 0.3;
+  }
+  if (race.playerBurst > 0) {
+    baseSpeed *= 1.8;
+    race.playerBurst--;
+    race.playerStamina -= 0.5;
+  }
+  
+  // 耐力恢复
+  if (race.playerBoost === 0 && race.playerBurst === 0) {
+    race.playerStamina = Math.min(100, race.playerStamina + 0.15);
+  }
+  
+  race.playerSpeed = baseSpeed;
+  race.playerDist += race.playerSpeed; // 用距离代替屏幕坐标
+  
+  // AI对手逻辑
+  var aiBaseSpeed = 0.8 + opponentFish.speed * 0.1;
+  
+  // AI决策
+  var aiDecision = Math.random();
+  if (opponentFish.aiType === 'aggressive') {
+    if (aiDecision < 0.4 && race.opponentStamina >= 30) {
+      race.opponentBoost = 180;
+      race.opponentStamina -= 30;
+    }
+  } else if (opponentFish.aiType === 'gambler') {
+    if (aiDecision < opponentFish.luck / 50 && race.opponentStamina >= 50) {
+      race.opponentBurst = 120;
+      race.opponentStamina -= 50;
+    }
+  } else {
+    if (aiDecision < 0.2 && race.opponentStamina >= 30) {
+      race.opponentBoost = 180;
+      race.opponentStamina -= 30;
+    }
+  }
+  
+  // AI速度计算
+  if (race.opponentBoost > 0) {
+    aiBaseSpeed *= 1.4;
+    race.opponentBoost--;
+    race.opponentStamina -= 0.3;
+  }
+  if (race.opponentBurst > 0) {
+    aiBaseSpeed *= 1.8;
+    race.opponentBurst--;
+    race.opponentStamina -= 0.5;
+  }
+  
+  // AI耐力恢复
+  if (race.opponentBoost === 0 && race.opponentBurst === 0) {
+    race.opponentStamina = Math.min(100, race.opponentStamina + 0.15);
+  }
+  
+  race.opponentSpeed = aiBaseSpeed;
+  race.opponentDist += race.opponentSpeed; // 用距离代替屏幕坐标
+  
+  // 摄像机跟随玩家
+  race.cameraX = race.playerDist - W * 0.3;
+  
+  // 进度计算
+  race.playerProgress = (race.playerDist / race.TRACK_LEN) * 100;
+  race.opponentProgress = (race.opponentDist / race.TRACK_LEN) * 100;
+  
+  // 检查是否到达策略点
+  if (race.nextStrategyIdx < race.strategyPoints.length) {
+    var nextPoint = race.strategyPoints[race.nextStrategyIdx] * race.TRACK_LEN;
+    if (race.playerDist >= nextPoint) {
+      race.paused = true;
+      race.nextStrategyIdx++;
+      addFloatingText('选择策略!', W/2, H/2 - 50, CLR.orange);
+      return;
+    }
+  }
+  
+  // 检查完成
+  if (race.playerDist >= race.TRACK_LEN || race.opponentDist >= race.TRACK_LEN) {
+    race.finished = true;
+    if (race.playerDist >= race.TRACK_LEN && race.opponentDist >= race.TRACK_LEN) {
+      race.winner = race.playerDist > race.opponentDist ? 'player' : 'opponent';
+    } else {
+      race.winner = race.playerDist >= race.TRACK_LEN ? 'player' : 'opponent';
+    }
+    
+    // 发放奖励
+    var scaleReward = race.winner === 'player' ? 30 : (Math.abs(race.playerProgress - race.opponentProgress) < 5 ? 15 : 5);
+    userData.fishScales += scaleReward;
+    
+    // 经验
+    if (selectedFishIndex >= 0) {
+      userData.fish[selectedFishIndex].exp += 10;
+      if (userData.fish[selectedFishIndex].exp >= userData.fish[selectedFishIndex].expToNext) {
+        userData.fish[selectedFishIndex].level++;
+        userData.fish[selectedFishIndex].exp = 0;
+        userData.fish[selectedFishIndex].expToNext = Math.floor(userData.fish[selectedFishIndex].expToNext * 1.5);
+        var p = Math.floor(Math.random() * 3);
+        if (p === 0) userData.fish[selectedFishIndex].speed++;
+        else if (p === 1) userData.fish[selectedFishIndex].luck++;
+        else userData.fish[selectedFishIndex].stamina++;
+        addFloatingText('升级了!等级' + userData.fish[selectedFishIndex].level, W/2, H/2, CLR.gold);
+      }
+    }
+    
+    saveData();
+    state = STATE.RESULT;
+  }
+}
+
+// ── 更新气泡 ──
+function updateBubbles() {
+  for (var b of anim.bubbles) {
+    b.y -= b.speed;
+    b.wobble += 0.02;
+    b.x += Math.sin(b.wobble) * 0.5;
+    if (b.y < H * 0.35) {
+      b.y = H;
+      b.x = Math.random() * W;
+    }
+  }
+}
+
+// ── 开始赛跑 ──
+function startRace() {
+  currentFish = userData.fish[selectedFishIndex];
+  opponentFish = createOpponent();
+  
+  race = {
+    // 滚动赛道: 4倍屏幕宽度
+    playerDist: 0,
+    opponentDist: 0,
+    cameraX: 0,
+    TRACK_LEN: W * 4,
+    playerSpeed: 0,
+    opponentSpeed: 0,
+    playerStamina: 100,
+    opponentStamina: 100,
+    playerBoost: 0,
+    opponentBoost: 0,
+    playerBurst: 0,
+    opponentBurst: 0,
+    raceTime: 0,
+    phase: 0,
+    finished: false,
+    winner: null,
+    playerProgress: 0,
+    opponentProgress: 0,
+    // 策略点机制
+    strategyPoints: [0.25, 0.5, 0.75],
+    nextStrategyIdx: 0,
+    paused: false
+  };
+  
+  state = STATE.RACE;
+}
+
+// ── 玩家操作 ──
+function playerAction(action) {
+  if (action === 'rush') {
+    // 冲刺
+    if (race.playerStamina >= 30) {
+      race.playerBoost = 180; // 3秒
+      addFloatingText('冲鸭!', W/2, H/2, CLR.orange);
+      race.paused = false; // 继续比赛
+    }
+  } else if (action === 'steady') {
+    // 稳健
+    race.playerStamina = Math.min(100, race.playerStamina + 10);
+    addFloatingText('稳住~', W/2, H/2, '#7BC4B8');
+    race.paused = false; // 继续比赛
+  } else if (action === 'burst') {
+    // 爆发
+    if (race.playerStamina >= 50) {
+      var chance = currentFish.luck * 10;
+      if (Math.random() * 100 < chance) {
+        race.playerBurst = 120; // 2秒
+        race.playerStamina -= 50;
+        addFloatingText('锦鲤附体!', W/2, H/2, '#8B5CF6');
+      } else {
+        race.playerStamina -= 25;
+        addFloatingText('差一点点...', W/2, H/2, CLR.grayLight);
+      }
+      race.paused = false; // 继续比赛
+    }
+  }
+}
+
+// ── 点击处理 ──
+c.addEventListener('click', function(e) {
+  var rect = c.getBoundingClientRect();
+  var x = (e.clientX - rect.left);
+  var y = (e.clientY - rect.top);
+  
+  if (state === STATE.MENU) {
+    // 菜单按钮
+    var buttons = [
+      { text: '赛跑', action: function() { selectedFishIndex = 0; state = STATE.SELECT_FISH; } },
+      { text: '养成', action: function() { selectedFishIndex = 0; state = STATE.FEED; } },
+      { text: '抽鱼', action: drawFish },
+      { text: '图鉴', action: function() { state = STATE.GUIDE; } }
+    ];
+    
+    var btnY = H * 0.65;
+    var btnSize = Math.min(70, (W - 60) / 4);
+    var gap = 15;
+    var totalW = btnSize * 2 + gap;
+    var startX = (W - totalW) / 2;
+    
+    for (var i = 0; i < 2; i++) {
+      for (var j = 0; j < 2; j++) {
+        var idx = i * 2 + j;
+        var bx = startX + j * (btnSize + gap);
+        var by = btnY + i * (btnSize + gap + 10);
+        
+        if (x >= bx && x <= bx + btnSize && y >= by && y <= by + btnSize) {
+          buttons[idx].action();
+          return;
+        }
+      }
+    }
+  } else if (state === STATE.SELECT_FISH) {
+    // 返回
+    if (x < 50 && y < 50) {
+      state = STATE.MENU;
+      return;
+    }
+    
+    // 选择锦鲤
+    var startY = 80;
+    var itemH = 90;
+    for (var i = 0; i < userData.fish.length; i++) {
+      if (y >= startY + i * itemH && y < startY + (i + 1) * itemH) {
+        selectedFishIndex = i;
+        return;
+      }
+    }
+    
+    // 开始比赛
+    if (selectedFishIndex >= 0 && y > H - 100) {
+      startRace();
+    }
+  } else if (state === STATE.RACE) {
+    // 返回按钮
+    if (x < 60 && y > H - 60) {
+      state = STATE.MENU;
+      return;
+    }
+    
+    // 策略点暂停时的按钮点击
+    if (race.paused) {
+      var btnY = H/2 - 30;
+      var btnW = Math.min(100, (W - 80) / 3);
+      var btnH = 80;
+      var btnGap = 20;
+      var totalBtnW = btnW * 3 + btnGap * 2;
+      var btnStartX = (W - totalBtnW) / 2;
+      
+      if (y >= btnY && y <= btnY + btnH) {
+        for (var i = 0; i < 3; i++) {
+          var bx = btnStartX + i * (btnW + btnGap);
+          if (x >= bx && x <= bx + btnW) {
+            var actions = ['rush', 'steady', 'burst'];
+            playerAction(actions[i]);
+            return;
+          }
+        }
+      }
+    }
+    // 非暂停时不响应按钮点击（让游戏继续自动跑）
+  } else if (state === STATE.DRAW) {
+    // 抽鱼确认 - 点击确定按钮返回
+    if (anim.drawAnimFrame > 80) {
+      var btnW = 150;
+      var btnH = 50;
+      var btnX = (W - btnW) / 2;
+      var btnY = H - 120;
+      if (x >= btnX && x <= btnX + btnW && y >= btnY && y <= btnY + btnH) {
+        state = STATE.MENU;
+      }
+    }
+  } else if (state === STATE.RESULT) {
+    // 再来一局
+    if (y > H - 150 && y < H - 100) {
+      startRace();
+      return;
+    }
+    // 返回主界面
+    if (y > H - 90) {
+      state = STATE.MENU;
+    }
+  } else if (state === STATE.FEED) {
+    // 返回
+    if (x < 50 && y < 50) {
+      state = STATE.MENU;
+      return;
+    }
+    
+    // 喂食
+    if (userData.feed > 0 && y > H - 120 && y < H - 70) {
+      userData.feed--;
+      userData.fish[selectedFishIndex].exp += 10;
+      
+      if (userData.fish[selectedFishIndex].exp >= userData.fish[selectedFishIndex].expToNext) {
+        userData.fish[selectedFishIndex].level++;
+        userData.fish[selectedFishIndex].exp = 0;
+        userData.fish[selectedFishIndex].expToNext = Math.floor(userData.fish[selectedFishIndex].expToNext * 1.5);
+        var p = Math.floor(Math.random() * 3);
+        if (p === 0) userData.fish[selectedFishIndex].speed++;
+        else if (p === 1) userData.fish[selectedFishIndex].luck++;
+        else userData.fish[selectedFishIndex].stamina++;
+        addFloatingText('升级了！等级' + userData.fish[selectedFishIndex].level, W/2, H/2, CLR.gold);
+      } else {
+        addFloatingText('+10经验', W/2, H/2, '#7BC4B8');
+      }
+      saveData();
+      return;
+    }
+    
+    // 切换锦鲤
+    if (userData.fish.length > 1) {
+      if (x < 70 && y > H - 75) {
+        selectedFishIndex = (selectedFishIndex - 1 + userData.fish.length) % userData.fish.length;
+      }
+      if (x > W - 70 && y > H - 75) {
+        selectedFishIndex = (selectedFishIndex + 1) % userData.fish.length;
+      }
+    }
+  } else if (state === STATE.GUIDE) {
+    // 返回
+    if (x < 50 && y < 50) {
+      state = STATE.MENU;
+    }
+  }
+});
+
+// ── 触摸事件（移动端）──
+c.addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  var touch = e.touches[0];
+  var rect = c.getBoundingClientRect();
+  var x = (touch.clientX - rect.left);
+  var y = (touch.clientY - rect.top);
+  
+  // 模拟点击
+  c.dispatchEvent(new MouseEvent('click', { clientX: touch.clientX, clientY: touch.clientY }));
+}, { passive: false });
+
+// ── 游戏主循环 ──
+var lastTime = 0;
+function gameLoop(timestamp) {
+  var deltaTime = timestamp - lastTime;
+  lastTime = timestamp;
+  
+  // 更新
+  anim.waveOffset += 0.5;
+  updateBubbles();
+  updateFloatingTexts();
+  
+  if (state === STATE.RACE) {
+    updateRace();
+  }
+  
+  // 震动效果衰减
+  anim.shakeX *= 0.9;
+  
+  // 绘制
+  sc.clearRect(0, 0, W, H);
+  
+  switch (state) {
+    case STATE.MENU:
+      drawMenu();
+      break;
+    case STATE.SELECT_FISH:
+      drawSelectFish();
+      break;
+    case STATE.RACE:
+      drawRace();
+      break;
+    case STATE.DRAW:
+      drawDrawFish();
+      break;
+    case STATE.RESULT:
+      drawResult();
+      break;
+    case STATE.FEED:
+      drawFeed();
+      break;
+    case STATE.GUIDE:
+      drawGuide();
+      break;
+  }
+  
+  requestAnimationFrame(gameLoop);
+}
+
+// ── 初始化 ──
+loadData();
+initBubbles();
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>

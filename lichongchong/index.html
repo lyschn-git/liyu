@@ -482,10 +482,10 @@ function drawMenu() {
   var startX = (W - totalW) / 2;
   
   var buttons = [
-    { text: '◇ 赛跑', action: 'race' },
-    { text: '养 养成', action: 'feed' },
-    { text: '◇ 抽鱼', action: 'draw', badge: '10' },
-    { text: '鉴 图鉴', action: 'guide' }
+    { text: '赛跑', action: 'race' },
+    { text: '养成', action: 'feed' },
+    { text: '抽鱼', action: 'draw', badge: '10' },
+    { text: '图鉴', action: 'guide' }
   ];
   
   for (var i = 0; i < 2; i++) {
@@ -510,11 +510,16 @@ function drawMenu() {
       
       // 按钮文字
       sc.fillStyle = '#FFF';
-      sc.font = '14px ' + FONT_ZK;
+      sc.font = '16px ' + FONT_ZK;
       sc.textAlign = 'center';
-      var lines = btn.text.split(' ');
-      sc.fillText(lines[0], bx + btnSize/2, by + btnSize/2 - 5);
-      sc.fillText(lines[1], bx + btnSize/2, by + btnSize/2 + 15);
+      sc.fillText(btn.text, bx + btnSize/2, by + btnSize/2 + 5);
+      
+      // 抽鱼价格标签
+      if (btn.badge) {
+        sc.fillStyle = '#FFF';
+        sc.font = '10px ' + FONT_ZK;
+        sc.fillText(btn.badge + '鳞', bx + btnSize/2, by + btnSize/2 + 22);
+      }
       
       // 存储按钮区域
       btn.x = bx;
@@ -646,6 +651,9 @@ function drawRace() {
   var cameraX = race.cameraX;
   var playerScreenX = W * 0.3; // 玩家固定在屏幕左侧1/3处
   var opponentScreenX = playerScreenX + (race.opponentDist - race.playerDist); // 相对距离差
+  // 限制对手在屏幕可见范围
+  if (opponentScreenX < 30) opponentScreenX = 30;
+  if (opponentScreenX > W - 30) opponentScreenX = W - 30;
   
   // 水域背景（视差滚动）
   sc.fillStyle = CLR.waterLight;
@@ -762,27 +770,43 @@ function drawRace() {
     }
   }
   
-  // 进度条
+  // 进度条（玩家和对手分行显示，避免遮挡）
   var progressY = trackY + trackH + 10;
   var progressW = W - 40;
   var progressX = 20;
+  var progressH = 6;
   
+  // 对手进度（上方，蓝色）
   sc.fillStyle = '#E5E7EB';
   sc.beginPath();
-  sc.roundRect(progressX, progressY, progressW, 8, 4);
+  sc.roundRect(progressX, progressY, progressW, progressH, 3);
   sc.fill();
-  
-  // 玩家进度
-  sc.fillStyle = CLR.orange;
-  sc.beginPath();
-  sc.roundRect(progressX, progressY, progressW * Math.min(1, race.playerProgress / 100), 8, 4);
-  sc.fill();
-  
-  // 对手进度
   sc.fillStyle = '#3B82F6';
   sc.beginPath();
-  sc.roundRect(progressX, progressY, progressW * Math.min(1, race.opponentProgress / 100), 8, 4);
+  sc.roundRect(progressX, progressY, progressW * Math.min(1, race.opponentProgress / 100), progressH, 3);
   sc.fill();
+  sc.fillStyle = '#3B82F6';
+  sc.font = '9px ' + FONT_ZK;
+  sc.textAlign = 'left';
+  sc.fillText('对手', progressX, progressY - 2);
+  sc.textAlign = 'right';
+  sc.fillText(Math.round(race.opponentProgress) + '%', progressX + progressW, progressY - 2);
+  
+  // 玩家进度（下方，橙色）
+  sc.fillStyle = '#E5E7EB';
+  sc.beginPath();
+  sc.roundRect(progressX, progressY + progressH + 8, progressW, progressH, 3);
+  sc.fill();
+  sc.fillStyle = CLR.orange;
+  sc.beginPath();
+  sc.roundRect(progressX, progressY + progressH + 8, progressW * Math.min(1, race.playerProgress / 100), progressH, 3);
+  sc.fill();
+  sc.fillStyle = CLR.orange;
+  sc.font = '9px ' + FONT_ZK;
+  sc.textAlign = 'left';
+  sc.fillText('你', progressX, progressY + progressH + 6);
+  sc.textAlign = 'right';
+  sc.fillText(Math.round(race.playerProgress) + '%', progressX + progressW, progressY + progressH + 6);
   
   // 玩家锦鲤（固定屏幕位置）
   var playerY = trackY + trackH * 0.65;
@@ -847,7 +871,7 @@ function drawRace() {
   }
   
   // 耐力条
-  var staminaY = trackY + trackH + 30;
+  var staminaY = trackY + trackH + 52;
   var staminaW = Math.min(280, W - 40);
   var staminaX = (W - staminaW) / 2;
   

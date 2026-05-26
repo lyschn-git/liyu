@@ -602,7 +602,7 @@ if(document.fonts&&document.fonts.ready){
 
 // ── 结算页按钮点击 ──
 c.addEventListener('click',function(e){
-  if(state!==STATE.OVER||overTimer<=30)return;
+  if(state!==STATE.OVER||overTimer<=15)return;
   var rect=c.getBoundingClientRect();
   var mx=e.clientX-rect.left,my=e.clientY-rect.top;
   // 再来一局按钮
@@ -612,13 +612,13 @@ c.addEventListener('click',function(e){
   }
   // 看看今日卦象按钮
   var btn2Y=H*0.68;
-  if(mx>W/2-80&&mx<W/2+80&&my>btn2Y-16&&my<btn2Y+16){
+  if(mx>W/2-90&&mx<W/2+90&&my>btn2Y-22&&my<btn2Y+22){
     window.location.href='https://liyu.yisan.run/';return;
   }
 });
 
 c.addEventListener('touchend',function(e){
-  if(state!==STATE.OVER||overTimer<=30)return;
+  if(state!==STATE.OVER||overTimer<=15)return;
   var t=e.changedTouches[0];
   var rect=c.getBoundingClientRect();
   var mx=t.clientX-rect.left,my=t.clientY-rect.top;
@@ -627,7 +627,7 @@ c.addEventListener('touchend',function(e){
     e.preventDefault();state=STATE.MENU;return;
   }
   var btn2Y=H*0.68;
-  if(mx>W/2-80&&mx<W/2+80&&my>btn2Y-16&&my<btn2Y+16){
+  if(mx>W/2-90&&mx<W/2+90&&my>btn2Y-22&&my<btn2Y+22){
     e.preventDefault();window.location.href='https://liyu.yisan.run/';return;
   }
 });

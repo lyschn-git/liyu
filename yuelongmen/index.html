@@ -803,7 +803,7 @@ function drawOver(){
   sc.font='15px "ZCOOL KuaiLe","PingFang SC",sans-serif';
   sc.fillStyle='rgba(180,130,80,0.7)';
   sc.textAlign='center';
-  sc.fillText('跃过龙门',W/2,H*0.24+32);
+  sc.fillText('跃过龙门',W/2,H*0.30);
 
   // 口彩签语（加光晕）
   var signIdx=Math.abs(Math.floor(Date.now()/86400000+score*7))%SIGN_TEXTS.length;
@@ -812,7 +812,7 @@ function drawOver(){
   sc.fillStyle=CLR.orangeDark;
   sc.textAlign='center';
   sc.shadowColor='rgba(255,154,92,0.25)';sc.shadowBlur=8;
-  sc.fillText(SIGN_TEXTS[signIdx],W/2,H*0.40);
+  sc.fillText(SIGN_TEXTS[signIdx],W/2,H*0.43);
   sc.shadowBlur=0;
   sc.restore();
 
@@ -820,7 +820,7 @@ function drawOver(){
   sc.font='13px "ZCOOL KuaiLe","PingFang SC",sans-serif';
   sc.fillStyle='rgba(180,130,80,0.55)';
   sc.textAlign='center';
-  sc.fillText('最佳: '+bestScore,W/2,H*0.48);
+  sc.fillText('最佳: '+bestScore,W/2,H*0.52);
 
   // 按钮位置
   if(overTimer>30){

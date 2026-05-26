@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta property="og:title" content="鲤·遇 · 有意义的偶然">
 <meta property="og:description" content="轻触锦鲤，遇见有意义的偶然">
-<meta property="og:image" content="https://s.coze.cn/image/t5VWxSxbYoU/">
+<meta property="og:image" content="https://liyu.yisan.run/og-card.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <title>鲤·遇 · 有意义的偶然</title>
@@ -90,6 +90,9 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'KingHwaOldSong','S
 .d7{animation-delay:.66s;opacity:0}.d8{animation-delay:.76s;opacity:0}.d9{animation-delay:.86s;opacity:0}
 .petal{position:absolute;z-index:4;pointer-events:none;opacity:0}
 @keyframes petalFall{0%{opacity:0;transform:translateY(-20px) rotate(0deg)}15%{opacity:.6}85%{opacity:.4}100%{opacity:0;transform:translateY(100vh) rotate(360deg)}}
+
+.reveal-lucky{text-align:center;margin-top:8px;flex-shrink:0}
+.reveal-lucky span{font-size:13px;color:#B8946A;letter-spacing:1px;font-family:"KingHwaOldSong","STSong",serif}
 </style>
 </head>
 <body>
@@ -113,18 +116,19 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'KingHwaOldSong','S
       <div class="reveal-date fade-in d1"><span id="rv-date"></span></div>
       <div class="reveal-guaname fade-in d2"><div class="gua-name-wrap"><span id="rv-fullname"></span></div></div>
       <div class="reveal-symbol fade-in d2"><div class="hexagram" id="rv-hexagram"></div></div>
-      <div class="reveal-see fade-in d3"><div class="see-label">你此刻</div><p class="see-text" id="rv-see"></p></div>
-      <div class="reveal-feel fade-in d4"><div class="feel-label">你心里</div><p class="feel-text" id="rv-feel"></p></div>
-      <div class="reveal-act fade-in d5"><span id="rv-act"></span></div>
-      <div class="reveal-quote fade-in d6"><p id="rv-quote"></p></div>
-      <div class="reveal-yaotext fade-in d7"><span id="rv-yaotext"></span></div>
-      <div class="reveal-daily fade-in d8">
+      <div class="reveal-tag fade-in d3"><div class="reveal-tag-card"><div class="tag-main" id="rv-tag"></div><div class="tag-sub">— 鲤遇吉运 —</div></div></div><div class="reveal-lucky fade-in d3"><span id="rv-lucky"></span></div>
+      <div class="reveal-see fade-in d4"><div class="see-label">你此刻</div><p class="see-text" id="rv-see"></p></div>
+      <div class="reveal-feel fade-in d5"><div class="feel-label">你心里</div><p class="feel-text" id="rv-feel"></p></div>
+      <div class="reveal-act fade-in d6"><span id="rv-act"></span></div>
+      <div class="reveal-quote fade-in d7"><p id="rv-quote"></p></div>
+      <div class="reveal-yaotext fade-in d8"><span id="rv-yaotext"></span></div>
+      <div class="reveal-daily fade-in d9">
         <p style="text-align:center;margin-bottom:4px"><span class="daily-label" style="font-size:12px;letter-spacing:3px;background:rgba(74,168,154,0.08);padding:3px 12px;border-radius:8px">今日黄历</span></p>
         <p><span class="daily-label">财神</span> · <span id="rv-direction"></span></p>
         <p><span class="daily-label">宜</span> <span id="rv-yi"></span> · <span class="daily-label">忌</span> <span id="rv-ji"></span></p>
       </div>
-      <div class="reveal-tag fade-in d9"><div class="reveal-tag-card"><div class="tag-main" id="rv-tag"></div><div class="tag-sub">— 鲤遇吉运 —</div></div></div>
-      <div class="reveal-actions fade-in d9">
+      
+      <div class="reveal-actions fade-in d10">
         <button class="btn-action btn-orange" onclick="resetToPond()">再来一卦</button>
         <button class="btn-action btn-green" onclick="generateShareImage()">生成日签</button>
       </div>
@@ -639,7 +643,23 @@ function getTodayGua(){try{
 }catch(e){return{name:'坤',fullName:'坤为地',lines:[0,0,0,0,0,0],see:'你正承受许多，默默承载着周围一切',feel:'柔软不是软弱，是能包容万物的力量',act:'顺势而为',quote:'地势坤 君子以厚德载物',tag:'中吉',yaoText:'含章可贞'};}}
 function getDailyInfo(){try{if(!window.__lunarFail&&typeof Lunar!=='undefined'&&Lunar.fromDate){const lunar=Lunar.fromDate(new Date());return{direction:'东南',yi:lunar.getDayYi?lunar.getDayYi().slice(0,4).join(' '):'求财 纳采',ji:lunar.getDayJi?lunar.getDayJi().slice(0,3).join(' '):'动土 开仓'};}}catch(e){}return{direction:'东南',yi:'求财 纳采 出行',ji:'动土 开仓'};}
 function splitWithPunct(text){var ci=text.indexOf('，');if(ci>0&&ci<text.length-1){var line1=text.substring(0,ci+1);var line2=text.substring(ci+1);var last=line2.charAt(line2.length-1);if(!/[。！？…！?]/.test(last)){line2+='。';}return line1+'<br>'+line2;}return text;}
-function populateReveal(){const gua=getTodayGua(),daily=getDailyInfo(),now=new Date();const weekDays=['日','一','二','三','四','五','六'];const dateStr=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} · 星期${weekDays[now.getDay()]}`;document.getElementById('rv-date').textContent=dateStr;document.getElementById('rv-fullname').textContent=gua.fullName;document.getElementById('rv-see').innerHTML=splitWithPunct(gua.see);document.getElementById('rv-feel').innerHTML=splitWithPunct(gua.feel);document.getElementById('rv-act').textContent=gua.act;document.getElementById('rv-quote').textContent=gua.quote;const hexEl=document.getElementById('rv-hexagram');hexEl.innerHTML='';if(gua.lines){gua.lines.forEach(function(yao){const row=document.createElement('div');row.className='yao';if(yao===1){const bar=document.createElement('div');bar.className='yao-yang';row.appendChild(bar);}else{const wrap=document.createElement('div');wrap.className='yao-yin';const l=document.createElement('span'),r=document.createElement('span');wrap.appendChild(l);wrap.appendChild(r);row.appendChild(wrap);}hexEl.appendChild(row);});}var movingIdx=getMovingYao();if(gua.yaoList&&gua.yaoList[movingIdx]){document.getElementById('rv-yaotext').textContent=gua.yaoList[movingIdx].pos+'：'+gua.yaoList[movingIdx].text;}else{document.getElementById('rv-yaotext').textContent=gua.yaoText||'';}document.getElementById('rv-tag').textContent=gua.tag;document.getElementById('rv-direction').textContent=daily.direction;document.getElementById('rv-yi').textContent=daily.yi;document.getElementById('rv-ji').textContent=daily.ji;const rvInner=document.querySelector('#scene-reveal .rv-inner');rvInner.querySelectorAll('.fade-in').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});}
+// ── 鲤遇口彩：结合卦象运签的专属吉利话 ──
+var LUCKY_WORDS={
+  '大吉':['鲤跃龙门，万事亨通','天降鸿运，鲤遇大吉','锦鲤附体，好运爆棚'],
+  '吉':['鲤遇逢吉，诸事顺遂','吉星高照，锦鲤送福','鲤遇之吉，水到渠成'],
+  '中吉':['稳步向前，鲤遇中吉','锦鲤游来，吉运渐浓','鲤遇中吉，好事将近'],
+  '小吉':['小步蓄运，鲤遇小吉','锦鲤轻摆，小吉随身','鲤遇微光，亦有好运'],
+  '平':['鲤遇守平，静待花开','稳如锦鲤，平中有运','鲤遇之平，蓄势待发'],
+  '小凶':['鲤遇化险，小厄即过','锦鲤转身，否极泰来','鲤遇小波，无碍前行'],
+  '凶':['鲤遇破局，触底反弹','锦鲤逆游，终见光明','鲤遇之凶，警示非定']
+};
+function getLuckyWord(tag){
+  var words=LUCKY_WORDS[tag]||LUCKY_WORDS['平'];
+  var idx=Math.abs(Math.floor(Date.now()/86400000))%words.length;
+  return words[idx];
+}
+
+function populateReveal(){const gua=getTodayGua(),daily=getDailyInfo(),now=new Date();const weekDays=['日','一','二','三','四','五','六'];const dateStr=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} · 星期${weekDays[now.getDay()]}`;document.getElementById('rv-date').textContent=dateStr;document.getElementById('rv-fullname').textContent=gua.fullName;document.getElementById('rv-see').innerHTML=splitWithPunct(gua.see);document.getElementById('rv-feel').innerHTML=splitWithPunct(gua.feel);document.getElementById('rv-act').textContent=gua.act;document.getElementById('rv-quote').textContent=gua.quote;const hexEl=document.getElementById('rv-hexagram');hexEl.innerHTML='';if(gua.lines){gua.lines.forEach(function(yao){const row=document.createElement('div');row.className='yao';if(yao===1){const bar=document.createElement('div');bar.className='yao-yang';row.appendChild(bar);}else{const wrap=document.createElement('div');wrap.className='yao-yin';const l=document.createElement('span'),r=document.createElement('span');wrap.appendChild(l);wrap.appendChild(r);row.appendChild(wrap);}hexEl.appendChild(row);});}var movingIdx=getMovingYao();if(gua.yaoList&&gua.yaoList[movingIdx]){document.getElementById('rv-yaotext').textContent=gua.yaoList[movingIdx].pos+'：'+gua.yaoList[movingIdx].text;}else{document.getElementById('rv-yaotext').textContent=gua.yaoText||'';}document.getElementById('rv-tag').textContent=gua.tag;document.getElementById('rv-lucky').textContent=getLuckyWord(gua.tag);document.getElementById('rv-direction').textContent=daily.direction;document.getElementById('rv-yi').textContent=daily.yi;document.getElementById('rv-ji').textContent=daily.ji;const rvInner=document.querySelector('#scene-reveal .rv-inner');rvInner.querySelectorAll('.fade-in').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});}
 function resetToPond(){guaOffset++;document.getElementById('scene-reveal').classList.remove('show');document.getElementById('scene-pond').classList.remove('hide');initPond();}
 // 动爻由触鱼精确时刻决定——锦鲤在这一瞬选择了你
 var _touchTimestamp=0;
@@ -738,9 +758,22 @@ var hexH=gua.lines.length*(yaoH+yaoGap)-yaoGap;
 var nameY=hexY+hexH+80;
 sc.font=`600 52px ${F}`;sc.fillStyle='#3A2818';
 sc.fillText(gua.fullName,sw/2,nameY);
+// ── 运签标签（紧跟卦名）──
+var tagText=gua.tag;
+sc.font=`600 20px ${F}`;
+var tagTW=sc.measureText(tagText).width;
+var tagW=tagTW+44,tagH=36,tagX=sw/2-tagW/2,tagY=nameY+20;
+var tagGrad=sc.createLinearGradient(tagX,tagY,tagX+tagW,tagY+tagH);
+tagGrad.addColorStop(0,'#FF9A5C');tagGrad.addColorStop(1,'#E8704A');
+sc.fillStyle=tagGrad;roundRect(sc,tagX,tagY,tagW,tagH,18);sc.fill();
+sc.font=`600 18px ${F}`;sc.fillStyle='#FFF8F0';
+sc.fillText(tagText,sw/2,tagY+25);
+// ── 鲤遇口彩 ──
+sc.font=`400 20px ${F}`;sc.fillStyle='#B8946A';
+sc.fillText(getLuckyWord(gua.tag),sw/2,tagY+tagH+24);
 
 // ── 你此刻 ──
-var textY=nameY+56;
+var textY=nameY+110;
 sc.font=`600 24px ${FS}`;sc.fillStyle='#C8A898';
 sc.fillText('你 此 刻',sw/2,textY);
 textY+=46;
@@ -766,16 +799,7 @@ sc.shadowColor='rgba(255,123,92,0.08)';sc.shadowBlur=16;
 sc.fillText(gua.act,sw/2,textY);
 sc.shadowColor='transparent';sc.shadowBlur=0;
 
-// ── 运签标签 ──
-var tagText=gua.tag;
-sc.font=`600 20px ${F}`;
-var tagTW=sc.measureText(tagText).width;
-var tagW=tagTW+44,tagH=36,tagX=sw/2-tagW/2,tagY=textY+32;
-var tagGrad=sc.createLinearGradient(tagX,tagY,tagX+tagW,tagY+tagH);
-tagGrad.addColorStop(0,'#FF9A5C');tagGrad.addColorStop(1,'#E8704A');
-sc.fillStyle=tagGrad;roundRect(sc,tagX,tagY,tagW,tagH,18);sc.fill();
-sc.font=`600 18px ${F}`;sc.fillStyle='#FFF8F0';
-sc.fillText(tagText,sw/2,tagY+25);
+
 
 // ── 分隔线 ──
 var sepY=tagY+54;

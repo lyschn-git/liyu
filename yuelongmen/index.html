@@ -63,7 +63,7 @@ var CLR={
 };
 
 // ── 口彩飘字（更Q萌）──
-var FORTUNE_1=['顺✨','吉✨','稳~','通~','升↑','达!'];
+var FORTUNE_1=['顺✨','吉✨','稳~','通~','升✨','达✨'];
 var FORTUNE_5=['逢考必过🎉','好事将至✨','稳步向前💪','贵人相助🌟','否极泰来🌸'];
 var FORTUNE_10=['锦鲤附体🎏','大吉大利🎊','鱼跃龙门🐉','万事如意🌸'];
 
@@ -102,7 +102,7 @@ var WIN_SCORE=36; // 三十六计，通关
 try{bestScore=parseInt(localStorage.getItem('ylm_best'))||0;}catch(e){}
 
 // ── 暂停恢复grace ──
-var RESUME_GRACE=120; // 2秒@60fps
+var RESUME_GRACE=150; // 2.5秒@60fps
 var resumeGraceLeft=0;
 var lastTapTime=0; // 双击检测
 
@@ -202,7 +202,7 @@ function initGame(){
   gates=[];floatingTexts=[];sparkles=[];
   gateSpeed=W*0.0020;
   gateGap=koi.h*5.5;    // 新手间隙
-  gateSpacing=W*0.35;   // 更紧凑间距
+  gateSpacing=W*0.30;   // 更紧凑间距
   score=0;overTimer=0;
   resumeGraceLeft=0;
   nextGateX=W*1.5; // 第一根门柱推更远
@@ -386,11 +386,11 @@ function update(){
     gates.shift();addGate();
   }
 
-  if(score>4){gateGap=koi.h*5.2;gateSpacing=W*0.34;}
-  if(score>8){gateGap=koi.h*4.8;gateSpacing=W*0.32;gateSpeed=W*0.0021;}
-  if(score>14){gateGap=koi.h*4.4;gateSpacing=W*0.30;gateSpeed=W*0.0023;}
-  if(score>20){gateGap=koi.h*4.0;gateSpacing=W*0.28;gateSpeed=W*0.0025;}
-  if(score>30){gateGap=koi.h*3.6;gateSpacing=W*0.25;gateSpeed=W*0.0028;}
+  if(score>4){gateGap=koi.h*5.0;gateSpacing=W*0.28;}
+  if(score>8){gateGap=koi.h*4.6;gateSpacing=W*0.26;gateSpeed=W*0.0021;}
+  if(score>14){gateGap=koi.h*4.2;gateSpacing=W*0.24;gateSpeed=W*0.0023;}
+  if(score>20){gateGap=koi.h*3.8;gateSpacing=W*0.22;gateSpeed=W*0.0025;}
+  if(score>30){gateGap=koi.h*3.4;gateSpacing=W*0.20;gateSpeed=W*0.0028;}
 
   var kx=koi.x,ky=koi.y,kw=koi.w*0.6,kh=koi.h*0.6;
   if(ky-kh<0){die();return;}
@@ -850,6 +850,10 @@ function drawMenu(){
   sc.fillText('轻触开始 ✨',W/2,H*0.62);
   sc.shadowBlur=0;
   sc.globalAlpha=1;
+  // 双指暂停提示
+  sc.font='12px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  sc.fillStyle='rgba(180,130,80,0.45)';
+  sc.fillText('双指可暂停 ⏸',W/2,H*0.67);
   sc.restore();
 
   // 最佳记录
@@ -857,7 +861,7 @@ function drawMenu(){
     sc.font='13px "ZCOOL KuaiLe","PingFang SC",sans-serif';
     sc.fillStyle='rgba(180,130,80,0.55)';
     sc.textAlign='center';
-    sc.fillText('最佳: '+bestScore,W/2,H*0.68);
+    sc.fillText('最佳: '+bestScore,W/2,H*0.72);
   }
 
   // 品牌（更温馨）

@@ -22,6 +22,12 @@ canvas{display:block;width:100%;height:100%}
   <div id="btn1" style="position:absolute;pointer-events:auto;width:160px;height:40px;border-radius:20px;background:linear-gradient(135deg,#FF9A5C,#FF7E3A);color:#fff;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(255,122,58,0.35);display:flex;align-items:center;justify-content:center">再来一局</div>
   <div id="btn2" style="position:absolute;pointer-events:auto;width:160px;height:36px;border-radius:18px;background:rgba(123,196,184,0.12);border:1.5px solid rgba(123,196,184,0.4);color:#5EAEA0;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">看看今日卦象</div>
 </div>
+<img id="win-share-img" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:5;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;touch-callout:default;object-fit:contain;background:#1C1C1E" />
+<div id="pauseOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9;background:rgba(255,248,240,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center">
+  <div style="font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:24px;color:#FF9A5C;margin-bottom:30px">⏸ 暂停</div>
+  <div id="resumeBtn" style="width:160px;height:44px;border-radius:22px;background:linear-gradient(135deg,#FF9A5C,#FF7E3A);color:#fff;font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:17px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(255,122,58,0.35);display:flex;align-items:center;justify-content:center">继续冲刺 ✨</div>
+  <div style="font-family:'ZCOOL KuaiLe','PingFang SC',sans-serif;font-size:12px;color:rgba(180,130,80,0.5);margin-top:16px">双指触摸可暂停</div>
+</div>
 <script>
 // ═══════════════════════════════════════════════
 // 锦鲤跃龙门 · V2 Q萌版
@@ -89,10 +95,27 @@ var SIGN_TEXTS=[
 ];
 
 // ── 游戏状态 ──
-var STATE={MENU:0,PLAY:1,OVER:2};
+var STATE={MENU:0,PLAY:1,OVER:2,WIN:3,PAUSE:4};
 var state=STATE.MENU;
 var score=0,bestScore=0;
+var WIN_SCORE=36; // 三十六计，通关
 try{bestScore=parseInt(localStorage.getItem('ylm_best'))||0;}catch(e){}
+
+// ── 暂停恢复grace ──
+var RESUME_GRACE=120; // 2秒@60fps
+var resumeGraceLeft=0;
+var lastTapTime=0; // 双击检测
+
+// ── 通关口彩 ──
+var WIN_FORTUNES=[
+  '锦鲤化龙，一飞冲天',
+  '鱼跃龙门，身价百倍',
+  '三十六关，功德圆满',
+  '龙门已过，天地任行'
+];
+
+// ── 通关分享图相关 ──
+var winShareImg=null;
 
 // ── 开局漂浮期 ──
 var graceFrames=0;
@@ -181,11 +204,15 @@ function initGame(){
   gateGap=koi.h*5.5;    // 新手间隙
   gateSpacing=W*0.35;   // 更紧凑间距
   score=0;overTimer=0;
+  resumeGraceLeft=0;
   nextGateX=W*1.5; // 第一根门柱推更远
   graceFrames=GRACE_TOTAL;
   graceBaseY=waterY*0.45;
   koi.y=graceBaseY;
   document.getElementById('overBtns').style.display='none';
+  document.getElementById('pauseOverlay').style.display='none';
+  document.getElementById('win-share-img').style.display='none';
+  document.getElementById('win-share-img').src='';
   // 添加初始门柱
   for(var i=0;i<4;i++){
     addGate();
@@ -214,10 +241,16 @@ function flap(){
     koi.vy=koi.flapPower*0.5; // 第一跳温和一点
     return;
   }
-  if(state===STATE.OVER){
+  if(state===STATE.OVER||state===STATE.WIN||state===STATE.PAUSE){
     return;
   }
   if(state===STATE.PLAY&&koi.alive){
+    // 恢复grace期间，首次点击取消grace开始游戏
+    if(resumeGraceLeft>0){
+      resumeGraceLeft=0;
+      koi.vy=koi.flapPower;
+      return;
+    }
     if(graceFrames>0){
       graceFrames=0;
       koi.vy=koi.flapPower;
@@ -227,7 +260,16 @@ function flap(){
   }
 }
 
-c.addEventListener('touchstart',function(e){e.preventDefault();flap();},{passive:false});
+c.addEventListener('touchstart',function(e){
+  e.preventDefault();
+  if(e.touches.length>=2&&state===STATE.PLAY){
+    // 双指=暂停
+    state=STATE.PAUSE;
+    document.getElementById('pauseOverlay').style.display='flex';
+    return;
+  }
+  flap();
+},{passive:false});
 c.addEventListener('mousedown',function(e){flap();});
 
 // ── 更新 ──
@@ -235,6 +277,24 @@ var overTimer=0;
 
 function update(){
   if(state===STATE.MENU)return;
+  if(state===STATE.PAUSE)return;
+
+  // 恢复grace倒计时
+  if(resumeGraceLeft>0){
+    resumeGraceLeft--;
+    // 锦鲤悬停，不移动
+    koi.vy=0;
+    koi.rotation=0;
+    // 仍然更新气泡/云朵让画面不死
+    for(var i=0;i<bubbles.length;i++){
+      var b=bubbles[i];b.y-=b.speed;b.wobble+=b.wobbleSpeed;b.x+=Math.sin(b.wobble)*0.3;
+      if(b.y<waterY){b.y=H;b.x=Math.random()*W;}
+    }
+    for(var i=0;i<clouds.length;i++){clouds[i].x+=clouds[i].speed;if(clouds[i].x>W+60)clouds[i].x=-60;}
+    // 更新闪光粒子
+    for(var i=sparkles.length-1;i>=0;i--){var s=sparkles[i];s.x+=s.vx;s.y+=s.vy;s.life--;s.alpha=s.life/s.maxLife;if(s.life<=0)sparkles.splice(i,1);}
+    return;
+  }
 
   // 气泡
   for(var i=0;i<bubbles.length;i++){
@@ -264,7 +324,7 @@ function update(){
     if(s.life<=0)sparkles.splice(i,1);
   }
 
-  if(state===STATE.OVER)return;
+  if(state===STATE.OVER||state===STATE.WIN)return;
 
   // 漂浮期
   if(graceFrames>0){
@@ -291,6 +351,15 @@ function update(){
     if(!gates[i].passed&&gates[i].x+gates[i].w<koi.x){
       gates[i].passed=true;
       score++;
+      // 通关判定
+      if(score>=WIN_SCORE){
+        state=STATE.WIN;
+        overTimer=0;
+        winShareImg=null;
+        if(score>bestScore){bestScore=score;try{localStorage.setItem('ylm_best',bestScore);}catch(e){}}
+        generateWinShareImage();
+        break;
+      }
       // 飘字
       var ft='';
       if(score%10===0&&score>0) ft=FORTUNE_10[Math.floor(Math.random()*FORTUNE_10.length)];
@@ -391,7 +460,7 @@ function draw(){
   drawSparkles();
 
   // 锦鲤
-  if(state===STATE.PLAY||state===STATE.OVER){
+  if(state===STATE.PLAY||state===STATE.OVER||state===STATE.WIN){
     drawKoi();
   }
 
@@ -415,15 +484,30 @@ function draw(){
 
   // HUD - 分数气泡
   if(state===STATE.PLAY){
-    if(graceFrames>0){
+    if(resumeGraceLeft>0){
+      // 恢复grace提示
+      var rAlpha=0.5+0.3*Math.sin(Date.now()*0.008);
+      sc.save();sc.globalAlpha=rAlpha;
+      sc.font='20px "ZCOOL KuaiLe","STSong",serif';
+      sc.fillStyle=CLR.orange;
+      sc.textAlign='center';
+      sc.shadowColor='rgba(255,154,92,0.3)';sc.shadowBlur=6;
+      sc.fillText('准备... ✨',W/2,H*0.15);
+      sc.shadowBlur=0;sc.restore();
+      // 仍然显示分数
+      drawScoreBubble(score,W/2,48);
+    }else if(graceFrames>0){
       var gAlpha=0.5+0.3*Math.sin(Date.now()*0.006);
       sc.save();sc.globalAlpha=gAlpha;
       sc.font='18px "ZCOOL KuaiLe","STSong",serif';
       sc.fillStyle=CLR.orange;
       sc.textAlign='center';
       sc.shadowColor='rgba(255,154,92,0.3)';sc.shadowBlur=6;
-      sc.fillText('轻触跃起 ✨',W/2,H*0.15);
+      sc.fillText('轻触跃起 ✨',W/2,H*0.13);
       sc.shadowBlur=0;
+      sc.font='13px "ZCOOL KuaiLe","STSong",serif';
+      sc.fillStyle='rgba(180,130,80,0.5)';
+      sc.fillText('双指可暂停 ⏸',W/2,H*0.18);
       sc.restore();
     }else{
       drawScoreBubble(score,W/2,48);
@@ -432,6 +516,7 @@ function draw(){
 
   if(state===STATE.MENU) drawMenu();
   if(state===STATE.OVER) drawOver();
+  if(state===STATE.WIN) drawWin();
 }
 
 // ── 云朵 ──
@@ -785,6 +870,259 @@ function drawMenu(){
 }
 
 // ═══════════════════════════════════════════════
+// 通关画面 - 锦鲤化龙
+// ═══════════════════════════════════════════════
+function drawWin(){
+  overTimer++;
+  var fadeIn=Math.min(1,overTimer/30);
+  sc.save();
+
+  // 金色渐变遮罩
+  var gAlpha=fadeIn*0.92;
+  sc.fillStyle='rgba(255,248,240,'+gAlpha.toFixed(2)+')';
+  sc.fillRect(0,0,W,H);
+
+  if(fadeIn<0.3){sc.restore();return;}
+
+  // 金色光效底色
+  if(fadeIn>0.5){
+    var glow=sc.createRadialGradient(W/2,H*0.38,0,W/2,H*0.38,W*0.5);
+    glow.addColorStop(0,'rgba(255,200,80,'+((fadeIn-0.5)*0.15).toFixed(3)+')');
+    glow.addColorStop(1,'rgba(255,200,80,0)');
+    sc.fillStyle=glow;
+    sc.fillRect(0,0,W,H);
+  }
+
+  // 化龙金光粒子
+  if(overTimer%3===0&&overTimer<120){
+    for(var p=0;p<3;p++){
+      sparkles.push({
+        x:W/2+(Math.random()-0.5)*W*0.6,
+        y:H*0.35+(Math.random()-0.5)*80,
+        vx:(Math.random()-0.5)*1.5,
+        vy:-0.5-Math.random()*1.5,
+        r:2+Math.random()*4,
+        life:30+Math.random()*20,
+        maxLife:50,
+        alpha:1,
+        color:'#FFD700'
+      });
+    }
+  }
+  drawSparkles();
+
+  // "通关" 大字
+  var titleScale=Math.min(1,overTimer/20);
+  sc.save();
+  sc.translate(W/2,H*0.16);
+  sc.scale(titleScale,titleScale);
+  sc.font='bold 36px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  sc.fillStyle='#FF9A5C';
+  sc.textAlign='center';
+  sc.shadowColor='rgba(255,154,92,0.4)';sc.shadowBlur=12;
+  sc.fillText('🎉 通关 🎉',0,0);
+  sc.shadowBlur=0;
+  sc.restore();
+
+  // 锦鲤化龙图（用锦鲤+金光光环代替）
+  if(koiLoaded){
+    var showW=Math.min(W*0.55,200);
+    var showH=showW*0.542;
+    var floatY=Math.sin(Date.now()*0.003)*8;
+    // 金色光环
+    sc.save();
+    sc.translate(W/2,H*0.34+floatY);
+    var aura=sc.createRadialGradient(0,0,showW*0.2,0,0,showW*0.55);
+    aura.addColorStop(0,'rgba(255,215,0,0.25)');
+    aura.addColorStop(0.6,'rgba(255,180,50,0.1)');
+    aura.addColorStop(1,'rgba(255,180,50,0)');
+    sc.fillStyle=aura;
+    sc.fillRect(-showW*0.55,-showW*0.55,showW*1.1,showW*1.1);
+    // 锦鲤
+    sc.shadowColor='rgba(255,200,80,0.5)';sc.shadowBlur=20;
+    sc.drawImage(koiImg,-showW/2,-showH/2,showW,showH);
+    sc.shadowBlur=0;
+    sc.restore();
+  }
+
+  // 龙的暗示：头顶角（两个金色三角）
+  if(koiLoaded&&overTimer>30){
+    var hornAlpha=Math.min(1,(overTimer-30)/30);
+    var showW2=Math.min(W*0.55,200);
+    sc.save();sc.globalAlpha=hornAlpha;
+    sc.translate(W/2,H*0.34+Math.sin(Date.now()*0.003)*8);
+    sc.fillStyle='#FFD700';
+    sc.shadowColor='rgba(255,215,0,0.6)';sc.shadowBlur=8;
+    // 左角
+    sc.beginPath();sc.moveTo(-showW2*0.12,-showW2*0.28);sc.lineTo(-showW2*0.22,-showW2*0.52);sc.lineTo(-showW2*0.02,-showW2*0.3);sc.closePath();sc.fill();
+    // 右角
+    sc.beginPath();sc.moveTo(showW2*0.12,-showW2*0.28);sc.lineTo(showW2*0.22,-showW2*0.52);sc.lineTo(showW2*0.02,-showW2*0.3);sc.closePath();sc.fill();
+    sc.shadowBlur=0;
+    sc.restore();
+  }
+
+  // 三十六关
+  sc.font='18px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  sc.fillStyle='#D4860A';
+  sc.textAlign='center';
+  sc.fillText('跃过 '+WIN_SCORE+' 关',W/2,H*0.52);
+
+  // 通关口彩
+  var winIdx=Math.abs(Math.floor(Date.now()/86400000))%WIN_FORTUNES.length;
+  sc.save();
+  sc.font='600 17px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  sc.fillStyle=CLR.orangeDark;
+  sc.textAlign='center';
+  sc.shadowColor='rgba(255,154,92,0.3)';sc.shadowBlur=8;
+  sc.fillText(WIN_FORTUNES[winIdx],W/2,H*0.59);
+  sc.shadowBlur=0;
+  sc.restore();
+
+  // 最佳记录
+  sc.font='13px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  sc.fillStyle='rgba(180,130,80,0.55)';
+  sc.textAlign='center';
+  sc.fillText('最佳: '+bestScore,W/2,H*0.65);
+
+  // 提示长按保存
+  if(overTimer>50){
+    // 显示分享图（长按保存）
+    if(winShareImg&&!document.getElementById('win-share-img').src){
+      var simg=document.getElementById('win-share-img');
+      simg.src=winShareImg;
+      simg.style.display='block';
+    }
+    var pAlpha=0.5+0.3*Math.sin(Date.now()*0.004);
+    sc.save();sc.globalAlpha=pAlpha;
+    sc.font='13px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+    sc.fillStyle='rgba(180,130,80,0.6)';
+    sc.textAlign='center';
+    sc.fillText('长按图片保存分享 ✨',W/2,H*0.72);
+    sc.globalAlpha=1;sc.restore();
+  }
+
+  // 再来按钮
+  if(overTimer>40){
+    var ob=document.getElementById('overBtns');
+    var b1=document.getElementById('btn1');
+    var b2=document.getElementById('btn2');
+    ob.style.display='block';
+    b1.style.left=(W/2-80)+'px';
+    b1.style.top=(H*0.78-20)+'px';
+    b1.textContent='再来一局';
+    b2.style.left=(W/2-80)+'px';
+    b2.style.top=(H*0.86-18)+'px';
+    b2.textContent='看看今日卦象';
+  }
+
+  sc.restore();
+}
+
+// ── 通关分享图生成 ──
+function generateWinShareImage(){
+  var sw=600,sh=800;
+  var cv=document.createElement('canvas');
+  cv.width=sw;cv.height=sh;
+  var c=cv.getContext('2d');
+
+  // 背景渐变
+  var bg=c.createLinearGradient(0,0,0,sh);
+  bg.addColorStop(0,'#FFF8F0');bg.addColorStop(0.5,'#FFF3E8');bg.addColorStop(1,'#FFECD2');
+  c.fillStyle=bg;c.fillRect(0,0,sw,sh);
+
+  // 金色光晕
+  var g2=c.createRadialGradient(sw/2,sh*0.32,0,sw/2,sh*0.32,sw*0.45);
+  g2.addColorStop(0,'rgba(255,200,80,0.18)');g2.addColorStop(1,'rgba(255,200,80,0)');
+  c.fillStyle=g2;c.fillRect(0,0,sw,sh);
+
+  // 底部水波
+  c.save();c.globalAlpha=0.15;
+  for(var w=0;w<3;w++){
+    c.fillStyle=w===0?'#7BC4B8':w===1?'#FFD700':'#FF9A5C';
+    c.beginPath();
+    var wby=sh*0.82+w*8;
+    for(var x=0;x<=sw;x+=2){
+      var yy=wby+Math.sin(x*0.015+w*1.5)*8;
+      x===0?c.moveTo(x,yy):c.lineTo(x,yy);
+    }
+    c.lineTo(sw,sh);c.lineTo(0,sh);c.closePath();c.fill();
+  }
+  c.restore();
+
+  // 锦鲤图
+  if(koiLoaded){
+    var kw=220,kh=kw*0.542;
+    c.save();
+    c.shadowColor='rgba(255,200,80,0.4)';c.shadowBlur=20;
+    c.drawImage(koiImg,sw/2-kw/2,sh*0.28-kh/2,kw,kh);
+    c.shadowBlur=0;
+    // 龙角
+    c.fillStyle='#FFD700';
+    c.shadowColor='rgba(255,215,0,0.6)';c.shadowBlur=8;
+    c.beginPath();c.moveTo(sw/2-kw*0.12,sh*0.28-kh*0.55);c.lineTo(sw/2-kw*0.22,sh*0.28-kh*0.95);c.lineTo(sw/2-kw*0.02,sh*0.28-kh*0.58);c.closePath();c.fill();
+    c.beginPath();c.moveTo(sw/2+kw*0.12,sh*0.28-kh*0.55);c.lineTo(sw/2+kw*0.22,sh*0.28-kh*0.95);c.lineTo(sw/2+kw*0.02,sh*0.28-kh*0.58);c.closePath();c.fill();
+    c.shadowBlur=0;
+    c.restore();
+  }
+
+  // 通关标题
+  c.font='bold 40px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  c.fillStyle='#FF9A5C';
+  c.textAlign='center';
+  c.shadowColor='rgba(255,154,92,0.3)';c.shadowBlur=10;
+  c.fillText('🎉 通关 🎉',sw/2,sh*0.08);
+  c.shadowBlur=0;
+
+  // 跃过36关
+  c.font='22px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  c.fillStyle='#D4860A';
+  c.fillText('跃过 '+WIN_SCORE+' 关',sw/2,sh*0.49);
+
+  // 通关口彩
+  var winIdx=Math.abs(Math.floor(Date.now()/86400000))%WIN_FORTUNES.length;
+  c.font='600 20px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  c.fillStyle='#8B5E3C';
+  c.shadowColor='rgba(255,154,92,0.2)';c.shadowBlur=6;
+  c.fillText(WIN_FORTUNES[winIdx],sw/2,sh*0.55);
+  c.shadowBlur=0;
+
+  // 分割线
+  c.strokeStyle='rgba(255,154,92,0.2)';c.lineWidth=1;
+  c.beginPath();c.moveTo(sw*0.2,sh*0.60);c.lineTo(sw*0.8,sh*0.60);c.stroke();
+
+  // 品牌
+  c.font='14px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  c.fillStyle='rgba(180,130,80,0.5)';
+  c.fillText('锦鲤跃龙门 · 鲤·遇出品',sw/2,sh*0.66);
+
+  // 底部口号
+  c.font='12px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  c.fillStyle='rgba(180,130,80,0.35)';
+  c.fillText('跃过去，就是龙门',sw/2,sh*0.70);
+
+  // 圆角裁剪（深色底兼容微信）
+  var cr=30;
+  var finalCv=document.createElement('canvas');
+  finalCv.width=sw;finalCv.height=sh;
+  var fc=finalCv.getContext('2d');
+  // 深色底
+  fc.fillStyle='#1C1C1E';
+  fc.fillRect(0,0,sw,sh);
+  // 圆角裁剪
+  fc.save();
+  fc.beginPath();
+  fc.moveTo(cr,0);fc.lineTo(sw-cr,0);fc.quadraticCurveTo(sw,0,sw,cr);
+  fc.lineTo(sw,sh-cr);fc.quadraticCurveTo(sw,sh,sw-cr,sh);
+  fc.lineTo(cr,sh);fc.quadraticCurveTo(0,sh,0,sh-cr);
+  fc.lineTo(0,cr);fc.quadraticCurveTo(0,0,cr,0);
+  fc.closePath();fc.clip();
+  fc.drawImage(cv,0,0);
+  fc.restore();
+
+  winShareImg=finalCv.toDataURL('image/jpeg',0.92);
+}
+
+// ═══════════════════════════════════════════════
 // 结算画面 - Q萌升级
 // ═══════════════════════════════════════════════
 function drawOver(){
@@ -870,6 +1208,8 @@ try{loop();}catch(e){document.body.innerHTML='<div style="display:flex;align-ite
 // ── 结算页按钮（HTML层）──
 document.getElementById('btn1').addEventListener('click',function(){
   document.getElementById('overBtns').style.display='none';
+  document.getElementById('win-share-img').style.display='none';
+  document.getElementById('win-share-img').src='';
   state=STATE.MENU;
 });
 document.getElementById('btn2').addEventListener('click',function(){
@@ -878,11 +1218,25 @@ document.getElementById('btn2').addEventListener('click',function(){
 document.getElementById('btn1').addEventListener('touchend',function(e){
   e.preventDefault();
   document.getElementById('overBtns').style.display='none';
+  document.getElementById('win-share-img').style.display='none';
+  document.getElementById('win-share-img').src='';
   state=STATE.MENU;
 });
 document.getElementById('btn2').addEventListener('touchend',function(e){
   e.preventDefault();
   window.location.href='https://liyu.yisan.run/';
+});
+// ── 暂停恢复按钮 ──
+document.getElementById('resumeBtn').addEventListener('click',function(){
+  document.getElementById('pauseOverlay').style.display='none';
+  state=STATE.PLAY;
+  resumeGraceLeft=RESUME_GRACE;
+});
+document.getElementById('resumeBtn').addEventListener('touchend',function(e){
+  e.preventDefault();
+  document.getElementById('pauseOverlay').style.display='none';
+  state=STATE.PLAY;
+  resumeGraceLeft=RESUME_GRACE;
 });
 </script>
 </body>

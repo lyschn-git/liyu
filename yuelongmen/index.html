@@ -88,8 +88,8 @@ var graceBaseY=0;        // 漂浮基准Y
 var koi={
   x:0,y:0,vy:0,
   w:0,h:0,
-  gravity:0.30,       // 降低重力，更容易控制
-  flapPower:-6.0,     // 降低跳跃力，配合低重力
+  gravity:0.26,       // 降低重力，更从容
+  flapPower:-5.2,     // 温和跳跃，不会一按飞老高
   rotation:0,
   slices:0, // 切片数
   alive:true
@@ -130,7 +130,7 @@ function initGameParams(){
 
   waterY=H*0.82;
   gateSpeed=W*0.0025;   // 降速
-  gateGap=koi.h*4.0;    // 大间隙，新手友好
+  gateGap=koi.h*4.5;    // 更大间隙，新手友好
   gateSpacing=W*0.5;    // 间距拉大
   score=0;
 
@@ -326,10 +326,10 @@ function draw(){
       sc.fillText('轻触跃起',W/2,H*0.15);
       sc.restore();
     }else{
-      sc.font='28px "ZCOOL KuaiLe","PingFang SC","Microsoft YaHei",sans-serif';
-      sc.fillStyle=CLR.brown;
+      sc.font='32px "ZCOOL KuaiLe","PingFang SC","Microsoft YaHei",sans-serif';
+      sc.fillStyle=CLR.orange;
       sc.textAlign='center';
-      sc.fillText(score,W/2,50);
+      sc.fillText(score,W/2,52);
     }
   }
 

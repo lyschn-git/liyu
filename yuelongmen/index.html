@@ -171,7 +171,7 @@ titleImg.src='data:image/png;base64,'+titleB64;
 // ── 初始化 ──
 function initGame(){
   waterY=H*0.82;
-  koi.w=Math.min(W*0.18,72);
+  koi.w=Math.min(W*0.22,90);
   koi.h=koi.w*0.558;
   koi.x=W*0.28;
   koi.y=waterY*0.5;
@@ -724,7 +724,7 @@ function drawMenu(){
 
   // 锦鲤图（更大更Q）
   if(koiLoaded){
-    var showW=Math.min(W*0.5,200);
+    var showW=Math.min(W*0.55,220);
     var showH=showW*0.558;
     var bobY=Math.sin(Date.now()*0.003)*10;
     var bobR=Math.sin(Date.now()*0.002)*0.06;

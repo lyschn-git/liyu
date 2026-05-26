@@ -812,12 +812,39 @@ function drawRace() {
   var playerY = trackY + trackH * 0.65;
   var playerBob = Math.sin(Date.now() * 0.008) * 4;
   
-  // 玩家橙色光晕
-  sc.save();
-  sc.shadowColor = CLR.orange;
-  sc.shadowBlur = 15;
-  drawKoi(playerScreenX, playerY + playerBob, 55, currentFish, 1, Date.now() * 0.1);
-  sc.restore();
+  // 玩家锦鲤绘制（含冲刺/爆发视觉反馈）
+  if (race.playerBoost > 0) {
+    // 冲刺：橙色光晕增强 + 水花拖尾
+    sc.save();
+    sc.shadowColor = CLR.orange;
+    sc.shadowBlur = 25;
+    drawKoi(playerScreenX, playerY + playerBob, 55, currentFish, 1, Date.now() * 0.1);
+    sc.restore();
+    // 水花拖尾
+    for (var i = 0; i < 3; i++) {
+      sc.beginPath();
+      var trailX = playerScreenX - 35 - i * 15;
+      var trailY = playerY + playerBob + (i - 1) * 4;
+      var trailR = 3 - i * 0.8;
+      sc.arc(trailX, trailY, Math.max(0.5, trailR), 0, Math.PI * 2);
+      sc.fillStyle = 'rgba(255,255,255,' + (0.5 - i * 0.15) + ')';
+      sc.fill();
+    }
+  } else if (race.playerBurst > 0) {
+    // 爆发：紫色光晕
+    sc.save();
+    sc.shadowColor = '#8B5CF6';
+    sc.shadowBlur = 30;
+    drawKoi(playerScreenX, playerY + playerBob, 55, currentFish, 1, Date.now() * 0.1);
+    sc.restore();
+  } else {
+    // 正常：橙色光晕
+    sc.save();
+    sc.shadowColor = CLR.orange;
+    sc.shadowBlur = 15;
+    drawKoi(playerScreenX, playerY + playerBob, 55, currentFish, 1, Date.now() * 0.1);
+    sc.restore();
+  }
   
   // 玩家标签
   sc.fillStyle = CLR.orange;
@@ -829,26 +856,30 @@ function drawRace() {
   sc.textAlign = 'center';
   sc.fillText('你', playerScreenX, playerY - 43 + playerBob);
   
-  // 玩家速度特效
-  if (race.playerBoost > 0 || race.playerBurst > 0) {
-    for (var i = 0; i < 4; i++) {
-      sc.beginPath();
-      sc.arc(playerScreenX - 25 - i * 12, playerY + playerBob + (i - 1.5) * 6, 4, 0, Math.PI * 2);
-      sc.fillStyle = 'rgba(255,255,255,' + (0.6 - i * 0.12) + ')';
-      sc.fill();
-    }
-  }
-  
   // 对手锦鲤
   var opponentY = trackY + trackH * 0.35;
   var opponentBob = Math.sin(Date.now() * 0.008 + 1.5) * 4;
   
-  // 对手蓝色光晕
-  sc.save();
-  sc.shadowColor = '#3B82F6';
-  sc.shadowBlur = 12;
-  drawKoi(opponentScreenX, opponentY + opponentBob, 55, opponentFish, 1, Date.now() * 0.1);
-  sc.restore();
+  // 对手锦鲤绘制（含冲刺/爆发视觉反馈）
+  if (race.opponentBoost > 0) {
+    sc.save();
+    sc.shadowColor = '#3B82F6';
+    sc.shadowBlur = 25;
+    drawKoi(opponentScreenX, opponentY + opponentBob, 55, opponentFish, 1, Date.now() * 0.1);
+    sc.restore();
+  } else if (race.opponentBurst > 0) {
+    sc.save();
+    sc.shadowColor = '#8B5CF6';
+    sc.shadowBlur = 25;
+    drawKoi(opponentScreenX, opponentY + opponentBob, 55, opponentFish, 1, Date.now() * 0.1);
+    sc.restore();
+  } else {
+    sc.save();
+    sc.shadowColor = '#3B82F6';
+    sc.shadowBlur = 12;
+    drawKoi(opponentScreenX, opponentY + opponentBob, 55, opponentFish, 1, Date.now() * 0.1);
+    sc.restore();
+  }
   
   // 对手标签
   sc.fillStyle = '#6B7280';
@@ -859,16 +890,6 @@ function drawRace() {
   sc.font = 'bold 12px ' + FONT_ZK;
   sc.textAlign = 'center';
   sc.fillText('对手', opponentScreenX, opponentY - 43 + opponentBob);
-  
-  // 对手速度特效
-  if (race.opponentBoost > 0 || race.opponentBurst > 0) {
-    for (var i = 0; i < 4; i++) {
-      sc.beginPath();
-      sc.arc(opponentScreenX - 25 - i * 12, opponentY + opponentBob + (i - 1.5) * 6, 4, 0, Math.PI * 2);
-      sc.fillStyle = 'rgba(255,255,255,' + (0.6 - i * 0.12) + ')';
-      sc.fill();
-    }
-  }
   
   // 耐力条
   var staminaY = trackY + trackH + 52;

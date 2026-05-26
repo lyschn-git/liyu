@@ -182,10 +182,10 @@ function saveData() {
 // ── 创建锦鲤 ──
 function createRandomFish(name, rarity) {
   var colors = {
-    'common': { main: '#EF4444', light: '#FCA5A5' },
-    'rare': { main: '#FBBF24', light: '#FDE68A' },
-    'epic': { main: '#1F2937', light: '#6B7280' },
-    'legend': { main: '#8B5CF6', light: '#C4B5FD' }
+    'common': { main: '#EF4444', light: '#FCA5A5', tint: null },
+    'rare': { main: '#FBBF24', light: '#FDE68A', tint: 'rgba(255,215,0,0.35)' },
+    'epic': { main: '#1F2937', light: '#6B7280', tint: 'rgba(20,30,80,0.5)' },
+    'legend': { main: '#8B5CF6', light: '#C4B5FD', tint: 'rgba(128,0,255,0.35)' }
   };
   
   var c = colors[rarity] || colors['common'];
@@ -201,6 +201,7 @@ function createRandomFish(name, rarity) {
     rarity: rarity,
     mainColor: c.main,
     lightColor: c.light,
+    tintColor: c.tint,
     speed: spd,
     luck: luk,
     stamina: sta,
@@ -887,16 +888,17 @@ function drawRace() {
     var btnStartX = (W - totalBtnW) / 2;
     
     var buttons = [
-      { text: '冲', sub: '速度+40%', color: CLR.orange, action: 'rush' },
-      { text: '稳', sub: '恢复+10%', color: '#7BC4B8', action: 'steady' },
-      { text: '爆', sub: '运%触发', color: '#8B5CF6', action: 'burst' }
+      { text: '冲', sub: '速度+40%', cost: '需30耐力', color: CLR.orange, need: 30, action: 'rush' },
+      { text: '稳', sub: '恢复+10%', cost: '免费', color: '#7BC4B8', need: 0, action: 'steady' },
+      { text: '爆', sub: '运%触发', cost: '需50耐力', color: '#8B5CF6', need: 50, action: 'burst' }
     ];
     
     for (var i = 0; i < 3; i++) {
       var bx = btnStartX + i * (btnW + btnGap);
       var btn = buttons[i];
+      var canUse = race.playerStamina >= btn.need;
       
-      sc.fillStyle = btn.color;
+      sc.fillStyle = canUse ? btn.color : '#9CA3AF';
       sc.beginPath();
       sc.roundRect(bx, btnY, btnW, btnH, 15);
       sc.fill();
@@ -904,9 +906,12 @@ function drawRace() {
       sc.fillStyle = '#FFF';
       sc.font = 'bold 28px ' + FONT_ZK;
       sc.textAlign = 'center';
-      sc.fillText(btn.text, bx + btnW/2, btnY + 35);
+      sc.fillText(btn.text, bx + btnW/2, btnY + 28);
       sc.font = '11px ' + FONT_ZK;
-      sc.fillText(btn.sub, bx + btnW/2, btnY + 55);
+      sc.fillText(btn.sub, bx + btnW/2, btnY + 45);
+      sc.font = '10px ' + FONT_ZK;
+      sc.fillStyle = canUse ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.5)';
+      sc.fillText(btn.cost, bx + btnW/2, btnY + 62);
       
       btn.x = bx;
       btn.y = btnY;
@@ -1033,11 +1038,13 @@ function drawResult() {
   sc.textAlign = 'center';
   sc.fillText(playerWon ? '★ 胜利!' : (close ? '惜败' : '失败'), W/2, 60);
   
-  // 口彩
-  var fortunes = playerWon ? FORTUNE_WIN : (close ? FORTUNE_CLOSE : FORTUNE_LOSE);
-  var fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+  // 口彩（只在首次进入结果页时随机，避免闪烁）
+  if (!race._fortune) {
+    var fortunes = playerWon ? FORTUNE_WIN : (close ? FORTUNE_CLOSE : FORTUNE_LOSE);
+    race._fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+  }
   sc.font = '18px ' + FONT_JH;
-  sc.fillText(fortune, W/2, 100);
+  sc.fillText(race._fortune, W/2, 100);
   
   // 比赛结果
   var resultY = 150;
@@ -1501,6 +1508,7 @@ function startRace() {
     phase: 0,
     finished: false,
     winner: null,
+    _fortune: null,
     playerProgress: 0,
     opponentProgress: 0,
     // 策略点机制
@@ -1520,6 +1528,8 @@ function playerAction(action) {
       race.playerBoost = 180; // 3秒
       addFloatingText('冲鸭!', W/2, H/2, CLR.orange);
       race.paused = false; // 继续比赛
+    } else {
+      addFloatingText('耐力不足!', W/2, H/2, '#EF4444');
     }
   } else if (action === 'steady') {
     // 稳健
@@ -1539,6 +1549,8 @@ function playerAction(action) {
         addFloatingText('差一点点...', W/2, H/2, CLR.grayLight);
       }
       race.paused = false; // 继续比赛
+    } else {
+      addFloatingText('耐力不足!', W/2, H/2, '#EF4444');
     }
   }
 }

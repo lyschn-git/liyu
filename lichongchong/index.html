@@ -702,7 +702,7 @@ function drawMenu() {
   buttons = [];
   
   var menus = [
-    { text: '出征', color: CLR.orange, action: 'select' },
+    { text: '闯关', color: CLR.orange, action: 'select' },
     { text: '养成', color: CLR.waterDeep, action: 'feed' },
     { text: '赐福', color: CLR.purple, action: 'draw' },
     { text: '图鉴', color: CLR.success, action: 'guide' }
@@ -747,7 +747,7 @@ function drawSelectFish() {
   sc.fillStyle = '#FFF';
   sc.font = 'bold 20px ' + FONT_ZK;
   sc.textAlign = 'center';
-  sc.fillText('选谁出征？', W/2, 36);
+  sc.fillText('选谁闯关？', W/2, 36);
   
   sc.fillStyle = 'rgba(255,255,255,0.3)';
   sc.beginPath();
@@ -820,7 +820,7 @@ function drawSelectFish() {
     sc.fillStyle = CLR.textMuted;
     sc.font = '14px ' + FONT_ZK;
     sc.textAlign = 'center';
-    sc.fillText('选择一条锦鲤出征', W/2, btnY + 30);
+    sc.fillText('选择一条锦鲤闯关', W/2, btnY + 30);
   }
   
   drawFloatingTexts();
@@ -1264,9 +1264,9 @@ function drawResult() {
   
   drawCard(20, cardY, W - 40, cardH, RADIUS.xl);
   
-  var result = race.winner === 'player' ? 'win' : (race.playerProgress >= race.opponentProgress - 0.05 ? 'close' : 'lose');
+  var result = race.winner === 'player' ? 'win' : (race.progress >= race.opponentProgress - 0.05 ? 'close' : 'lose');
   if (!anim._resultFortune) {
-    var result2 = race.winner === 'player' ? 'win' : (race.playerProgress >= race.opponentProgress - 0.05 ? 'close' : 'lose');
+    var result2 = race.winner === 'player' ? 'win' : (race.progress >= race.opponentProgress - 0.05 ? 'close' : 'lose');
     var fortunes = result2 === 'win' ? FORTUNE_WIN : (result2 === 'close' ? FORTUNE_CLOSE : FORTUNE_LOSE);
     anim._resultFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
     anim._resultReward = result2 === 'win' ? 15 : (result2 === 'close' ? 8 : 5);
@@ -1288,7 +1288,7 @@ function drawResult() {
   
   sc.fillStyle = CLR.textLight;
   sc.font = '14px ' + FONT_ZK;
-  sc.fillText('你的进度: ' + Math.round(race.playerProgress * 100) + '%', W/2, cardY + 230);
+  sc.fillText('你的进度: ' + Math.round(race.progress * 100) + '%', W/2, cardY + 230);
   sc.fillText('对手进度: ' + Math.round(race.opponentProgress * 100) + '%', W/2, cardY + 252);
   
   var reward = anim._resultReward;

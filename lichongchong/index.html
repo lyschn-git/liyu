@@ -485,7 +485,7 @@ function addFloatingText(text, x, y, color) {
     y: y,
     color: color || CLR.orange,
     alpha: 1,
-    vy: -2.5,
+    vy: -1.2,
     scale: 1.2
   });
 }
@@ -495,8 +495,8 @@ function updateFloatingTexts() {
   for (var i = anim.floatingTexts.length - 1; i >= 0; i--) {
     var ft = anim.floatingTexts[i];
     ft.y += ft.vy;
-    ft.alpha -= 0.02;
-    ft.scale *= 0.98;
+    ft.alpha -= 0.012;
+    ft.scale *= 0.99;
     if (ft.alpha <= 0) {
       anim.floatingTexts.splice(i, 1);
     }
@@ -1079,9 +1079,18 @@ function drawFeed() {
   sc.font = '18px sans-serif';
   sc.fillText('←', 24, 34);
   
+  // 资源栏
+  var resY = headerH + 8;
+  sc.fillStyle = 'rgba(255,255,255,0.7)';
+  sc.font = '13px ' + FONT_ZK;
+  sc.textAlign = 'left';
+  sc.fillText('◆ 鱼鳞: ' + userData.fishScales, 20, resY + 16);
+  sc.textAlign = 'right';
+  sc.fillText('粮 饲料: ' + userData.feed, W - 20, resY + 16);
+  
   buttons = [{ x: 6, y: 10, w: 36, h: 36, action: 'back' }];
   
-  var contentY = headerH + 20;
+  var contentY = headerH + 40;
   
   drawCard(20, contentY, W - 40, 220, RADIUS.xl);
   
@@ -1151,7 +1160,7 @@ function drawFeed() {
   var canFeed = userData.feed >= feedCost;
   
   if (canFeed) {
-    drawBtn(20, btnY, btnW, btnH, '食 喂食 (' + feedCost + ')', CLR.success);
+    drawBtn(20, btnY, btnW, btnH, '喂食 x' + feedCost + '饲料', CLR.success);
     buttons.push({ x: 20, y: btnY, w: btnW, h: btnH, action: 'feedFish' });
   } else {
     drawCard(20, btnY, btnW, btnH, RADIUS.md, false);
@@ -1160,11 +1169,11 @@ function drawFeed() {
     sc.fillStyle = CLR.textMuted;
     sc.font = '14px ' + FONT_ZK;
     sc.textAlign = 'center';
-    sc.fillText('食 喂食', 20 + btnW/2, btnY + 30);
-    sc.fillText('(饲料不足)', 20 + btnW/2, btnY + 48);
+    sc.fillText('喂食', 20 + btnW/2, btnY + 30);
+    sc.fillText('饲料不足', 20 + btnW/2, btnY + 48);
   }
   
-  drawBtn(28 + btnW, btnY, btnW, btnH, '购 购买饲料', CLR.orange);
+  drawBtn(28 + btnW, btnY, btnW, btnH, '5鱼鳞→3饲料', CLR.orange);
   buttons.push({ x: 28 + btnW, y: btnY, w: btnW, h: btnH, action: 'buyFeed' });
   
   drawFloatingTexts();
@@ -1485,9 +1494,9 @@ function handleAction(action, btn) {
           userData.fish[0].speed += 1;
           userData.fish[0].luck += 1;
           userData.fish[0].stamina += 1;
-          addFloatingText('升级！', W/2, H/2, CLR.success);
+          addFloatingText('升级！全属性+1', W/2, H/2, CLR.success);
         } else {
-          addFloatingText('+5经验', W/2, H/2, CLR.success);
+          addFloatingText('喂食成功 +5经验', W/2, H/2, CLR.success);
         }
         saveData();
       }
@@ -1497,9 +1506,9 @@ function handleAction(action, btn) {
         userData.fishScales -= 5;
         userData.feed += 3;
         saveData();
-        addFloatingText('+3饲料', W/2, H/2, CLR.warning);
+        addFloatingText('购买成功 +3饲料', W/2, H/2, CLR.warning);
       } else {
-        addFloatingText('鱼鳞不足！', W/2, H/2, CLR.danger);
+        addFloatingText('鱼鳞不足 需要5鱼鳞', W/2, H/2, CLR.danger);
       }
       break;
     case 'confirmDraw':

@@ -6,7 +6,7 @@
 <meta property="og:title" content="鲤冲冲 · 锦鲤赛跑">
 <meta property="og:description" content="养锦鲤，选策略，来一场好运赛跑">
 <title>鲤冲冲 · 锦鲤赛跑</title>
-<link href="https://fonts.font.im/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;">
+<link href="https://fonts.font.im/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet" >
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 html,body{width:100%;height:100%;overflow:hidden;position:fixed;top:0;left:0;touch-action:none}
@@ -630,9 +630,9 @@ function drawMenu() {
   sc.fillStyle = '#FFF';
   sc.font = '12px ' + FONT_ZK;
   sc.textAlign = 'left';
-  sc.fillText('◆ ' + userData.fishScales, 25, headerH + 33);
+  sc.fillText('◆鱼鳞:' + userData.fishScales, 25, headerH + 33);
   sc.textAlign = 'right';
-  sc.fillText('粮 ' + userData.feed, W - 25, headerH + 33);
+  sc.fillText('粮饲料:' + userData.feed, W - 25, headerH + 33);
   
   var fishY = H * 0.48;
   anim.menuKoiFrame++;
@@ -1365,10 +1365,11 @@ function drawResult() {
   drawCard(20, cardY, W - 40, cardH, RADIUS.xl);
   
   var result = race.winner === 'player' ? 'win' : (race.playerProgress >= race.opponentProgress - 0.05 ? 'close' : 'lose');
-  var fortunes = result === 'win' ? FORTUNE_WIN : (result === 'close' ? FORTUNE_CLOSE : FORTUNE_LOSE);
   if (!anim._resultFortune) {
+    var result2 = race.winner === 'player' ? 'win' : (race.playerProgress >= race.opponentProgress - 0.05 ? 'close' : 'lose');
+    var fortunes = result2 === 'win' ? FORTUNE_WIN : (result2 === 'close' ? FORTUNE_CLOSE : FORTUNE_LOSE);
     anim._resultFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
-    anim._resultReward = result === 'win' ? 15 : (result === 'close' ? 8 : 5);
+    anim._resultReward = result2 === 'win' ? 15 : (result2 === 'close' ? 8 : 5);
     anim._resultSettled = false;
   }
   var fortune = anim._resultFortune;
@@ -1392,8 +1393,11 @@ function drawResult() {
   
   var reward = anim._resultReward;
   sc.fillStyle = CLR.warning;
-  sc.font = 'bold 18px ' + FONT_ZK;
-  sc.fillText('+' + reward + ' 鱼鳞', W/2, cardY + 290);
+  sc.font = 'bold 20px ' + FONT_ZK;
+  sc.fillText('+' + reward + ' 鱼鳞', W/2, cardY + 280);
+  sc.fillStyle = CLR.textLight;
+  sc.font = '12px ' + FONT_ZK;
+  sc.fillText('鱼鳞可孵化新锦鲤或购买饲料', W/2, cardY + 305);
   
   if (!anim._resultSettled) {
     userData.fishScales += reward;

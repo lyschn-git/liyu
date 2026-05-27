@@ -1404,7 +1404,7 @@ function performJump() {
   
   race.isJumping = true;
   race.jumpY = 0;
-  race.jumpVelocity = -12;
+  race.jumpVelocity = -15;
   race.jumpHeight = 0;
   
   for (var i = 0; i < 8; i++) {
@@ -1474,20 +1474,20 @@ function updateAI(dt) {
     }
   }
   
-  var baseSpeed = opponentFish.speed * 0.8;
-  var aiMaxSpeed = baseSpeed * 1.5;
+  var baseSpeed = opponentFish.speed * 2.5 + 5;
+  var aiMaxSpeed = baseSpeed * 1.6;
   
   switch (race.aiState) {
     case 'sprint':
-      race.opponentVelocity = Math.min(race.opponentVelocity + 20 * dt, aiMaxSpeed);
-      race.opponentStamina -= 10 * dt;
+      race.opponentVelocity = Math.min(race.opponentVelocity + 25 * dt, aiMaxSpeed);
+      race.opponentStamina -= 8 * dt;
       break;
     case 'coast':
-      race.opponentVelocity = Math.max(race.opponentVelocity - 5 * dt, baseSpeed * 0.8);
+      race.opponentVelocity = Math.max(race.opponentVelocity - 8 * dt, baseSpeed * 0.7);
       race.opponentStamina += 5 * dt;
       break;
     case 'rest':
-      race.opponentVelocity = Math.max(race.opponentVelocity - 10 * dt, baseSpeed * 0.3);
+      race.opponentVelocity = Math.max(race.opponentVelocity - 15 * dt, baseSpeed * 0.3);
       race.opponentStamina += 8 * dt;
       break;
   }
@@ -1662,7 +1662,7 @@ function updateRace(dt) {
   race.progress = race.playerX / race.TRACK_LEN;
   
   updateAI(dt);
-  var opponentMaxSpeed = opponentFish.speed * 3 + 5;
+  var opponentMaxSpeed = opponentFish.speed * 2.5 + 5;
   race.opponentX += race.opponentVelocity * dt;
   race.opponentProgress = race.opponentX / race.TRACK_LEN;
   
@@ -1865,7 +1865,7 @@ function drawRace() {
   var playerScreenX = race.playerX;
   var playerBaseY = trackY + 50;
   var playerBob = race.isHolding ? Math.sin(Date.now() * 0.015) * 2 : Math.sin(Date.now() * 0.003) * 5;
-  var playerY = playerBaseY + playerBob - race.jumpY;
+  var playerY = playerBaseY + playerBob + race.jumpY;
   var playerScale = 50;
   
   if (race.isHolding && race.forcedCooldown <= 0) {

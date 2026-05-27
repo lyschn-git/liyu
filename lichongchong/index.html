@@ -738,6 +738,9 @@ function drawSelectFish() {
       sc.stroke();
     }
     
+    // 注册可点击区域
+    buttons.push({ x: 16, y: fy, w: W - 32, h: cardH, action: 'selectFish', fishIndex: i });
+    
     drawKoiIcon(55, fy + cardH/2, 70, fish.mainColor, fish.lightColor, fish.tintColor);
     
     sc.fillStyle = CLR.text;
@@ -971,7 +974,56 @@ function drawGacha() {
   var phase = anim.drawPhase;
   var frame = anim.drawAnimFrame;
   
-  if (phase === 0) {
+  if (phase === 3) {
+    // 确认页面：让用户知道花费和可能获得的鱼
+    sc.fillStyle = CLR.text;
+    sc.font = 'bold 20px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('孵化新锦鲤', W/2, cardY + 40);
+    
+    sc.fillStyle = CLR.textLight;
+    sc.font = '14px ' + FONT_ZK;
+    sc.fillText('消耗 10 鱼鳞，随机孵化一条锦鲤', W/2, cardY + 70);
+    
+    // 显示可能获得的品种
+    var breedY = cardY + 110;
+    var breeds = [
+      { name: '红鲤', rarity: '普通', color: '#EF4444', prob: '60%' },
+      { name: '金鲤', rarity: '稀有', color: '#FBBF24', prob: '25%' },
+      { name: '墨鲤', rarity: '史诗', color: '#1F2937', prob: '12%' },
+      { name: '化龙鲤', rarity: '传说', color: '#8B5CF6', prob: '3%' }
+    ];
+    for (var b = 0; b < breeds.length; b++) {
+      var by = breedY + b * 36;
+      sc.fillStyle = breeds[b].color;
+      sc.font = 'bold 14px ' + FONT_ZK;
+      sc.textAlign = 'left';
+      sc.fillText(breeds[b].name, 50, by);
+      sc.fillStyle = CLR.textMuted;
+      sc.font = '12px ' + FONT_ZK;
+      sc.fillText(breeds[b].rarity, 120, by);
+      sc.fillStyle = CLR.textLight;
+      sc.textAlign = 'right';
+      sc.fillText(breeds[b].prob, W - 50, by);
+    }
+    
+    sc.fillStyle = CLR.textLight;
+    sc.font = '12px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('当前鱼鳞: ' + userData.fishScales, W/2, cardY + cardH - 60);
+    
+    // 确认按钮
+    if (userData.fishScales >= 10) {
+      var btnW2 = Math.min(200, W - 48);
+      var btnX2 = (W - btnW2) / 2;
+      drawBtn(btnX2, H - 90, btnW2, 52, '孵化 (10鱼鳞)', CLR.purple);
+      buttons.push({ x: btnX2, y: H - 90, w: btnW2, h: 52, action: 'confirmGacha' });
+    } else {
+      sc.fillStyle = CLR.danger;
+      sc.font = '14px ' + FONT_ZK;
+      sc.fillText('鱼鳞不足 (需要10)', W/2, H - 70);
+    }
+  } else if (phase === 0) {
     sc.fillStyle = CLR.text;
     sc.font = '16px ' + FONT_ZK;
     sc.textAlign = 'center';
@@ -1450,7 +1502,8 @@ function handleAction(action, btn) {
       break;
     case 'draw':
       prevState = STATE.MENU;
-      drawFish();
+      state = STATE.DRAW;
+      anim.drawPhase = 3;
       break;
     case 'guide':
       prevState = STATE.MENU;
@@ -1458,6 +1511,9 @@ function handleAction(action, btn) {
       break;
     case 'back':
       state = prevState;
+      break;
+    case 'selectFish':
+      selectedFishIndex = btn.fishIndex;
       break;
     case 'startRace':
       if (selectedFishIndex >= 0) {
@@ -1510,6 +1566,9 @@ function handleAction(action, btn) {
       } else {
         addFloatingText('鱼鳞不足 需要5鱼鳞', W/2, H/2, CLR.danger);
       }
+      break;
+    case 'confirmGacha':
+      drawFish();
       break;
     case 'confirmDraw':
       state = STATE.MENU;

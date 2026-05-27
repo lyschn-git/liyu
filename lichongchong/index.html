@@ -2090,19 +2090,24 @@ function handleAction(action, btn) {
       state = STATE.MENU;
       break;
     case 'feedFish':
-      if (userData.feed > 0 && btn.fish) {
+      if (userData.feed > 0 && userData.fish.length > 0) {
         userData.feed--;
-        btn.fish.exp += 5;
-        if (btn.fish.exp >= btn.fish.expToNext) {
-          btn.fish.level++;
-          btn.fish.exp = 0;
-          btn.fish.expToNext = Math.round(btn.fish.expToNext * 1.5);
-          btn.fish.speed = Math.min(10, btn.fish.speed + 1);
-          btn.fish.luck = Math.min(10, btn.fish.luck + 1);
-          btn.fish.stamina = Math.min(10, btn.fish.stamina + 1);
-          addFloatingText('升级！', W/2, H/2, CLR.success);
+        var fish = userData.fish[0];
+        fish.exp += 5;
+        if (fish.exp >= fish.expToNext) {
+          fish.level++;
+          fish.exp = 0;
+          fish.expToNext = Math.round(fish.expToNext * 1.5);
+          fish.speed = Math.min(10, fish.speed + 1);
+          fish.luck = Math.min(10, fish.luck + 1);
+          fish.stamina = Math.min(10, fish.stamina + 1);
+          addFloatingText('升级！全属性+1', W/2, H/2, CLR.success);
+        } else {
+          addFloatingText('喂食成功 +5经验', W/2, H/2, CLR.success);
         }
         saveData();
+      } else {
+        addFloatingText('饲料不足', W/2, H/2, CLR.danger);
       }
       break;
     case 'buyFeed':
@@ -2110,8 +2115,16 @@ function handleAction(action, btn) {
         userData.fishScales -= 5;
         userData.feed += 5;
         saveData();
-        addFloatingText('购买成功！', W/2, H/2, CLR.success);
+        addFloatingText('购买成功！+5饲料', W/2, H/2, CLR.success);
+      } else {
+        addFloatingText('鱼鳞不足 需要5鱼鳞', W/2, H/2, CLR.danger);
       }
+      break;
+    case 'confirmGacha':
+      drawFish();
+      break;
+    case 'confirmDraw':
+      state = STATE.MENU;
       break;
   }
 }

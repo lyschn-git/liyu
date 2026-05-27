@@ -6,7 +6,7 @@
 <meta property="og:title" content="鲤冲冲 · 锦鲤赛跑">
 <meta property="og:description" content="养锦鲤，选策略，来一场好运赛跑">
 <title>鲤冲冲 · 锦鲤赛跑</title>
-<link href="https://fonts.font.im/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet" >
+<link href="https://fonts.font.im/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 html,body{width:100%;height:100%;overflow:hidden;position:fixed;top:0;left:0;touch-action:none}
@@ -17,9 +17,9 @@ canvas{display:block;width:100%;height:100%}
 <canvas id="gc"></canvas>
 <script>
 // ═══════════════════════════════════════════════
-// 鲤冲冲 · v2.0 全面重构版
+// 鲤冲冲 · v3.0 实时操控重构版
 // 锦鲤赛跑+养成游戏
-// 基于全新设计规范重构
+// 基于实时操控手感驱动重构
 // ═══════════════════════════════════════════════
 
 var c = document.getElementById('gc'), sc = c.getContext('2d');
@@ -40,58 +40,28 @@ window.addEventListener('resize', resize);
 
 // ── 品牌配色（设计规范v2）──
 var CLR = {
-  // 主背景 60%
-  bg: '#FFFBF5',          // 暖白米色
-  bgWarm: '#FEF3E2',      // 暖白偏橙
-  
-  // 卡片/区域 30%
-  card: '#FFFFFF',        // 纯白卡片
-  water: '#B8E4DC',       // 柔和青绿水面
-  waterDeep: '#7BC4B8',   // 青绿深色
+  bg: '#FFFBF5',
+  bgWarm: '#FEF3E2',
+  card: '#FFFFFF',
+  water: '#B8E4DC',
+  waterDeep: '#7BC4B8',
   waterLight: 'rgba(184,228,220,0.3)',
-  
-  // 强调 10%
-  orange: '#F97316',      // 品牌暖橙
-  orangeLight: '#FB923C',  // 橙金
-  orangeDark: '#EA580C',   // 深橙
-  
-  // 辅助色
-  purple: '#8B5CF6',      // 神秘紫（稀有/爆发）
-  success: '#10B981',     // 翠绿
-  warning: '#FBBF24',     // 金黄
-  danger: '#EF4444',      // 红色
-  
-  // 文字
-  text: '#1F2937',        // 深灰主文字
-  textLight: '#6B7280',   // 中灰
-  textMuted: '#9CA3AF',   // 浅灰
-  
-  // 阴影
+  orange: '#F97316',
+  orangeLight: '#FB923C',
+  orangeDark: '#EA580C',
+  purple: '#8B5CF6',
+  success: '#10B981',
+  warning: '#FBBF24',
+  danger: '#EF4444',
+  text: '#1F2937',
+  textLight: '#6B7280',
+  textMuted: '#9CA3AF',
   shadow: 'rgba(0,0,0,0.06)',
   shadowBrand: 'rgba(249,115,22,0.25)'
 };
 
-// ── 圆角规范（设计规范v2）──
-var RADIUS = {
-  xl: 20,  // 大卡片/弹窗
-  lg: 16,  // 中卡片
-  md: 12,  // 按钮/小卡片
-  sm: 8,   // 图标容器
-  full: 9999
-};
-
-// ── 间距规范（8pt Grid）──
-var SPACE = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  base: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 40
-};
-
-// ── 字体 ──
+var RADIUS = { xl: 20, lg: 16, md: 12, sm: 8, full: 9999 };
+var SPACE = { xs: 4, sm: 8, md: 12, base: 16, lg: 24, xl: 32, xxl: 40 };
 var FONT_ZK = "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif";
 var FONT_SYS = "'PingFang SC', -apple-system, sans-serif";
 
@@ -101,40 +71,54 @@ var state = STATE.MENU;
 var prevState = STATE.MENU;
 
 // ── 用户数据 ──
-var userData = {
-  fish: [],
-  fishScales: 50,
-  feed: 10
-};
+var userData = { fish: [], fishScales: 50, feed: 10 };
 
 // ── 当前锦鲤 ──
 var currentFish = null;
 var opponentFish = null;
 var selectedFishIndex = -1;
 
-// ── 赛跑数据 ──
+// ── 赛跑数据（实时操控版）──
 var race = {
-  playerDist: 0,
-  opponentDist: 0,
+  playerX: 0,
+  opponentX: 0,
   cameraX: 0,
-  TRACK_LEN: 800,
-  playerSpeed: 0,
-  opponentSpeed: 0,
+  TRACK_LEN: 1500,
+  playerVelocity: 0,
+  opponentVelocity: 0,
   playerStamina: 100,
   opponentStamina: 100,
-  playerBoost: 0,
-  opponentBoost: 0,
-  playerBurst: 0,
-  opponentBurst: 0,
+  maxStamina: 100,
+  staminaRegen: 8,
+  staminaCost: 15,
   raceTime: 0,
   phase: 0,
+  countdown: 3,
   finished: false,
   winner: null,
-  playerProgress: 0,
+  progress: 0,
   opponentProgress: 0,
-  strategyPoints: [0.25, 0.5, 0.75],
-  nextStrategyIdx: 0,
-  paused: false
+  paused: false,
+  isHolding: false,
+  holdStartTime: 0,
+  lastTapTime: 0,
+  isJumping: false,
+  jumpY: 0,
+  jumpVelocity: 0,
+  jumpHeight: 0,
+  forcedCooldown: 0,
+  obstacles: [],
+  currentObstacleIndex: 0,
+  hitFlash: 0,
+  boostGlow: 0,
+  trailParticles: [],
+  waveParticles: [],
+  catchWave: false,
+  catchWaveTime: 0,
+  aiState: 'sprint',
+  aiStateTimer: 0,
+  aiJumpTimer: 0,
+  aiNextAction: 0
 };
 
 // ── 动画数据 ──
@@ -153,7 +137,10 @@ var anim = {
   pageTransAlpha: 0,
   pageTransDir: 0,
   lotusPos: [],
-  ripple: []
+  ripple: [],
+  caustics: [],
+  lightSpots: [],
+  victoryParticles: []
 };
 
 // ── 按钮定义 ──
@@ -223,6 +210,38 @@ function initDecorations() {
   
   anim.ripple = [];
 }
+
+// 初始化画质提升元素
+function initQualityEnhancements() {
+  anim.caustics = [];
+  for (var i = 0; i < 20; i++) {
+    anim.caustics.push({
+      x: Math.random() * W,
+      y: H * 0.3 + Math.random() * H * 0.5,
+      r: 20 + Math.random() * 40,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.5 + Math.random() * 1,
+      alpha: 0.1 + Math.random() * 0.15
+    });
+  }
+  
+  anim.lightSpots = [];
+  for (var i = 0; i < 8; i++) {
+    anim.lightSpots.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: 30 + Math.random() * 60,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.2 + Math.random() * 0.3,
+      alpha: 0.05 + Math.random() * 0.08
+    });
+  }
+  
+  anim.victoryParticles = [];
+}
+
+initDecorations();
+initQualityEnhancements();
 
 // ── 加载数据 ──
 function loadData() {
@@ -421,7 +440,7 @@ function drawKoiIcon(x, y, size, color, lightColor, tintColor) {
   sc.restore();
 }
 
-// ── 绘制水波背景（温暖小世界）──
+// ── 绘制水波背景（画质提升版）──
 function drawWaterBg() {
   var waterY = H * 0.42;
   
@@ -452,6 +471,21 @@ function drawWaterBg() {
     sc.fill();
   }
   sc.globalAlpha = 1;
+  
+  // Caustics光斑
+  for (var c of anim.caustics) {
+    var cx = (c.x - anim.waveOffset * 0.5) % (W + 100) - 50;
+    sc.beginPath();
+    var gradient = sc.createRadialGradient(cx, c.y, 0, cx, c.y, c.r);
+    gradient.addColorStop(0, 'rgba(255,255,200,0.15)');
+    gradient.addColorStop(0.5, 'rgba(255,255,200,0.08)');
+    gradient.addColorStop(1, 'rgba(255,255,200,0)');
+    sc.fillStyle = gradient;
+    sc.arc(cx, c.y, c.r, 0, Math.PI * 2);
+    sc.globalAlpha = c.alpha * (0.5 + 0.5 * Math.sin(Date.now() * 0.001 * c.speed + c.phase));
+    sc.fill();
+  }
+  sc.globalAlpha = 1;
 }
 
 // ── 绘制荷叶装饰 ──
@@ -473,6 +507,20 @@ function drawLotus() {
     sc.fill();
     
     sc.globalAlpha = 1;
+    sc.restore();
+  }
+}
+
+// ── 绘制荷叶阴影 ──
+function drawLotusShadow() {
+  for (var lotus of anim.lotusPos) {
+    var sway = Math.sin(Date.now() * 0.001 + lotus.phase) * 3;
+    sc.save();
+    sc.globalAlpha = 0.1;
+    sc.fillStyle = '#000';
+    sc.beginPath();
+    sc.ellipse(lotus.x + sway + 5, lotus.y + lotus.size * 0.3, lotus.size * 0.8, lotus.size * 0.4, 0, 0, Math.PI * 2);
+    sc.fill();
     sc.restore();
   }
 }
@@ -503,108 +551,105 @@ function updateFloatingTexts() {
   }
 }
 
-// ── 绘制飘字 ──
+// ── 绘制飘字（批量）──
 function drawFloatingTexts() {
   for (var ft of anim.floatingTexts) {
+    sc.save();
     sc.globalAlpha = ft.alpha;
     sc.fillStyle = ft.color;
-    sc.font = 'bold ' + (20 * ft.scale) + 'px ' + FONT_ZK;
+    sc.font = 'bold ' + Math.round(16 * ft.scale) + 'px ' + FONT_ZK;
     sc.textAlign = 'center';
-    sc.fillText(ft.text, ft.x + anim.shakeX, ft.y);
+    sc.fillText(ft.text, ft.x, ft.y);
+    sc.restore();
   }
-  sc.globalAlpha = 1;
 }
 
-// ── 绘制卡片（圆角规范）──
+// ── 通用绘制函数 ──
 function drawCard(x, y, w, h, radius, shadow) {
-  radius = radius || RADIUS.lg;
   shadow = shadow !== false;
-  
   if (shadow) {
     sc.fillStyle = CLR.shadow;
     sc.beginPath();
     sc.roundRect(x + 2, y + 2, w, h, radius);
     sc.fill();
   }
-  
   sc.fillStyle = CLR.card;
   sc.beginPath();
   sc.roundRect(x, y, w, h, radius);
   sc.fill();
 }
 
-// ── 绘制按钮 ──
 function drawBtn(x, y, w, h, text, color, shadow) {
   shadow = shadow !== false;
-  
   if (shadow) {
-    sc.fillStyle = CLR.shadowBrand;
+    sc.fillStyle = CLR.shadow;
     sc.beginPath();
     sc.roundRect(x + 2, y + 2, w, h, RADIUS.md);
     sc.fill();
   }
   
-  sc.fillStyle = color || CLR.orange;
+  // 渐变效果
+  var grad = sc.createLinearGradient(x, y, x, y + h);
+  grad.addColorStop(0, color);
+  grad.addColorStop(1, shadeColor(color, -15));
+  
+  sc.fillStyle = grad;
   sc.beginPath();
   sc.roundRect(x, y, w, h, RADIUS.md);
   sc.fill();
   
   sc.fillStyle = '#FFF';
-  sc.font = 'bold 16px ' + FONT_ZK;
+  sc.font = 'bold 15px ' + FONT_ZK;
   sc.textAlign = 'center';
-  sc.textBaseline = 'middle';
-  sc.fillText(text, x + w/2, y + h/2 + 1);
-  sc.textBaseline = 'alphabetic';
+  sc.fillText(text, x + w/2, y + h/2 + 5);
 }
 
-// ── 绘制稀有度标签 ──
+function shadeColor(color, percent) {
+  var num = parseInt(color.replace('#', ''), 16);
+  var amt = Math.round(2.55 * percent);
+  var R = (num >> 16) + amt;
+  var G = (num >> 8 & 0x00FF) + amt;
+  var B = (num & 0x0000FF) + amt;
+  return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+}
+
 function drawRarityTag(x, y, rarity) {
-  var cfg = RARITY_COLORS[rarity] || RARITY_COLORS.common;
-  var text = RARITY_LABELS[rarity] || '普通';
-  
-  sc.font = '11px ' + FONT_ZK;
-  var tw = sc.measureText(text).width;
-  
-  sc.fillStyle = cfg.bg;
+  var colors = RARITY_COLORS[rarity] || RARITY_COLORS.common;
+  sc.fillStyle = colors.bg;
   sc.beginPath();
-  sc.roundRect(x, y, tw + 12, 22, 11);
+  sc.roundRect(x, y, 48, 20, 10);
   sc.fill();
-  
-  sc.fillStyle = cfg.text;
+  sc.fillStyle = colors.text;
+  sc.font = '11px ' + FONT_ZK;
   sc.textAlign = 'center';
-  sc.fillText(text, x + (tw + 12)/2, y + 15);
+  sc.fillText(RARITY_LABELS[rarity] || '普通', x + 24, y + 14);
 }
 
-// ── 绘制属性弧形 ──
 function drawAttrArc(x, y, r, value, maxVal, color, label) {
-  var startAngle = Math.PI * 0.75;
-  var endAngle = Math.PI * 2.25;
-  var progress = Math.min(value / maxVal, 1);
+  var ratio = value / maxVal;
   
-  sc.beginPath();
-  sc.arc(x, y, r, startAngle, endAngle);
-  sc.strokeStyle = '#E5E7EB';
+  // 背景弧
+  sc.strokeStyle = 'rgba(0,0,0,0.1)';
   sc.lineWidth = 6;
-  sc.lineCap = 'round';
+  sc.beginPath();
+  sc.arc(x, y, r, 0, Math.PI * 2);
   sc.stroke();
   
-  sc.beginPath();
-  sc.arc(x, y, r, startAngle, startAngle + (endAngle - startAngle) * progress);
+  // 数值弧
   sc.strokeStyle = color;
   sc.lineWidth = 6;
+  sc.beginPath();
+  sc.arc(x, y, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ratio);
   sc.stroke();
   
+  // 标签
   sc.fillStyle = CLR.text;
-  sc.font = 'bold 14px ' + FONT_ZK;
+  sc.font = '11px ' + FONT_ZK;
   sc.textAlign = 'center';
-  sc.fillText(value, x, y + 5);
-  
-  sc.fillStyle = CLR.textMuted;
-  sc.font = '10px ' + FONT_ZK;
   sc.fillText(label, x, y + r + 14);
+  sc.fillText(value, x, y + 4);
 }
 
-// ── 主界面 ──
 function drawMenu() {
   sc.fillStyle = CLR.bg;
   sc.fillRect(0, 0, W, H);
@@ -691,7 +736,6 @@ function drawMenu() {
   
   drawFloatingTexts();
 }
-
 // ── 选鱼界面 ──
 function drawSelectFish() {
   sc.fillStyle = CLR.bg;
@@ -784,160 +828,7 @@ function drawSelectFish() {
   
   drawFloatingTexts();
 }
-
-// ── 赛跑界面 ──
-function drawRace() {
-  sc.fillStyle = CLR.bg;
-  sc.fillRect(0, 0, W, H);
-  
-  drawLotus();
-  drawWaterBg();
-  
-  var headerH = 50;
-  sc.fillStyle = CLR.orange;
-  sc.globalAlpha = 0.9;
-  sc.fillRect(0, 0, W, headerH);
-  sc.globalAlpha = 1;
-  
-  sc.fillStyle = '#FFF';
-  sc.font = 'bold 18px ' + FONT_ZK;
-  sc.textAlign = 'center';
-  sc.fillText('锦鲤闯关', W/2, 33);
-  
-  sc.fillStyle = 'rgba(255,255,255,0.3)';
-  sc.beginPath();
-  sc.arc(24, 25, 18, 0, Math.PI * 2);
-  sc.fill();
-  sc.fillStyle = '#FFF';
-  sc.font = '18px sans-serif';
-  sc.fillText('×', 24, 31);
-  
-  buttons = [{ x: 6, y: 7, w: 36, h: 36, action: 'quitRace' }];
-  
-  var trackY = headerH + 16;
-  var trackH = 140;
-  
-  var playerX = W * 0.2 + (race.playerProgress * (W * 0.6));
-  var opponentX = W * 0.2 + (race.opponentProgress * (W * 0.6));
-  
-  sc.fillStyle = 'rgba(255,255,255,0.7)';
-  sc.beginPath();
-  sc.roundRect(16, trackY, W - 32, trackH, RADIUS.lg);
-  sc.fill();
-  
-  sc.fillStyle = 'rgba(249,115,22,0.15)';
-  sc.beginPath();
-  sc.roundRect(W * 0.2, trackY + 10, W * 0.6, 50, RADIUS.md);
-  sc.fill();
-  
-  sc.fillStyle = 'rgba(59,130,246,0.15)';
-  sc.beginPath();
-  sc.roundRect(W * 0.2, trackY + 80, W * 0.6, 50, RADIUS.md);
-  sc.fill();
-  
-  sc.fillStyle = CLR.orange;
-  sc.beginPath();
-  sc.roundRect(W * 0.2 - 3, trackY + 10 - 3, W * 0.6 + 6, 56, RADIUS.md + 2);
-  sc.stroke();
-  
-  sc.fillStyle = '#3B82F6';
-  sc.beginPath();
-  sc.roundRect(W * 0.2 - 3, trackY + 80 - 3, W * 0.6 + 6, 56, RADIUS.md + 2);
-  sc.stroke();
-  
-  drawKoi(playerX, trackY + 35, 50, currentFish, 1, Date.now() * 0.1);
-  drawKoi(opponentX, trackY + 105, 50, opponentFish, 1, Date.now() * 0.1);
-  
-  sc.fillStyle = 'rgba(249,115,22,0.8)';
-  sc.font = 'bold 11px ' + FONT_ZK;
-  sc.textAlign = 'center';
-  sc.fillText('你', W * 0.2 - 20, trackY + 35);
-  
-  sc.fillStyle = 'rgba(59,130,246,0.8)';
-  sc.fillText('对手', W * 0.2 - 25, trackY + 105);
-  
-  var infoY = trackY + trackH + 16;
-  var progress = Math.round(race.playerProgress * 100) + '%';
-  
-  drawCard(16, infoY, W - 32, 50, RADIUS.md);
-  sc.fillStyle = CLR.text;
-  sc.font = '14px ' + FONT_ZK;
-  sc.textAlign = 'left';
-  sc.fillText('当前进度', 28, infoY + 20);
-  sc.fillStyle = CLR.orange;
-  sc.font = 'bold 18px ' + FONT_ZK;
-  sc.fillText(progress, 28, infoY + 42);
-  sc.fillStyle = CLR.textLight;
-  sc.font = '12px ' + FONT_ZK;
-  sc.textAlign = 'right';
-  sc.fillText(currentFish.name + ' vs ' + opponentFish.name, W - 28, infoY + 32);
-  
-  var btnY = infoY + 66;
-  var btnW = (W - 48) / 3;
-  var btnH = 56;
-  
-  var staminaCost = { sprint: 20, steady: 5, burst: 35 };
-  var staminaAvail = race.playerStamina;
-  
-  var strategies = [
-    { text: '冲刺', icon: '\u25B6\u25B6', color: CLR.orange, type: 'sprint', cost: 20 },
-    { text: '稳健', icon: '\u25A3', color: CLR.waterDeep, type: 'steady', cost: 5 },
-    { text: '爆发', icon: '\u26A1', color: CLR.purple, type: 'burst', cost: 35 }
-  ];
-  var oldBtnH = btnH;
-  btnH = 64;
-  for (var i = 0; i < 3; i++) {
-    var s = strategies[i];
-    var bx = 16 + i * (btnW + 8);
-    var canUse = staminaAvail >= s.cost;
-    
-    if (canUse) {
-      sc.fillStyle = CLR.shadowBrand;
-      sc.beginPath();
-      sc.roundRect(bx + 2, btnY + 2, btnW, btnH, RADIUS.md);
-      sc.fill();
-      sc.fillStyle = s.color;
-      sc.beginPath();
-      sc.roundRect(bx, btnY, btnW, btnH, RADIUS.md);
-      sc.fill();
-      sc.fillStyle = '#FFF';
-      sc.font = 'bold 18px sans-serif';
-      sc.textAlign = 'center';
-      sc.fillText(s.icon, bx + btnW/2, btnY + 26);
-      sc.font = 'bold 14px ' + FONT_ZK;
-      sc.fillText(s.text, bx + btnW/2, btnY + 50);
-    } else {
-      drawCard(bx, btnY, btnW, btnH, RADIUS.md, false);
-      sc.strokeStyle = '#D1D5DB';
-      sc.lineWidth = 1;
-      sc.stroke();
-      sc.fillStyle = CLR.textMuted;
-      sc.font = '16px sans-serif';
-      sc.textAlign = 'center';
-      sc.fillText(s.icon, bx + btnW/2, btnY + 24);
-      sc.font = '13px ' + FONT_ZK;
-      sc.fillText(s.text, bx + btnW/2, btnY + 44);
-      sc.fillStyle = CLR.danger;
-      sc.font = '11px ' + FONT_ZK;
-      sc.fillText('需' + s.cost + '耐力', bx + btnW/2, btnY + 58);
-    }
-    
-    buttons.push({ x: bx, y: btnY, w: btnW, h: btnH, action: 'strategy', strategy: s.type, cost: s.cost });
-  }
-  
-  sc.fillStyle = 'rgba(96,165,250,0.2)';
-  sc.beginPath();
-  sc.roundRect(16, btnY + btnH + 12, W - 32, 36, RADIUS.md);
-  sc.fill();
-  sc.fillStyle = CLR.textLight;
-  sc.font = '12px ' + FONT_ZK;
-  sc.textAlign = 'center';
-  sc.fillText('耐力: ' + race.playerStamina + ' | 策略点: ' + (2 - race.nextStrategyIdx), W/2, btnY + btnH + 34);
-  
-  drawFloatingTexts();
-}
-
-// ── 抽鱼界面 ──
+// ── 赐福/抽鱼界面 ──
 function drawGacha() {
   sc.fillStyle = CLR.bg;
   sc.fillRect(0, 0, W, H);
@@ -1103,8 +994,7 @@ function drawGacha() {
   
   drawFloatingTexts();
 }
-
-// ── 养成界面 ──
+// ── 喂养界面 ──
 function drawFeed() {
   sc.fillStyle = CLR.bg;
   sc.fillRect(0, 0, W, H);
@@ -1245,7 +1135,6 @@ function drawFeed() {
   
   drawFloatingTexts();
 }
-
 // ── 图鉴界面 ──
 function drawGuide() {
   sc.fillStyle = CLR.bg;
@@ -1352,7 +1241,6 @@ function drawGuide() {
   
   drawFloatingTexts();
 }
-
 // ── 结果界面 ──
 function drawResult() {
   sc.fillStyle = CLR.bg;
@@ -1429,27 +1317,332 @@ function drawResult() {
   
   drawFloatingTexts();
 }
+// ═══════════════════════════════════════════════
+// 实时操控赛跑系统 v3.0
+// ═══════════════════════════════════════════════
 
-// ── 更新赛跑逻辑 ──
+// ── 触摸事件处理 ──
+var touchStartX = 0, touchStartY = 0;
+
+function handleTouchStart(e) {
+  e.preventDefault();
+  if (state !== STATE.RACE || race.phase < 2 || race.finished) return;
+  
+  var touch = e.touches ? e.touches[0] : e;
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+  race.isHolding = true;
+  race.holdStartTime = Date.now();
+}
+
+function handleTouchEnd(e) {
+  e.preventDefault();
+  if (state !== STATE.RACE || race.phase < 2 || race.finished) return;
+  
+  var holdDuration = Date.now() - race.holdStartTime;
+  
+  // 区分点击和按住：<200ms算点击（跳跃），>=200ms已经在加速了
+  if (holdDuration < 200 && !race.isJumping) {
+    performJump();
+  }
+  
+  race.isHolding = false;
+}
+
+function handleTouchMove(e) {
+  e.preventDefault();
+}
+
+// 鼠标事件（桌面端支持）
+function handleMouseDown(e) {
+  handleTouchStart({ preventDefault: function(){}, touches: [e] });
+}
+
+function handleMouseUp(e) {
+  handleTouchEnd({ preventDefault: function(){} });
+}
+
+function handleMouseMove(e) {
+  handleTouchMove({ preventDefault: function(){} });
+}
+
+// 注册事件
+c.addEventListener('touchstart', handleTouchStart, { passive: false });
+c.addEventListener('touchend', handleTouchEnd, { passive: false });
+c.addEventListener('touchmove', handleTouchMove, { passive: false });
+c.addEventListener('mousedown', handleMouseDown);
+c.addEventListener('mouseup', handleMouseUp);
+c.addEventListener('mousemove', handleMouseMove);
+
+// ── 执行跳跃 ──
+function performJump() {
+  if (race.isJumping) return;
+  
+  race.isJumping = true;
+  race.jumpY = 0;
+  race.jumpVelocity = -12;
+  race.jumpHeight = 0;
+  
+  for (var i = 0; i < 8; i++) {
+    race.trailParticles.push({
+      x: race.playerX - race.cameraX,
+      y: H * 0.5 + 20,
+      vx: -2 - Math.random() * 3,
+      vy: -1 - Math.random() * 2,
+      life: 1,
+      size: 3 + Math.random() * 4,
+      color: CLR.waterLight
+    });
+  }
+}
+
+// ── 生成障碍物 ──
+function generateObstacles() {
+  race.obstacles = [];
+  var types = ['grass', 'grass', 'grass', 'vortex', 'wave', 'wave', 'rock'];
+  
+  var luckFactor = currentFish ? currentFish.luck / 10 : 1;
+  
+  for (var i = 0; i < 15; i++) {
+    var type = types[Math.floor(Math.random() * types.length)];
+    
+    if (type === 'wave' && Math.random() > luckFactor * 0.3) {
+      type = 'grass';
+    }
+    
+    race.obstacles.push({
+      x: 200 + i * 100 + Math.random() * 50,
+      type: type,
+      hit: false,
+      width: type === 'rock' ? 40 : 30,
+      height: type === 'wave' ? 50 : 25
+    });
+  }
+  
+  race.currentObstacleIndex = 0;
+}
+
+// ── AI控制 ──
+function updateAI(dt) {
+  race.aiStateTimer -= dt;
+  race.aiJumpTimer -= dt;
+  
+  if (race.aiStateTimer <= 0) {
+    var rand = Math.random();
+    if (rand < 0.4) {
+      race.aiState = 'sprint';
+      race.aiStateTimer = 1 + Math.random() * 2;
+    } else if (rand < 0.7) {
+      race.aiState = 'coast';
+      race.aiStateTimer = 0.5 + Math.random() * 1;
+    } else {
+      race.aiState = 'rest';
+      race.aiStateTimer = 1 + Math.random() * 1.5;
+    }
+    race.aiNextAction = 0;
+  }
+  
+  if (race.aiJumpTimer <= 0) {
+    var nextObs = race.obstacles[race.currentObstacleIndex];
+    if (nextObs && nextObs.x - race.opponentX < 80 && nextObs.x - race.opponentX > 20) {
+      race.aiJumpTimer = 0.3 + Math.random() * 0.3;
+      race.aiNextAction = 'jump';
+    }
+  }
+  
+  var baseSpeed = opponentFish.speed * 0.8;
+  var aiMaxSpeed = baseSpeed * 1.5;
+  
+  switch (race.aiState) {
+    case 'sprint':
+      race.opponentVelocity = Math.min(race.opponentVelocity + 20 * dt, aiMaxSpeed);
+      race.opponentStamina -= 10 * dt;
+      break;
+    case 'coast':
+      race.opponentVelocity = Math.max(race.opponentVelocity - 5 * dt, baseSpeed * 0.8);
+      race.opponentStamina += 5 * dt;
+      break;
+    case 'rest':
+      race.opponentVelocity = Math.max(race.opponentVelocity - 10 * dt, baseSpeed * 0.3);
+      race.opponentStamina += 8 * dt;
+      break;
+  }
+  
+  race.opponentStamina = Math.min(100, Math.max(0, race.opponentStamina));
+  
+  if (race.aiNextAction === 'jump') {
+    race.aiNextAction = '';
+  }
+}
+
+// ── 更新实时操控赛跑 ──
 function updateRace(dt) {
   if (race.finished || race.paused) return;
   
   race.raceTime += dt;
   
-  var baseSpeed = currentFish.speed * 0.001;
-  var opponentBaseSpeed = opponentFish.speed * 0.0009;
+  if (race.phase === 0) {
+    race.countdown -= dt;
+    if (race.countdown <= 0) {
+      race.phase = 2;
+      race.countdown = 0;
+    }
+    return;
+  }
   
-  race.playerDist += baseSpeed * dt;
-  race.opponentDist += opponentBaseSpeed * dt;
+  if (race.phase === 1) {
+    return;
+  }
   
-  race.playerProgress = Math.min(race.playerDist / race.TRACK_LEN, 1);
-  race.opponentProgress = Math.min(race.opponentDist / race.TRACK_LEN, 1);
+  var maxSpeed = currentFish.speed * 3 + 5;
+  var baseSpeed = 30;
   
-  if (race.playerProgress >= 1 && race.opponentProgress >= 1) {
-    race.finished = true;
-    race.winner = race.playerProgress > race.opponentProgress ? 'player' : 'opponent';
-    state = STATE.RESULT;
-  } else if (race.playerProgress >= 1) {
+  if (race.forcedCooldown > 0) {
+    race.forcedCooldown -= dt;
+    race.isHolding = false;
+  }
+  
+  if (race.isHolding && race.forcedCooldown <= 0) {
+    race.playerStamina -= race.staminaCost * dt;
+    var accel = 50 * (currentFish.stamina / 10);
+    race.playerVelocity = Math.min(race.playerVelocity + accel * dt, maxSpeed);
+    
+    if (Math.random() < 0.3) {
+      race.trailParticles.push({
+        x: race.playerX - race.cameraX - 20,
+        y: H * 0.5 + Math.random() * 30,
+        vx: -3 - Math.random() * 2,
+        vy: -1 + Math.random() * 2,
+        life: 1,
+        size: 2 + Math.random() * 3,
+        color: 'rgba(255,255,255,0.7)'
+      });
+    }
+  } else {
+    race.playerStamina = Math.min(race.playerStamina + race.staminaRegen * dt, race.maxStamina);
+    var friction = race.isJumping ? 2 : 15;
+    race.playerVelocity = Math.max(race.playerVelocity - friction * dt, baseSpeed);
+  }
+  
+  if (race.playerStamina <= 0) {
+    race.playerStamina = 0;
+    race.forcedCooldown = 3;
+    addFloatingText('体力耗尽！', W/2, H/2, CLR.danger);
+  }
+  
+  if (race.catchWaveTime > 0) {
+    race.catchWaveTime -= dt;
+    var boostMult = 1.5 + (currentFish.luck / 10);
+    race.playerVelocity = Math.min(race.playerVelocity * boostMult, maxSpeed * 1.5);
+    race.boostGlow = 1;
+  } else {
+    race.boostGlow = Math.max(0, race.boostGlow - dt * 2);
+  }
+  
+  if (race.isJumping) {
+    race.jumpVelocity += 25 * dt;
+    race.jumpY += race.jumpVelocity * dt * 60;
+    race.jumpHeight = Math.max(0, -race.jumpY);
+    
+    if (race.jumpY >= 0) {
+      race.jumpY = 0;
+      race.isJumping = false;
+      race.jumpVelocity = 0;
+      
+      for (var i = 0; i < 6; i++) {
+        race.trailParticles.push({
+          x: race.playerX - race.cameraX,
+          y: H * 0.5 + 20,
+          vx: -2 + Math.random() * 4,
+          vy: -3 - Math.random() * 2,
+          life: 1,
+          size: 2 + Math.random() * 3,
+          color: CLR.waterLight
+        });
+      }
+    }
+  }
+  
+  race.playerX += race.playerVelocity * dt;
+  
+  var playerScreenX = race.playerX - race.cameraX;
+  
+  for (var i = race.currentObstacleIndex; i < race.obstacles.length; i++) {
+    var obs = race.obstacles[i];
+    var dist = obs.x - race.playerX;
+    
+    if (dist < 0) {
+      race.currentObstacleIndex = i + 1;
+      continue;
+    }
+    
+    if (Math.abs(dist) < obs.width / 2 + 15) {
+      var jumped = race.isJumping && race.jumpHeight > obs.height;
+      
+      if (!obs.hit) {
+        switch (obs.type) {
+          case 'grass':
+            if (!jumped) {
+              race.playerVelocity *= 0.7;
+              race.hitFlash = 0.3;
+              obs.hit = true;
+              addFloatingText('水草减速', W/2, H/2 - 50, CLR.warning);
+            }
+            break;
+          case 'vortex':
+            if (!jumped && race.isHolding) {
+              race.playerVelocity *= 0.5;
+            } else if (!jumped) {
+              race.playerVelocity *= 0.3;
+              race.hitFlash = 0.5;
+            }
+            break;
+          case 'wave':
+            if (jumped && race.jumpHeight > 30) {
+              race.catchWaveTime = 2;
+              race.catchWave = true;
+              addFloatingText('冲浪加速！', W/2, H/2 - 80, CLR.orange);
+              obs.hit = true;
+            }
+            break;
+          case 'rock':
+            if (!jumped) {
+              race.playerVelocity *= 0.5;
+              race.forcedCooldown = Math.max(race.forcedCooldown, 1);
+              race.hitFlash = 0.8;
+              obs.hit = true;
+              addFloatingText('撞到石头！', W/2, H/2 - 50, CLR.danger);
+            }
+            break;
+        }
+      }
+    }
+    break;
+  }
+  
+  for (var i = race.trailParticles.length - 1; i >= 0; i--) {
+    var p = race.trailParticles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.1;
+    p.life -= 0.03;
+    if (p.life <= 0) race.trailParticles.splice(i, 1);
+  }
+  
+  if (race.hitFlash > 0) race.hitFlash -= dt * 3;
+  
+  var targetCameraX = race.playerX - W * 0.3;
+  race.cameraX += (targetCameraX - race.cameraX) * 0.1;
+  race.cameraX = Math.max(0, race.cameraX);
+  
+  race.progress = race.playerX / race.TRACK_LEN;
+  
+  updateAI(dt);
+  var opponentMaxSpeed = opponentFish.speed * 3 + 5;
+  race.opponentX += race.opponentVelocity * dt;
+  race.opponentProgress = race.opponentX / race.TRACK_LEN;
+  
+  if (race.progress >= 1) {
     race.finished = true;
     race.winner = 'player';
     state = STATE.RESULT;
@@ -1458,55 +1651,350 @@ function updateRace(dt) {
     race.winner = 'opponent';
     state = STATE.RESULT;
   }
-}
-
-// ── 执行策略 ──
-function executeStrategy(type, cost) {
-  if (race.playerStamina < cost) {
-    addFloatingText('耐力不足！', W/2, H/2, CLR.danger);
-    return;
+  
+  if (race.winner === 'player' && anim.victoryParticles.length < 50) {
+    anim.victoryParticles.push({
+      x: Math.random() * W,
+      y: -10,
+      vx: -0.5 + Math.random(),
+      vy: 1 + Math.random() * 2,
+      life: 1,
+      size: 3 + Math.random() * 5,
+      color: Math.random() > 0.5 ? CLR.orange : CLR.warning
+    });
   }
   
-  race.playerStamina -= cost;
-  
-  var boost = 0;
-  var particleColor = CLR.orange;
-  
-  switch(type) {
-    case 'sprint':
-      boost = currentFish.speed * 0.015;
-      race.playerBoost += boost;
-      particleColor = CLR.orange;
-      addFloatingText('冲！', W/2, H/2 - 50, CLR.orange);
-      break;
-    case 'steady':
-      boost = currentFish.speed * 0.008;
-      race.playerBoost += boost;
-      particleColor = CLR.waterDeep;
-      addFloatingText('稳', W/2, H/2 - 50, CLR.waterDeep);
-      break;
-    case 'burst':
-      boost = currentFish.luck * 0.02 * (Math.random() + 0.5);
-      race.playerBoost += boost;
-      particleColor = CLR.purple;
-      addFloatingText('爆！', W/2, H/2 - 50, CLR.purple);
-      break;
+  for (var i = anim.victoryParticles.length - 1; i >= 0; i--) {
+    var p = anim.victoryParticles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= 0.01;
+    if (p.life <= 0 || p.y > H) anim.victoryParticles.splice(i, 1);
   }
-  
-  race.playerDist += boost;
-  
-  race.nextStrategyIdx++;
 }
 
-// ── 点击处理 ──
-function handleClick(x, y) {
-  for (var btn of buttons) {
-    if (x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h) {
-      handleAction(btn.action, btn);
-      return;
+// ── 绘制实时操控赛跑界面 ──
+function drawRace() {
+  sc.fillStyle = CLR.bg;
+  sc.fillRect(0, 0, W, H);
+  
+  drawLotusShadow();
+  drawLotus();
+  drawWaterBg();
+  
+  var headerH = 50;
+  sc.fillStyle = CLR.orange;
+  sc.globalAlpha = 0.9;
+  sc.fillRect(0, 0, W, headerH);
+  sc.globalAlpha = 1;
+  
+  sc.fillStyle = '#FFF';
+  sc.font = 'bold 18px ' + FONT_ZK;
+  sc.textAlign = 'center';
+  sc.fillText('锦鲤闯关', W/2, 33);
+  
+  sc.fillStyle = 'rgba(255,255,255,0.3)';
+  sc.beginPath();
+  sc.arc(24, 25, 18, 0, Math.PI * 2);
+  sc.fill();
+  sc.fillStyle = '#FFF';
+  sc.font = '18px sans-serif';
+  sc.fillText('×', 24, 31);
+  
+  buttons = [{ x: 6, y: 7, w: 36, h: 36, action: 'quitRace' }];
+  
+  var trackY = headerH + 16;
+  var trackH = 180;
+  
+  sc.fillStyle = 'rgba(255,255,255,0.7)';
+  sc.beginPath();
+  sc.roundRect(16, trackY, W - 32, trackH, RADIUS.lg);
+  sc.fill();
+  
+  sc.strokeStyle = CLR.water;
+  sc.lineWidth = 2;
+  sc.globalAlpha = 0.3;
+  for (var i = 0; i < 3; i++) {
+    sc.beginPath();
+    for (var x = 0; x < W; x += 3) {
+      var waveY = trackY + 60 + i * 40 + Math.sin((x + anim.waveOffset * 2) * 0.02) * 5;
+      if (x === 0) sc.moveTo(x, waveY);
+      else sc.lineTo(x, waveY);
+    }
+    sc.stroke();
+  }
+  sc.globalAlpha = 1;
+  
+  sc.fillStyle = 'rgba(249,115,22,0.1)';
+  sc.beginPath();
+  sc.roundRect(W * 0.1, trackY + 20, W * 0.8, 60, RADIUS.md);
+  sc.fill();
+  
+  sc.fillStyle = 'rgba(59,130,246,0.1)';
+  sc.beginPath();
+  sc.roundRect(W * 0.1, trackY + 100, W * 0.8, 60, RADIUS.md);
+  sc.fill();
+  
+  sc.strokeStyle = CLR.orange;
+  sc.lineWidth = 2;
+  sc.beginPath();
+  sc.roundRect(W * 0.1 - 2, trackY + 18, W * 0.8 + 4, 64, RADIUS.md + 2);
+  sc.stroke();
+  
+  sc.strokeStyle = '#3B82F6';
+  sc.beginPath();
+  sc.roundRect(W * 0.1 - 2, trackY + 98, W * 0.8 + 4, 64, RADIUS.md + 2);
+  sc.stroke();
+  
+  sc.save();
+  sc.translate(-race.cameraX, 0);
+  
+  for (var obs of race.obstacles) {
+    if (obs.x < race.cameraX - 50 || obs.x > race.cameraX + W + 50) continue;
+    
+    var obsY = trackY + 50;
+    
+    switch (obs.type) {
+      case 'grass':
+        sc.fillStyle = '#4CAF50';
+        for (var g = 0; g < 5; g++) {
+          var sway = Math.sin(Date.now() * 0.003 + obs.x * 0.1 + g) * 5;
+          sc.beginPath();
+          sc.moveTo(obs.x - 15 + g * 8, obsY + 20);
+          sc.quadraticCurveTo(obs.x - 15 + g * 8 + sway, obsY - 10, obs.x - 15 + g * 8 + sway * 1.5, obsY - 25);
+          sc.lineWidth = 3;
+          sc.strokeStyle = '#4CAF50';
+          sc.stroke();
+        }
+        break;
+      case 'vortex':
+        var vortexAlpha = 0.3 + 0.2 * Math.sin(Date.now() * 0.005);
+        sc.strokeStyle = 'rgba(100,150,200,' + vortexAlpha + ')';
+        sc.lineWidth = 2;
+        for (var v = 0; v < 3; v++) {
+          sc.beginPath();
+          sc.arc(obs.x, obsY, 15 + v * 8, Date.now() * 0.002 + v, Date.now() * 0.002 + v + Math.PI);
+          sc.stroke();
+        }
+        break;
+      case 'wave':
+        sc.fillStyle = 'rgba(135,206,250,0.6)';
+        sc.beginPath();
+        for (var x = 0; x < 40; x++) {
+          var wy = obsY - 30 + Math.sin((x + Date.now() * 0.01) * 0.3) * 10;
+          if (x === 0) sc.moveTo(obs.x - 20 + x, wy);
+          else sc.lineTo(obs.x - 20 + x, wy);
+        }
+        sc.lineTo(obs.x + 20, obsY);
+        sc.lineTo(obs.x - 20, obsY);
+        sc.fill();
+        break;
+      case 'rock':
+        sc.fillStyle = '#757575';
+        sc.beginPath();
+        sc.ellipse(obs.x, obsY + 10, 20, 15, 0, 0, Math.PI * 2);
+        sc.fill();
+        sc.fillStyle = '#9E9E9E';
+        sc.beginPath();
+        sc.ellipse(obs.x - 5, obsY + 5, 8, 6, 0, 0, Math.PI * 2);
+        sc.fill();
+        break;
     }
   }
+  
+  var finishX = race.TRACK_LEN;
+  sc.strokeStyle = CLR.orange;
+  sc.lineWidth = 4;
+  sc.setLineDash([10, 10]);
+  sc.beginPath();
+  sc.moveTo(finishX, trackY + 15);
+  sc.lineTo(finishX, trackY + trackH - 15);
+  sc.stroke();
+  sc.setLineDash([]);
+  
+  for (var p of race.trailParticles) {
+    sc.globalAlpha = p.life;
+    sc.fillStyle = p.color;
+    sc.beginPath();
+    sc.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    sc.fill();
+  }
+  sc.globalAlpha = 1;
+  
+  var opponentScreenX = race.opponentX;
+  var opponentBob = Math.sin(Date.now() * 0.005) * 3;
+  var opponentScale = 45;
+  
+  if (race.aiState === 'sprint') {
+    sc.globalAlpha = 0.3;
+    sc.fillStyle = '#3B82F6';
+    for (var i = 0; i < 3; i++) {
+      sc.beginPath();
+      sc.arc(opponentScreenX - 25 - i * 10, trackY + 130 + opponentBob, 5 - i, 0, Math.PI * 2);
+      sc.fill();
+    }
+    sc.globalAlpha = 1;
+  }
+  
+  drawKoi(opponentScreenX, trackY + 130 + opponentBob, opponentScale, opponentFish, 1, Date.now() * 0.008);
+  
+  var playerScreenX = race.playerX;
+  var playerBaseY = trackY + 50;
+  var playerBob = race.isHolding ? Math.sin(Date.now() * 0.015) * 2 : Math.sin(Date.now() * 0.003) * 5;
+  var playerY = playerBaseY + playerBob - race.jumpY;
+  var playerScale = 50;
+  
+  if (race.isHolding && race.forcedCooldown <= 0) {
+    sc.strokeStyle = 'rgba(255,255,255,0.5)';
+    sc.lineWidth = 1;
+    for (var i = 0; i < 5; i++) {
+      var lineY = playerY - 10 + i * 5;
+      var lineLen = 20 + Math.random() * 30;
+      sc.beginPath();
+      sc.moveTo(playerScreenX - 30, lineY);
+      sc.lineTo(playerScreenX - 30 - lineLen, lineY);
+      sc.stroke();
+    }
+    
+    sc.globalAlpha = 0.4;
+    sc.fillStyle = CLR.waterLight;
+    for (var i = 0; i < 4; i++) {
+      sc.beginPath();
+      sc.arc(playerScreenX - 35 - i * 15, playerY + Math.random() * 10, 4 - i * 0.5, 0, Math.PI * 2);
+      sc.fill();
+    }
+    sc.globalAlpha = 1;
+  }
+  
+  if (race.catchWaveTime > 0) {
+    sc.globalAlpha = 0.5;
+    var gradient = sc.createRadialGradient(playerScreenX, playerY, 0, playerScreenX, playerY, 60);
+    gradient.addColorStop(0, CLR.orangeLight);
+    gradient.addColorStop(1, 'rgba(249,115,22,0)');
+    sc.fillStyle = gradient;
+    sc.beginPath();
+    sc.arc(playerScreenX, playerY, 60, 0, Math.PI * 2);
+    sc.fill();
+    sc.globalAlpha = 1;
+  }
+  
+  if (race.hitFlash > 0) {
+    sc.globalAlpha = race.hitFlash;
+    sc.fillStyle = CLR.danger;
+    sc.beginPath();
+    sc.arc(playerScreenX, playerY, playerScale * 0.8, 0, Math.PI * 2);
+    sc.fill();
+    sc.globalAlpha = 1;
+  }
+  
+  var staminaBarWidth = 40;
+  var staminaBarHeight = 6;
+  var staminaBarX = playerScreenX - staminaBarWidth / 2;
+  var staminaBarY = playerY - playerScale * 0.6 - 15;
+  
+  sc.fillStyle = 'rgba(0,0,0,0.3)';
+  sc.beginPath();
+  sc.roundRect(staminaBarX - 1, staminaBarY - 1, staminaBarWidth + 2, staminaBarHeight + 2, 3);
+  sc.fill();
+  
+  var staminaRatio = race.playerStamina / race.maxStamina;
+  var staminaColor;
+  if (staminaRatio > 0.6) staminaColor = CLR.orange;
+  else if (staminaRatio > 0.3) staminaColor = CLR.warning;
+  else staminaColor = CLR.danger;
+  
+  sc.fillStyle = staminaColor;
+  sc.beginPath();
+  sc.roundRect(staminaBarX, staminaBarY, staminaBarWidth * staminaRatio, staminaBarHeight, 2);
+  sc.fill();
+  
+  if (race.isJumping) {
+    sc.fillStyle = CLR.textLight;
+    sc.font = '10px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    sc.fillText('跳跃: ' + Math.round(race.jumpHeight) + 'px', playerScreenX, staminaBarY - 5);
+  }
+  
+  drawKoi(playerScreenX, playerY, playerScale, currentFish, 1, Date.now() * (race.isHolding ? 0.015 : 0.005));
+  
+  sc.restore();
+  
+  var infoY = trackY + trackH + 16;
+  
+  drawCard(16, infoY, W - 32, 45, RADIUS.md);
+  sc.fillStyle = CLR.text;
+  sc.font = '14px ' + FONT_ZK;
+  sc.textAlign = 'left';
+  sc.fillText('进度', 28, infoY + 18);
+  
+  var progress = Math.round(race.progress * 100);
+  sc.fillStyle = CLR.orange;
+  sc.font = 'bold 20px ' + FONT_ZK;
+  sc.fillText(progress + '%', 28, infoY + 38);
+  
+  sc.fillStyle = CLR.textLight;
+  sc.font = '12px ' + FONT_ZK;
+  sc.textAlign = 'right';
+  sc.fillText(currentFish.name + ' vs ' + opponentFish.name, W - 28, infoY + 28);
+  
+  var oppProgress = Math.round(race.opponentProgress * 100);
+  sc.fillText('对手: ' + oppProgress + '%', W - 28, infoY + 42);
+  
+  var hintY = infoY + 55;
+  
+  if (race.phase === 0) {
+    sc.fillStyle = CLR.orange;
+    sc.font = 'bold 72px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    var countdownNum = Math.ceil(race.countdown);
+    sc.fillText(countdownNum > 0 ? countdownNum : 'GO!', W/2, H/2);
+    
+    sc.fillStyle = CLR.textLight;
+    sc.font = '16px ' + FONT_ZK;
+    sc.fillText('准备好冲刺了吗？', W/2, H/2 + 50);
+  } else if (race.phase === 2 && !race.finished) {
+    drawCard(16, hintY, W - 32, 40, RADIUS.md);
+    
+    sc.fillStyle = CLR.text;
+    sc.font = '14px ' + FONT_ZK;
+    sc.textAlign = 'center';
+    
+    var hint = '';
+    if (race.forcedCooldown > 0) {
+      hint = '体力耗尽！等待恢复...';
+      sc.fillStyle = CLR.danger;
+    } else if (race.isHolding) {
+      hint = '🏃 加速冲刺中 | 松开减速 | 点击跳跃';
+    } else {
+      hint = '按住加速 | 松开滑行恢复体力 | 点击跳跃';
+    }
+    sc.fillText(hint, W/2, hintY + 26);
+  }
+  
+  for (var p of anim.victoryParticles) {
+    sc.globalAlpha = p.life;
+    sc.fillStyle = p.color;
+    sc.beginPath();
+    sc.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    sc.fill();
+  }
+  sc.globalAlpha = 1;
+  
+  if (race.finished && race.winner === 'player') {
+    var endGlow = Math.sin(Date.now() * 0.003) * 0.1 + 0.2;
+    var gradient = sc.createRadialGradient(W/2, H/2, 0, W/2, H/2, W);
+    gradient.addColorStop(0, 'rgba(249,115,22,' + endGlow + ')');
+    gradient.addColorStop(1, 'rgba(249,115,22,0)');
+    sc.fillStyle = gradient;
+    sc.fillRect(0, 0, W, H);
+  }
+  
+  drawFloatingTexts();
 }
+
+// ═══════════════════════════════════════════════
+// 事件处理
+// ═══════════════════════════════════════════════
 
 function handleAction(action, btn) {
   switch(action) {
@@ -1538,40 +2026,57 @@ function handleAction(action, btn) {
       if (selectedFishIndex >= 0) {
         currentFish = userData.fish[selectedFishIndex];
         opponentFish = createOpponent();
-        race.playerDist = 0;
-        race.opponentDist = 0;
-        race.playerProgress = 0;
-        race.opponentProgress = 0;
+        race.playerX = 0;
+        race.opponentX = 0;
+        race.cameraX = 0;
+        race.playerVelocity = 0;
+        race.opponentVelocity = 0;
         race.playerStamina = 100;
+        race.opponentStamina = 100;
+        race.progress = 0;
+        race.opponentProgress = 0;
+        race.phase = 0;
+        race.countdown = 3;
         race.finished = false;
         race.winner = null;
-        race.nextStrategyIdx = 0;
+        race.isHolding = false;
+        race.isJumping = false;
+        race.jumpY = 0;
+        race.forcedCooldown = 0;
+        race.hitFlash = 0;
+        race.boostGlow = 0;
+        race.catchWave = false;
+        race.catchWaveTime = 0;
+        race.trailParticles = [];
+        race.obstacles = [];
+        race.currentObstacleIndex = 0;
+        race.aiState = 'sprint';
+        race.aiStateTimer = 0;
+        anim.victoryParticles = [];
         anim._resultFortune = null;
+        anim._resultSettled = false;
+        generateObstacles();
         state = STATE.RACE;
       }
       break;
     case 'quitRace':
       state = STATE.SELECT_FISH;
       break;
-    case 'strategy':
-      if (btn.cost <= race.playerStamina) {
-        executeStrategy(btn.strategy, btn.cost);
-      }
+    case 'toMenu':
+      state = STATE.MENU;
       break;
     case 'feedFish':
-      if (userData.feed >= 1) {
-        userData.feed -= 1;
-        userData.fish[0].exp += 5;
-        if (userData.fish[0].exp >= userData.fish[0].expToNext) {
-          userData.fish[0].level++;
-          userData.fish[0].exp = 0;
-          userData.fish[0].expToNext = Math.floor(userData.fish[0].expToNext * 1.5);
-          userData.fish[0].speed += 1;
-          userData.fish[0].luck += 1;
-          userData.fish[0].stamina += 1;
-          addFloatingText('升级！全属性+1', W/2, H/2, CLR.success);
-        } else {
-          addFloatingText('喂食成功 +5经验', W/2, H/2, CLR.success);
+      if (userData.feed > 0 && btn.fish) {
+        userData.feed--;
+        btn.fish.exp += 5;
+        if (btn.fish.exp >= btn.fish.expToNext) {
+          btn.fish.level++;
+          btn.fish.exp = 0;
+          btn.fish.expToNext = Math.round(btn.fish.expToNext * 1.5);
+          btn.fish.speed = Math.min(10, btn.fish.speed + 1);
+          btn.fish.luck = Math.min(10, btn.fish.luck + 1);
+          btn.fish.stamina = Math.min(10, btn.fish.stamina + 1);
+          addFloatingText('升级！', W/2, H/2, CLR.success);
         }
         saveData();
       }
@@ -1579,69 +2084,58 @@ function handleAction(action, btn) {
     case 'buyFeed':
       if (userData.fishScales >= 5) {
         userData.fishScales -= 5;
-        userData.feed += 3;
+        userData.feed += 5;
         saveData();
-        addFloatingText('购买成功 +3饲料', W/2, H/2, CLR.warning);
-      } else {
-        addFloatingText('鱼鳞不足 需要5鱼鳞', W/2, H/2, CLR.danger);
+        addFloatingText('购买成功！', W/2, H/2, CLR.success);
       }
-      break;
-    case 'confirmGacha':
-      drawFish();
-      break;
-    case 'confirmDraw':
-      state = STATE.MENU;
-      break;
-    case 'toMenu':
-      state = STATE.MENU;
       break;
   }
 }
 
-// ── 触摸事件 ──
-function getTouchPos(e) {
-  var touch = e.touches ? e.touches[0] : e;
-  var rect = c.getBoundingClientRect();
-  return {
-    x: touch.clientX - rect.left,
-    y: touch.clientY - rect.top
-  };
+function handleClick(x, y) {
+  for (var btn of buttons) {
+    if (x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h) {
+      handleAction(btn.action, btn);
+      return;
+    }
+  }
 }
 
-c.addEventListener('click', function(e) {
-  var pos = getTouchPos(e);
-  handleClick(pos.x, pos.y);
-});
+// ═══════════════════════════════════════════════
+// 主循环
+// ═══════════════════════════════════════════════
 
-c.addEventListener('touchstart', function(e) {
-  e.preventDefault();
-  var pos = getTouchPos(e);
-  handleClick(pos.x, pos.y);
-});
-
-// ── 主循环 ──
 var lastTime = 0;
 
-function loop(time) {
-  var dt = time - lastTime;
-  lastTime = time;
+function gameLoop(timestamp) {
+  var dt = Math.min((timestamp - lastTime) / 1000, 0.1);
+  lastTime = timestamp;
   
-  anim.waveOffset += 0.5;
+  anim.waveOffset += dt * 20;
+  
+  updateFloatingTexts();
   
   for (var b of anim.bubbles) {
     b.y -= b.speed;
-    b.x += Math.sin(b.wobble + time * 0.001) * 0.3;
-    if (b.y < H * 0.4) {
-      b.y = H * 0.9;
+    b.wobble += 0.02;
+    b.x += Math.sin(b.wobble) * 0.3;
+    if (b.y < -10) {
+      b.y = H + 10;
       b.x = Math.random() * W;
     }
   }
   
-  updateFloatingTexts();
-  
-  if (state === STATE.RACE) {
-    updateRace(dt);
+  for (var c of anim.caustics) {
+    c.phase += dt * c.speed;
   }
+  
+  for (var ls of anim.lightSpots) {
+    ls.x += Math.sin(ls.phase) * 0.5;
+    ls.y += Math.cos(ls.phase) * 0.3;
+    ls.phase += dt * ls.speed;
+  }
+  
+  sc.clearRect(0, 0, W, H);
   
   switch(state) {
     case STATE.MENU:
@@ -1651,6 +2145,7 @@ function loop(time) {
       drawSelectFish();
       break;
     case STATE.RACE:
+      updateRace(dt);
       drawRace();
       break;
     case STATE.DRAW:
@@ -1667,13 +2162,15 @@ function loop(time) {
       break;
   }
   
-  requestAnimationFrame(loop);
+  requestAnimationFrame(gameLoop);
 }
 
 // ── 初始化 ──
-initDecorations();
 loadData();
-requestAnimationFrame(loop);
+initDecorations();
+initQualityEnhancements();
+requestAnimationFrame(gameLoop);
+
 </script>
 </body>
 </html>

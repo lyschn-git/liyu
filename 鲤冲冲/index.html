@@ -6,7 +6,7 @@
 <meta property="og:title" content="鲤冲冲 · 锦鲤赛跑">
 <meta property="og:description" content="养锦鲤，选策略，来一场好运赛跑">
 <title>鲤冲冲 · 锦鲤赛跑</title>
-<link href="https://fonts.font.im/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;">
+<link href="https://fonts.font.im/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 html,body{width:100%;height:100%;overflow:hidden;position:fixed;top:0;left:0;touch-action:none}
@@ -92,7 +92,7 @@ var SPACE = {
 };
 
 // ── 字体 ──
-var FONT_ZK = "'ZCOOL KuaiLe', 'PingFang SC', sans-serif";
+var FONT_ZK = "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif";
 var FONT_SYS = "'PingFang SC', -apple-system, sans-serif";
 
 // ── 游戏状态 ──
@@ -877,28 +877,46 @@ function drawRace() {
   var staminaAvail = race.playerStamina;
   
   var strategies = [
-    { text: '冲刺', icon: '闪', color: CLR.orange, type: 'sprint', cost: 20 },
-    { text: '稳健', icon: '盾', color: CLR.waterDeep, type: 'steady', cost: 5 },
-    { text: '爆发', icon: '星', color: CLR.purple, type: 'burst', cost: 35 }
+    { text: '冲刺', icon: '\u25B6\u25B6', color: CLR.orange, type: 'sprint', cost: 20 },
+    { text: '稳健', icon: '\u25A3', color: CLR.waterDeep, type: 'steady', cost: 5 },
+    { text: '爆发', icon: '\u26A1', color: CLR.purple, type: 'burst', cost: 35 }
   ];
-  
+  var oldBtnH = btnH;
+  btnH = 64;
   for (var i = 0; i < 3; i++) {
     var s = strategies[i];
     var bx = 16 + i * (btnW + 8);
     var canUse = staminaAvail >= s.cost;
     
     if (canUse) {
-      drawBtn(bx, btnY, btnW, btnH, s.icon + ' ' + s.text, s.color);
+      sc.fillStyle = CLR.shadowBrand;
+      sc.beginPath();
+      sc.roundRect(bx + 2, btnY + 2, btnW, btnH, RADIUS.md);
+      sc.fill();
+      sc.fillStyle = s.color;
+      sc.beginPath();
+      sc.roundRect(bx, btnY, btnW, btnH, RADIUS.md);
+      sc.fill();
+      sc.fillStyle = '#FFF';
+      sc.font = 'bold 18px sans-serif';
+      sc.textAlign = 'center';
+      sc.fillText(s.icon, bx + btnW/2, btnY + 26);
+      sc.font = 'bold 14px ' + FONT_ZK;
+      sc.fillText(s.text, bx + btnW/2, btnY + 50);
     } else {
       drawCard(bx, btnY, btnW, btnH, RADIUS.md, false);
       sc.strokeStyle = '#D1D5DB';
       sc.lineWidth = 1;
       sc.stroke();
       sc.fillStyle = CLR.textMuted;
-      sc.font = '12px ' + FONT_ZK;
+      sc.font = '16px sans-serif';
       sc.textAlign = 'center';
-      sc.fillText(s.icon + ' ' + s.text, bx + btnW/2, btnY + 25);
-      sc.fillText('需' + s.cost + '耐力', bx + btnW/2, btnY + 45);
+      sc.fillText(s.icon, bx + btnW/2, btnY + 24);
+      sc.font = '13px ' + FONT_ZK;
+      sc.fillText(s.text, bx + btnW/2, btnY + 44);
+      sc.fillStyle = CLR.danger;
+      sc.font = '11px ' + FONT_ZK;
+      sc.fillText('需' + s.cost + '耐力', bx + btnW/2, btnY + 58);
     }
     
     buttons.push({ x: bx, y: btnY, w: btnW, h: btnH, action: 'strategy', strategy: s.type, cost: s.cost });
@@ -1285,7 +1303,12 @@ function drawResult() {
   
   var result = race.winner === 'player' ? 'win' : (race.playerProgress >= race.opponentProgress - 0.05 ? 'close' : 'lose');
   var fortunes = result === 'win' ? FORTUNE_WIN : (result === 'close' ? FORTUNE_CLOSE : FORTUNE_LOSE);
-  var fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+  if (!anim._resultFortune) {
+    anim._resultFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    anim._resultReward = result === 'win' ? 15 : (result === 'close' ? 8 : 5);
+    anim._resultSettled = false;
+  }
+  var fortune = anim._resultFortune;
   
   sc.fillStyle = result === 'win' ? CLR.warning : CLR.textLight;
   sc.font = 'bold 28px ' + FONT_ZK;
@@ -1304,13 +1327,16 @@ function drawResult() {
   sc.fillText('你的进度: ' + Math.round(race.playerProgress * 100) + '%', W/2, cardY + 230);
   sc.fillText('对手进度: ' + Math.round(race.opponentProgress * 100) + '%', W/2, cardY + 252);
   
-  var reward = result === 'win' ? 15 : (result === 'close' ? 8 : 5);
+  var reward = anim._resultReward;
   sc.fillStyle = CLR.warning;
   sc.font = 'bold 18px ' + FONT_ZK;
   sc.fillText('+' + reward + ' 鱼鳞', W/2, cardY + 290);
   
-  userData.fishScales += reward;
-  saveData();
+  if (!anim._resultSettled) {
+    userData.fishScales += reward;
+    saveData();
+    anim._resultSettled = true;
+  }
   
   var btnY = H - 90;
   var btnW = Math.min(160, W - 48);
@@ -1434,6 +1460,7 @@ function handleAction(action, btn) {
         race.finished = false;
         race.winner = null;
         race.nextStrategyIdx = 0;
+        anim._resultFortune = null;
         state = STATE.RACE;
       }
       break;

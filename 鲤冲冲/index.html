@@ -553,7 +553,7 @@ function drawBtn(x, y, w, h, text, color, shadow) {
   sc.font = 'bold 16px ' + FONT_ZK;
   sc.textAlign = 'center';
   sc.textBaseline = 'middle';
-  sc.fillText(text, x + w/2, y + h/2);
+  sc.fillText(text, x + w/2, y + h/2 + 1);
   sc.textBaseline = 'alphabetic';
 }
 
@@ -1125,20 +1125,22 @@ function drawFeed() {
     var a = attrs[i];
     var ax = 20 + i * (attrW + 8);
     
-    drawCard(ax, attrY, attrW, 70, RADIUS.md);
+    drawCard(ax, attrY, attrW, 72, RADIUS.md);
     
     sc.fillStyle = a.color;
-    sc.font = '18px sans-serif';
+    sc.font = 'bold 14px ' + FONT_ZK;
     sc.textAlign = 'center';
-    sc.fillText(a.icon, ax + attrW/2, attrY + 25);
+    sc.textBaseline = 'middle';
+    sc.fillText(a.icon, ax + attrW/2, attrY + 18);
     
     sc.fillStyle = CLR.text;
-    sc.font = 'bold 20px ' + FONT_ZK;
-    sc.fillText(a.value, ax + attrW/2, attrY + 50);
+    sc.font = 'bold 22px ' + FONT_ZK;
+    sc.fillText(a.value, ax + attrW/2, attrY + 42);
     
     sc.fillStyle = CLR.textMuted;
-    sc.font = '10px ' + FONT_ZK;
-    sc.fillText(a.label, ax + attrW/2, attrY + 65);
+    sc.font = '12px ' + FONT_ZK;
+    sc.fillText(a.label, ax + attrW/2, attrY + 62);
+    sc.textBaseline = 'alphabetic';
   }
   
   var btnY = attrY + 90;

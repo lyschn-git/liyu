@@ -696,37 +696,34 @@ function drawMenu() {
   }
   
   var btnY = H * 0.72;
-  var btnSize = 72;
-  var gap = 16;
-  var margin = 24;
+  var btnW = (W - 56) / 4;
+  var btnH = 56;
   
   buttons = [];
   
   var menus = [
-    { text: '出征', icon: '剑', color: CLR.orange, action: 'select' },
-    { text: '养成', icon: '粮', color: CLR.waterDeep, action: 'feed' },
-    { text: '赐福', icon: '星', color: CLR.purple, action: 'draw' },
-    { text: '图鉴', icon: '册', color: CLR.success, action: 'guide' }
+    { text: '出征', color: CLR.orange, action: 'select' },
+    { text: '养成', color: CLR.waterDeep, action: 'feed' },
+    { text: '赐福', color: CLR.purple, action: 'draw' },
+    { text: '图鉴', color: CLR.success, action: 'guide' }
   ];
   
   for (var i = 0; i < 4; i++) {
-    var col = i % 2;
-    var row = Math.floor(i / 2);
-    var bx = margin + col * (btnSize + gap);
-    var by = btnY + row * (btnSize + gap + 8);
+    var bx = 20 + i * (btnW + 8);
     
-    drawCard(bx, by, btnSize, btnSize, RADIUS.lg);
-    
+    sc.fillStyle = CLR.shadowBrand;
+    sc.beginPath(); sc.roundRect(bx + 1, btnY + 2, btnW, btnH, RADIUS.md); sc.fill();
     sc.fillStyle = menus[i].color;
-    sc.font = '28px sans-serif';
+    sc.beginPath(); sc.roundRect(bx, btnY, btnW, btnH, RADIUS.md); sc.fill();
+    
+    sc.fillStyle = '#FFF';
+    sc.font = 'bold 15px ' + FONT_ZK;
     sc.textAlign = 'center';
-    sc.fillText(menus[i].icon, bx + btnSize/2, by + 32);
+    sc.textBaseline = 'middle';
+    sc.fillText(menus[i].text, bx + btnW/2, btnY + btnH/2 + 1);
+    sc.textBaseline = 'alphabetic';
     
-    sc.fillStyle = CLR.text;
-    sc.font = '14px ' + FONT_ZK;
-    sc.fillText(menus[i].text, bx + btnSize/2, by + 58);
-    
-    buttons.push({ x: bx, y: by, w: btnSize, h: btnSize, action: menus[i].action });
+    buttons.push({ x: bx, y: btnY, w: btnW, h: btnH, action: menus[i].action });
   }
   
   sc.fillStyle = CLR.textMuted;
@@ -1326,27 +1323,35 @@ var touchStartX = 0, touchStartY = 0;
 
 function handleTouchStart(e) {
   e.preventDefault();
-  if (state !== STATE.RACE || race.phase < 2 || race.finished) return;
-  
   var touch = e.touches ? e.touches[0] : e;
-  touchStartX = touch.clientX;
-  touchStartY = touch.clientY;
-  race.isHolding = true;
-  race.holdStartTime = Date.now();
+  var rect = c.getBoundingClientRect();
+  var x = touch.clientX - rect.left;
+  var y = touch.clientY - rect.top;
+  
+  // 赛跑状态：记录按住
+  if (state === STATE.RACE && race.phase >= 2 && !race.finished) {
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    race.isHolding = true;
+    race.holdStartTime = Date.now();
+    return;
+  }
+  
+  // 其他页面：当作点击处理
+  handleClick(x, y);
 }
 
 function handleTouchEnd(e) {
   e.preventDefault();
-  if (state !== STATE.RACE || race.phase < 2 || race.finished) return;
   
-  var holdDuration = Date.now() - race.holdStartTime;
-  
-  // 区分点击和按住：<200ms算点击（跳跃），>=200ms已经在加速了
-  if (holdDuration < 200 && !race.isJumping) {
-    performJump();
+  if (state === STATE.RACE && race.phase >= 2 && !race.finished) {
+    var holdDuration = Date.now() - race.holdStartTime;
+    if (holdDuration < 200 && !race.isJumping) {
+      performJump();
+    }
+    race.isHolding = false;
+    return;
   }
-  
-  race.isHolding = false;
 }
 
 function handleTouchMove(e) {
@@ -1355,11 +1360,30 @@ function handleTouchMove(e) {
 
 // 鼠标事件（桌面端支持）
 function handleMouseDown(e) {
-  handleTouchStart({ preventDefault: function(){}, touches: [e] });
+  var rect = c.getBoundingClientRect();
+  var x = e.clientX - rect.left;
+  var y = e.clientY - rect.top;
+  
+  if (state === STATE.RACE && race.phase >= 2 && !race.finished) {
+    touchStartX = e.clientX;
+    touchStartY = e.clientY;
+    race.isHolding = true;
+    race.holdStartTime = Date.now();
+    return;
+  }
+  
+  handleClick(x, y);
 }
 
 function handleMouseUp(e) {
-  handleTouchEnd({ preventDefault: function(){} });
+  if (state === STATE.RACE && race.phase >= 2 && !race.finished) {
+    var holdDuration = Date.now() - race.holdStartTime;
+    if (holdDuration < 200 && !race.isJumping) {
+      performJump();
+    }
+    race.isHolding = false;
+    return;
+  }
 }
 
 function handleMouseMove(e) {

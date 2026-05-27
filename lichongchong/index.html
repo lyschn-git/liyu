@@ -305,6 +305,7 @@ function createOpponent() {
   }
   
   opponent.isAI = true;
+  opponent.tintColor = "rgba(255,80,20,0.4)";
   opponent.aiType = aiType < 0.33 ? 'aggressive' : (aiType < 0.66 ? 'endurance' : 'gambler');
   
   return opponent;

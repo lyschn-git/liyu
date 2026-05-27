@@ -629,9 +629,9 @@ function drawMenu() {
   sc.fillStyle = '#FFF';
   sc.font = '12px ' + FONT_ZK;
   sc.textAlign = 'left';
-  sc.fillText('🪙 ' + userData.fishScales, 25, headerH + 33);
+  sc.fillText('◆ ' + userData.fishScales, 25, headerH + 33);
   sc.textAlign = 'right';
-  sc.fillText('🌾 ' + userData.feed, W - 25, headerH + 33);
+  sc.fillText('粮 ' + userData.feed, W - 25, headerH + 33);
   
   var fishY = H * 0.48;
   anim.menuKoiFrame++;
@@ -657,10 +657,10 @@ function drawMenu() {
   buttons = [];
   
   var menus = [
-    { text: '出征', icon: '⚔️', color: CLR.orange, action: 'select' },
-    { text: '养成', icon: '🌾', color: CLR.waterDeep, action: 'feed' },
-    { text: '赐福', icon: '✨', color: CLR.purple, action: 'draw' },
-    { text: '图鉴', icon: '📖', color: CLR.success, action: 'guide' }
+    { text: '出征', icon: '剑', color: CLR.orange, action: 'select' },
+    { text: '养成', icon: '粮', color: CLR.waterDeep, action: 'feed' },
+    { text: '赐福', icon: '星', color: CLR.purple, action: 'draw' },
+    { text: '图鉴', icon: '册', color: CLR.success, action: 'guide' }
   ];
   
   for (var i = 0; i < 4; i++) {
@@ -876,9 +876,9 @@ function drawRace() {
   var staminaAvail = race.playerStamina;
   
   var strategies = [
-    { text: '冲刺', icon: '⚡', color: CLR.orange, type: 'sprint', cost: 20 },
-    { text: '稳健', icon: '🛡', color: CLR.waterDeep, type: 'steady', cost: 5 },
-    { text: '爆发', icon: '✨', color: CLR.purple, type: 'burst', cost: 35 }
+    { text: '冲刺', icon: '闪', color: CLR.orange, type: 'sprint', cost: 20 },
+    { text: '稳健', icon: '盾', color: CLR.waterDeep, type: 'steady', cost: 5 },
+    { text: '爆发', icon: '星', color: CLR.purple, type: 'burst', cost: 35 }
   ];
   
   for (var i = 0; i < 3; i++) {
@@ -1097,7 +1097,7 @@ function drawFeed() {
   var attrW = (W - 56) / 3;
   
   var attrs = [
-    { label: '速度', value: userData.fish[0].speed, color: '#EF4444', icon: '⚡' },
+    { label: '速度', value: userData.fish[0].speed, color: '#EF4444', icon: '闪' },
     { label: '运气', value: userData.fish[0].luck, color: '#8B5CF6', icon: '🍀' },
     { label: '耐力', value: userData.fish[0].stamina, color: '#3B82F6', icon: '💪' }
   ];
@@ -1139,7 +1139,7 @@ function drawFeed() {
     sc.fillStyle = CLR.textMuted;
     sc.font = '14px ' + FONT_ZK;
     sc.textAlign = 'center';
-    sc.fillText('🌾 喂食', 20 + btnW/2, btnY + 30);
+    sc.fillText('食 喂食', 20 + btnW/2, btnY + 30);
     sc.fillText('(饲料不足)', 20 + btnW/2, btnY + 48);
   }
   
@@ -1368,19 +1368,19 @@ function executeStrategy(type, cost) {
       boost = currentFish.speed * 0.015;
       race.playerBoost += boost;
       particleColor = CLR.orange;
-      addFloatingText('⚡ 冲刺！', W/2, H/2 - 50, CLR.orange);
+      addFloatingText('冲！', W/2, H/2 - 50, CLR.orange);
       break;
     case 'steady':
       boost = currentFish.speed * 0.008;
       race.playerBoost += boost;
       particleColor = CLR.waterDeep;
-      addFloatingText('🛡 稳健', W/2, H/2 - 50, CLR.waterDeep);
+      addFloatingText('稳', W/2, H/2 - 50, CLR.waterDeep);
       break;
     case 'burst':
       boost = currentFish.luck * 0.02 * (Math.random() + 0.5);
       race.playerBoost += boost;
       particleColor = CLR.purple;
-      addFloatingText('✨ 爆发！', W/2, H/2 - 50, CLR.purple);
+      addFloatingText('爆！', W/2, H/2 - 50, CLR.purple);
       break;
   }
   

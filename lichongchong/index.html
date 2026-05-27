@@ -1206,27 +1206,42 @@ function drawFeed() {
   
   var btnY = attrY + 90;
   var btnW = (W - 56) / 2;
-  var btnH = 56;
-  
+  var btnH = 62;
   var feedCost = 1;
   var canFeed = userData.feed >= feedCost;
   
   if (canFeed) {
-    drawBtn(20, btnY, btnW, btnH, '喂食 x' + feedCost + '饲料', CLR.success);
+    sc.fillStyle = CLR.shadowBrand;
+    sc.beginPath(); sc.roundRect(22, btnY + 2, btnW, btnH, RADIUS.md); sc.fill();
+    sc.fillStyle = CLR.success;
+    sc.beginPath(); sc.roundRect(20, btnY, btnW, btnH, RADIUS.md); sc.fill();
+    sc.fillStyle = '#FFF'; sc.textAlign = 'center';
+    sc.font = 'bold 15px ' + FONT_ZK;
+    sc.fillText('喂食', 20 + btnW/2, btnY + 24);
+    sc.font = '11px ' + FONT_ZK;
+    sc.fillText('花' + feedCost + '饲料 +5经验', 20 + btnW/2, btnY + 44);
     buttons.push({ x: 20, y: btnY, w: btnW, h: btnH, action: 'feedFish' });
   } else {
     drawCard(20, btnY, btnW, btnH, RADIUS.md, false);
-    sc.strokeStyle = '#D1D5DB';
-    sc.stroke();
-    sc.fillStyle = CLR.textMuted;
+    sc.strokeStyle = '#D1D5DB'; sc.stroke();
+    sc.fillStyle = CLR.textMuted; sc.textAlign = 'center';
     sc.font = '14px ' + FONT_ZK;
-    sc.textAlign = 'center';
-    sc.fillText('喂食', 20 + btnW/2, btnY + 30);
-    sc.fillText('饲料不足', 20 + btnW/2, btnY + 48);
+    sc.fillText('喂食', 20 + btnW/2, btnY + 22);
+    sc.font = '11px ' + FONT_ZK;
+    sc.fillText('饲料不足', 20 + btnW/2, btnY + 42);
   }
   
-  drawBtn(28 + btnW, btnY, btnW, btnH, '5鱼鳞→3饲料', CLR.orange);
-  buttons.push({ x: 28 + btnW, y: btnY, w: btnW, h: btnH, action: 'buyFeed' });
+  var bBtnX = 28 + btnW;
+  sc.fillStyle = CLR.shadowBrand;
+  sc.beginPath(); sc.roundRect(bBtnX + 2, btnY + 2, btnW, btnH, RADIUS.md); sc.fill();
+  sc.fillStyle = CLR.orange;
+  sc.beginPath(); sc.roundRect(bBtnX, btnY, btnW, btnH, RADIUS.md); sc.fill();
+  sc.fillStyle = '#FFF'; sc.textAlign = 'center';
+  sc.font = 'bold 15px ' + FONT_ZK;
+  sc.fillText('买饲料', bBtnX + btnW/2, btnY + 24);
+  sc.font = '11px ' + FONT_ZK;
+  sc.fillText('花5鱼鳞 得3饲料', bBtnX + btnW/2, btnY + 44);
+  buttons.push({ x: bBtnX, y: btnY, w: btnW, h: btnH, action: 'buyFeed' });
   
   drawFloatingTexts();
 }

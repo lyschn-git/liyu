@@ -2,6 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/moyu/manifest.json">
+<meta name="theme-color" content="#F97316">
+<link rel="apple-touch-icon" href="/pwa-icons/moyu-192.png">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta property="og:title" content="摸鱼 · 打工人的小确幸">
 <meta property="og:description" content="戳一下，让锦鲤替你翻个运">
@@ -743,5 +746,6 @@ function generateShareCard(){
 function loop(){update();draw();requestAnimationFrame(loop);}
 loop();
 </script>
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.register('/sw.js')}</script>
 </body>
 </html>

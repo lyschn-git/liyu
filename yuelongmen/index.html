@@ -2,6 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/yuelongmen/manifest.json">
+<meta name="theme-color" content="#0a1628">
+<link rel="apple-touch-icon" href="/pwa-icons/yuelongmen-192.png">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta property="og:title" content="锦鲤跃龙门 · 鲤·遇">
 <meta property="og:description" content="跃过去，就是龙门">
@@ -1517,5 +1520,6 @@ document.getElementById('resumeBtn').addEventListener('touchend',function(e){
   resumeGraceLeft=RESUME_GRACE;
 });
 </script>
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.register('/sw.js')}</script>
 </body>
 </html>

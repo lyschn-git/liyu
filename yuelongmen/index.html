@@ -119,6 +119,7 @@ var score=0,bestScore=0;
 var lastScore=0; // 缓存本次成绩，供排行榜提交
 var WIN_SCORE=36; // 三十六计，通关
 try{bestScore=parseInt(localStorage.getItem('ylm_best'))||0;}catch(e){}
+try{vibrateOn=localStorage.getItem('ylm_vib')!=='0';}catch(e){}
 
 // ── 暂停恢复grace ──
 var RESUME_GRACE=150; // 2.5秒@60fps
@@ -170,6 +171,13 @@ function fetchLeaderboard(cb){
 var graceFrames=0;
 var GRACE_TOTAL=180;
 var graceBaseY=0;
+
+// ── 振感设置 ──
+var vibrateOn=true;
+function doVibrate(ms){
+  if(!vibrateOn)return;
+  try{navigator.vibrate&&navigator.vibrate(ms);}catch(e){}
+}
 
 // ── 锦鲤 ──
 var koi={
@@ -324,9 +332,11 @@ function flap(){
       graceFrames=0;
       koi.vy=koi.flapPower;
       spawnActionBubbles(koi.x-koi.w*0.4,koi.y,4);
+      doVibrate(12);
     }else{
       koi.vy=koi.flapPower;
       spawnActionBubbles(koi.x-koi.w*0.4,koi.y,4);
+      doVibrate(12);
     }
   }
 }
@@ -339,9 +349,32 @@ c.addEventListener('touchstart',function(e){
     document.getElementById('pauseOverlay').style.display='flex';
     return;
   }
+  // 菜单页齿轮点击检测
+  if(state===STATE.MENU){
+    var tx=e.touches[0].clientX,ty=e.touches[0].clientY;
+    var dpr=window.devicePixelRatio||1;
+    var dx=tx-((W/dpr)-36),dy=ty-(36/dpr);
+    if(dx*dx+dy*dy<30*30){
+      vibrateOn=!vibrateOn;
+      try{localStorage.setItem('ylm_vib',vibrateOn?'1':'0');}catch(e){}
+      if(vibrateOn)doVibrate(20);
+      return;
+    }
+  }
   flap();
 },{passive:false});
-c.addEventListener('mousedown',function(e){flap();});
+c.addEventListener('mousedown',function(e){
+  if(state===STATE.MENU){
+    var dx=e.clientX-((W/(window.devicePixelRatio||1))-36),dy=e.clientY-36;
+    if(dx*dx+dy*dy<30*30){
+      vibrateOn=!vibrateOn;
+      try{localStorage.setItem('ylm_vib',vibrateOn?'1':'0');}catch(e2){}
+      if(vibrateOn)doVibrate(20);
+      return;
+    }
+  }
+  flap();
+});
 
 // ── 更新 ──
 var overTimer=0;
@@ -454,6 +487,7 @@ function update(){
       var big=(score%10===0&&score>0)?1:(score%5===0&&score>0)?0.8:0;
       floatingTexts.push({text:ft,x:koi.x+koi.w,y:koi.y-koi.h*0.5,life:80,alpha:1,scale:2.0+big*0.5,big:big});
       // 过门闪光+气泡爆发
+      doVibrate(30);
       spawnActionBubbles(koi.x,koi.y,8);
       for(var j=0;j<6;j++){
         sparkles.push({
@@ -996,6 +1030,29 @@ function drawMenu(){
   sc.fillStyle='rgba(180,130,80,0.4)';
   sc.textAlign='center';
   sc.fillText('鲤·遇出品',W/2,H*0.92);
+
+  // 设置齿轮（右上角）
+  var gearX=W-36,gearY=36,gearR=14;
+  sc.save();
+  sc.globalAlpha=0.35;
+  sc.translate(gearX,gearY);
+  sc.rotate(Date.now()*0.0005);
+  sc.strokeStyle='#8B6E4E';
+  sc.lineWidth=2;
+  sc.beginPath();sc.arc(0,0,gearR*0.55,0,Math.PI*2);sc.stroke();
+  for(var gi=0;gi<6;gi++){
+    var ga=gi*Math.PI/3;
+    sc.beginPath();
+    sc.moveTo(Math.cos(ga)*gearR*0.45,Math.sin(ga)*gearR*0.45);
+    sc.lineTo(Math.cos(ga)*gearR,Math.sin(ga)*gearR);
+    sc.stroke();
+  }
+  sc.restore();
+  // 振感状态小圆点
+  sc.save();
+  sc.fillStyle=vibrateOn?'rgba(255,154,92,0.7)':'rgba(180,130,80,0.25)';
+  sc.beginPath();sc.arc(gearX,gearY+gearR+8,3,0,Math.PI*2);sc.fill();
+  sc.restore();
 
   sc.restore();
 }

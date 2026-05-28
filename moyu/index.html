@@ -19,16 +19,12 @@ canvas{display:block;width:100%;height:100%}
 <body>
 <canvas id="gc"></canvas>
 <script>
-// ═══════════════════════════════════════════════
-// 摸鱼 · 打工人的小确幸
-// 手绘Q萌锦鲤 - 零PNG，纯Canvas
-// 视觉风格：圆滚滚 + 大眼 + 粉腮 + 慵懒痞气
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// 摸鱼 v7 — 鱼是灵魂
+// 贝塞尔曲线鱼形 · 字鱼一体 · 减法留白 · 彩蛋故事
+// ═══════════════════════════════════════════════════════
 
-var c=document.getElementById('gc');
-var sc=c.getContext('2d');
-var W,H,dpr;
-
+var c=document.getElementById('gc'),sc=c.getContext('2d'),W,H,dpr;
 function resize(){
   dpr=window.devicePixelRatio||1;
   W=window.innerWidth;H=window.innerHeight;
@@ -37,286 +33,678 @@ function resize(){
   initLayout();
 }
 
-// ── 颜色（暖米+青绿水面，与鲤遇/跃龙门统一色系）──
+// ─── 色彩 ───
 var CLR={
-  bgTop:'#F5F0E8', bgMid:'#EDE6D8', bgBot:'#E0D5C5',
-  water1:'rgba(123,196,184,0.18)', water2:'rgba(90,168,156,0.28)', waterDeep:'rgba(61,142,130,0.35)',
-  koi:'#FF9A5C', koiLight:'#FFB87D', koiDark:'#E07030', koiBelly:'#FFD4B0',
-  fin:'rgba(255,184,125,0.55)',
-  blush:'rgba(255,120,120,0.30)',
-  eyeWhite:'#FFFEF8', pupil:'#2A1A0A',
-  gold:'#FFD700', orange:'#FF9A5C',
-  text:'#3A2818', textLight:'#9A8878', white:'#FFFDF8'
+  bg:'#F5F0E8',
+  koi:'#FF9A5C',koiLight:'#FFB87D',koiDark:'#E07030',koiBelly:'#FFD4B0',
+  fin:'rgba(255,184,125,0.4)',
+  blush:'rgba(255,120,120,0.22)',
+  eyeWhite:'#FFFEF8',pupil:'#2A1A0A',
+  orange:'#FF9A5C',
+  text:'#3A2818',textLight:'#9A8878',white:'#FFFDF8'
 };
 var FC={'天命':'#FFD700','大吉':'#FF9A5C','中吉':'#7BC4B8','小吉':'#A8D5C8','平':'#C4B89A','小凶':'#C49A8A','凶':'#B87C6A'};
 
-// ── 状态机 ──
-var ST={IDLE:0,POKE1:1,POKE2:2,LEAP:3,FORTUNE:4};
-var state=ST.IDLE, frame=0;
+// ─── 状态 ───
+var ST={IDLE:0,POKE1:1,POKE2:2,LEAP:3,FORTUNE:4,STORY:5};
+var state=ST.IDLE,frame=0;
+var prevState=ST.IDLE,storyShow=0;
 
-// ── 锦鲤 ──
 var koi={x:0,y:0,baseY:0,w:0,h:0,breathPhase:0,
-  eyeRoll:0,flipAngle:0,leapY:0,leapProgress:0,eyelidDroop:0.45};
+  flipAngle:0,leapY:0,leapProgress:0,currExpr:'idle'};
+var pokeCount=0,lastPokeTime=0;
+var POKE_TIMEOUT=5000;
+var waterY=0,zzBubbles=[],ripples=[];
+var fortuneShow=0,currentFortune=null,currentText='';
 
-// ── 交互 ──
-var pokeCount=0, lastPokeTime=0, POKE_TIMEOUT=2000;
+// 鱼说话
+var fishSayText='',fishSayAlpha=0;
+var FISH_SAY={
+  poke1:['干嘛','嗯？','别闹','烦','...','你谁啊'],
+  poke2:['还戳？','你有完没完','再戳试试','啧','行吧','最后一次啊']
+};
+function pickSay(g){return FISH_SAY[g][Math.floor(Math.random()*FISH_SAY[g].length)];}
 
-// ── 粒子 ──
-var waterY=0, zzBubbles=[], ripples=[], floaters=[], splashP=[];
-var fortuneShow=0, currentFortune=null, currentText='';
-
+// ─── 布局 ───
 function initLayout(){
   var sz=Math.min(W,H);
-  koi.w=sz*0.42; koi.h=koi.w*0.55;
+  // ★ v7: 鱼占画面80%特写
+  koi.w=sz*0.75; koi.h=koi.w*0.52;
   koi.x=W/2;
-  waterY=H*0.44;
-  koi.baseY=waterY+koi.h*0.25;
+  koi.baseY=H*0.52;
   koi.y=koi.baseY;
-  floaters=[];
-  for(var i=0;i<8;i++) floaters.push({x:Math.random()*W,y:waterY+Math.random()*(H-waterY),r:2+Math.random()*3,speed:0.12+Math.random()*0.25,phase:Math.random()*6.28});
+  waterY=H*0.56;
 }
 
-// ── 缘分派 ──
+// ─── 运势 ───
 function getUserSeed(){var s=localStorage.getItem('moyu_seed');if(!s){s=''+Date.now()+Math.random();localStorage.setItem('moyu_seed',s);}return s;}
 function hashStr(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return h;}
 function todayFortune(){var d=new Date(),k=getUserSeed()+'-'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(),r=Math.abs(hashStr(k))%1000;if(r<30)return'天命';if(r<100)return'大吉';if(r<280)return'中吉';if(r<500)return'小吉';if(r<700)return'平';if(r<880)return'小凶';return'凶';}
+
 var FT={
-  '大吉':['今日宜摸鱼，老板不在，天助你也','下午会有好事发生，先摸为敬','今天的你，连摸鱼都是天选','有贵人在帮你，你只管躺','锦鲤说：今天运气全给你了'],
-  '中吉':['下午3点会有一杯咖啡主动走向你','今日适合假装很忙，实际效率翻倍','中午的饭不会难吃，信我','有个好消息正在路上，快递那种','今天开会不会被点名，放心坐后排'],
-  '小吉':['今天的饭不会难吃','摸鱼不会被发现的概率很高','下班前能搞定手头的事','下午比上午顺，撑住','今天水逆绕着你走'],
-  '平':['今日平平，但至少没开会','运气一般，但也没坏事','普通的一天，安稳就是福','不咸不淡，正好摸鱼','锦鲤翻了个身又睡过去了'],
-  '小凶':['有人要找你开会，假装没看见','今天不宜做任何重要决定','外卖可能迟到，提前点','少说话多喝水，保平安','锦鲤说：今天低调点'],
-  '凶':['今天不宜加班，宜早退','运势低迷，但摸鱼无罪','可能有锅飞来，注意闪避','锦鲤都替你发愁，但它也无能为力','今天适合装病，真的'],
-  '天命':['命运说：这条鱼专门为你跃的','天命所归，今天的锦鲤只属于你','万年一遇的天命签，赶紧许愿','今天你被选中了，做什么都顺利','锦鲤化龙了——它说等你很久了']
+  '大吉':['你已经很努力了，今天允许自己偷个懒','有些好事正在路上，不是因为运气，是因为你值得','今天可以松一口气了，真的','锦鲤说：辛苦了，剩下的交给我','你比自己以为的要好，真的'],
+  '中吉':['今天不会太糟，也不会太好，但你在','平平淡淡也是一种被保护着的好运气','没什么大事发生，就是最好的事','锦鲤翻了翻身：还行，稳住','不是每个好日子都轰轰烈烈'],
+  '小吉':['小的善意也会积少成多','今天的你，值得一个不加班的傍晚','锦鲤说：别急，慢慢来也是一种快','有些运气是小声的，要安静才听得到','你注意到今天的晚风了吗'],
+  '平':['今天没有波澜，本身就是一种庇护','不是每一天都要有意义的','锦鲤翻了个身又睡了，它觉得这样就挺好','普通的一天，但你撑过来了','活着就好，真的，活着就好'],
+  '小凶':['今天不顺利不是你的错','累了就歇一会儿，没人会怪你','锦鲤说：今天帮你扛了，明天会好一点','有些日子就是用来熬的，熬过去就行','允许自己今天什么都不想干'],
+  '凶':['今天的你很辛苦，但明天又是新的','最难的日子，往往也是快要过去的日子','锦鲤也替你发愁，但它不走，它陪你','撑不住就别硬撑，歇一天天不会塌','有些路只能慢慢走，但你不孤单'],
+  '天命':['命运说：这条鱼一直在等你','不是你找到了锦鲤，是锦鲤找到了你','万般皆苦，但你被选中了','今天，宇宙站在你这边','锦鲤化龙了——它说，我等你好久了']
 };
 function getFortuneText(lv){var a=FT[lv]||FT['平'],d=new Date();return a[Math.abs(hashStr(getUserSeed()+d.getDate()))%a.length];}
 
-// ── 触摸 ──
+// ─── 输入 ───
 function handlePoke(x,y){
-  if(state===ST.FORTUNE){
-    if(fortuneShow>=1){var cW=Math.min(W*0.82,320),cH=cW*1.15,cY=(H-cH)/2,bW=cW*0.35,bH=36,bX=W/2-bW/2,bY=cY+cH*0.72;if(x>=bX&&x<=bX+bW&&y>=bY&&y<=bY+bH){generateShareCard();return;}}
-    resetToIdle();return;
+  // 故事overlay：任意点击关闭
+  if(state===ST.STORY){
+    state=prevState;storyShow=0;return;
   }
+  if(state===ST.FORTUNE&&fortuneShow>=1){
+    var cardW2=Math.min(W*0.82,320),cardH2=cardW2*1.15;
+    var cy2=H*0.44,cx2=W/2;
+    // 分享按钮
+    var sbW=cardW2*0.33,sbH=34,sbX=cx2-sbW/2,sbY=cy2+cardH2*0.25;
+    if(x>=sbX&&x<=sbX+sbW&&y>=sbY&&y<=sbY+sbH){doShare();return;}
+    // 故事按钮
+    var stY=sbY+sbH+18;
+    if(x>=cx2-50&&x<=cx2+50&&y>=stY-12&&y<=stY+12){prevState=ST.FORTUNE;state=ST.STORY;storyShow=0;return;}
+    // 卡片其他区域返回
+    var cardX=cx2-cardW2/2,cardY=cy2-cardH2/2;
+    if(x>=cardX&&x<=cardX+cardW2&&y>=cardY&&y<=cardY+cardH2){resetToIdle();return;}
+    return;
+  }
+  // IDLE状态右下角⋯进入故事
+  if(state===ST.IDLE&&x>=W-50&&y>=H-50){prevState=ST.IDLE;state=ST.STORY;storyShow=0;return;}
+  if(state===ST.LEAP)return;
+  // 戳鱼
   var dx=x-koi.x,dy=y-(koi.y+koi.leapY);
-  if(Math.abs(dx)<koi.w*0.5&&Math.abs(dy)<koi.h*0.7){
-    var now=Date.now();if(now-lastPokeTime>POKE_TIMEOUT)pokeCount=0;lastPokeTime=now;pokeCount++;
+  if(Math.abs(dx)<koi.w*0.55&&Math.abs(dy)<koi.h*0.75){
+    var now=Date.now();
+    if(now-lastPokeTime>POKE_TIMEOUT)pokeCount=0;
+    lastPokeTime=now;pokeCount++;
     try{navigator.vibrate&&navigator.vibrate(25);}catch(e){}
-    ripples.push({x:koi.x,y:koi.y,r:5,alpha:0.6});
-    if(pokeCount===1){state=ST.POKE1;koi.eyeRoll=1;}
-    else if(pokeCount===2){state=ST.POKE2;koi.flipAngle=1;}
-    else{state=ST.LEAP;koi.leapProgress=0;currentFortune=todayFortune();currentText=getFortuneText(currentFortune);
-      if(currentFortune==='天命')setTimeout(function(){try{navigator.vibrate([50,50,50]);}catch(e){}},800);
-      else setTimeout(function(){try{navigator.vibrate(30);}catch(e){}},800);
-      for(var i=0;i<12;i++){var a=-2.5+Math.random()*1.8;splashP.push({x:koi.x+Math.cos(a)*10,y:waterY,vx:Math.cos(a)*(2+Math.random()*3),vy:-3-Math.random()*4,r:2+Math.random()*3,life:40+Math.random()*20});}
+    ripples.push({x:koi.x,y:koi.y,r:5,alpha:0.25});
+    if(pokeCount===1){
+      state=ST.POKE1;koi.currExpr='bored';
+      fishSayText=pickSay('poke1');fishSayAlpha=1;
+    }else if(pokeCount===2){
+      state=ST.POKE2;koi.currExpr='annoyed';koi.flipAngle=1;
+      fishSayText=pickSay('poke2');fishSayAlpha=1;
+    }else if(pokeCount>=3){
+      state=ST.LEAP;koi.currExpr='tired';koi.leapProgress=0;
+      currentFortune=todayFortune();currentText=getFortuneText(currentFortune);fishSayAlpha=0;
+      try{setTimeout(function(){navigator.vibrate(currentFortune==='天命'?[50,50,50]:30);},800);}catch(e){}
     }
-  }else if(y>waterY-10){ripples.push({x:x,y:y,r:5,alpha:0.5});}
+  }else if(y>waterY-20){ripples.push({x:x,y:y,r:5,alpha:0.18});}
 }
 c.addEventListener('touchstart',function(e){e.preventDefault();handlePoke(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
 c.addEventListener('mousedown',function(e){handlePoke(e.clientX,e.clientY);});
-function resetToIdle(){state=ST.IDLE;pokeCount=0;koi.eyeRoll=0;koi.flipAngle=0;koi.leapY=0;koi.leapProgress=0;fortuneShow=0;currentFortune=null;currentText='';}
 
-// ── 更新 ──
+function resetToIdle(){
+  state=ST.IDLE;pokeCount=0;koi.flipAngle=0;koi.leapY=0;koi.leapProgress=0;
+  koi.y=koi.baseY;fortuneShow=0;currentFortune=null;currentText='';koi.currExpr='idle';
+}
+
+// ─── 更新 ───
 function update(){
-  frame++;koi.breathPhase+=0.03;
-  if(state===ST.IDLE&&frame%40===0)zzBubbles.push({x:koi.x+koi.w*0.32,y:koi.y-koi.h*0.35,size:12+Math.random()*8,opacity:0.5,speed:0.4+Math.random()*0.3});
-  for(var i=zzBubbles.length-1;i>=0;i--){var b=zzBubbles[i];b.y-=b.speed;b.x+=Math.sin(frame*0.04+i)*0.4;b.opacity-=0.006;b.size+=0.03;if(b.opacity<=0)zzBubbles.splice(i,1);}
-  if(state===ST.POKE2){koi.flipAngle=Math.max(0,koi.flipAngle-0.015);if(koi.flipAngle<=0&&pokeCount<3)state=ST.IDLE;}
-  if(state===ST.LEAP){koi.leapProgress+=0.018;if(koi.leapProgress>=1)koi.leapProgress=1;koi.leapY=-Math.sin(koi.leapProgress*Math.PI)*H*0.35;if(koi.leapProgress>=1&&state===ST.LEAP){state=ST.FORTUNE;fortuneShow=0;}}
+  frame++;koi.breathPhase+=0.02;
+  // Zz气泡 — 更稀更慢更禅
+  if(state===ST.IDLE&&frame%150===0)
+    zzBubbles.push({x:koi.x+koi.w*0.25,y:koi.y-koi.h*0.22,size:7+Math.random()*4,opacity:0.12,speed:0.12+Math.random()*0.08});
+  for(var i=zzBubbles.length-1;i>=0;i--){
+    var b=zzBubbles[i];b.y-=b.speed;b.x+=Math.sin(frame*0.015+i)*0.15;
+    b.opacity-=0.0015;b.size+=0.008;if(b.opacity<=0)zzBubbles.splice(i,1);
+  }
+  if(fishSayAlpha>0)fishSayAlpha=Math.max(0,fishSayAlpha-0.006);
+  // POKE2动画
+  if(state===ST.POKE2){koi.flipAngle=Math.max(0,koi.flipAngle-0.012);if(koi.flipAngle<=0)state=ST.IDLE;}
+  // 超时重置
+  if((state===ST.POKE1||state===ST.POKE2)&&Date.now()-lastPokeTime>POKE_TIMEOUT){resetToIdle();}
+  // 跃起
+  if(state===ST.LEAP){
+    koi.leapProgress+=0.014;if(koi.leapProgress>=1)koi.leapProgress=1;
+    koi.leapY=-Math.sin(koi.leapProgress*Math.PI)*H*0.32;
+    if(koi.leapProgress>=1&&state===ST.LEAP){state=ST.FORTUNE;fortuneShow=0;}
+  }
   if(state===ST.FORTUNE)fortuneShow=Math.min(1,fortuneShow+0.018);
-  if(state===ST.IDLE){koi.y=koi.baseY+Math.sin(koi.breathPhase)*3;koi.eyelidDroop=0.45+Math.sin(koi.breathPhase*0.5)*0.12;if(koi.eyeRoll>0)koi.eyeRoll=Math.max(0,koi.eyeRoll-0.02);}
-  for(var i=ripples.length-1;i>=0;i--){ripples[i].r+=1.5;ripples[i].alpha-=0.012;if(ripples[i].alpha<=0)ripples.splice(i,1);}
-  for(var i=splashP.length-1;i>=0;i--){var p=splashP[i];p.x+=p.vx;p.y+=p.vy;p.vy+=0.15;p.life--;if(p.life<=0||p.y>waterY+10)splashP.splice(i,1);}
-  for(var i=0;i<floaters.length;i++){var f=floaters[i];f.y-=f.speed;f.x+=Math.sin(frame*0.01+f.phase)*0.3;if(f.y<waterY-20){f.y=H+10;f.x=Math.random()*W;}}
+  if(state===ST.STORY)storyShow=Math.min(1,storyShow+0.03);
+  // ★ 非跃起状态：鱼强制归位
+  if(state!==ST.LEAP){
+    koi.leapY=0;
+    koi.y=koi.baseY+Math.sin(koi.breathPhase)*2.5;
+  }
+  // 涟漪 — 更慢更淡
+  for(var i=ripples.length-1;i>=0;i--){ripples[i].r+=0.8;ripples[i].alpha-=0.004;if(ripples[i].alpha<=0)ripples.splice(i,1);}
 }
 
-// ═══════════════════════════════════════════════
-// 绘制
-// ═══════════════════════════════════════════════
-function draw(){sc.clearRect(0,0,W,H);drawBg();drawWater();drawFloaters();drawRipples();drawSplash();drawKoi();drawZZ();drawTitle();drawHint();if(state===ST.FORTUNE)drawFortune();}
+// ─── 绘制 ───
+function draw(){
+  sc.clearRect(0,0,W,H);
+  drawBg();drawWater();drawRipples();drawKoi();drawZZ();drawFishSay();drawTitle();
+  if(state===ST.FORTUNE)drawFortune();
+  if(state===ST.STORY)drawStoryOverlay();
+  // 右下角故事入口
+  if(state===ST.IDLE){
+    sc.save();sc.globalAlpha=0.18+0.06*Math.sin(frame*0.02);
+    sc.font='18px "ZCOOL KuaiLe",sans-serif';sc.fillStyle=CLR.textLight;
+    sc.textAlign='right';sc.textBaseline='bottom';
+    sc.fillText('⋯',W-22,H-22);sc.restore();
+  }
+}
 
-function drawBg(){var g=sc.createLinearGradient(0,0,0,H);g.addColorStop(0,CLR.bgTop);g.addColorStop(0.4,CLR.bgMid);g.addColorStop(1,CLR.bgBot);sc.fillStyle=g;sc.fillRect(0,0,W,H);}
+function drawBg(){sc.fillStyle=CLR.bg;sc.fillRect(0,0,W,H);}
+
 function drawWater(){
-  var g=sc.createLinearGradient(0,waterY-10,0,H);g.addColorStop(0,CLR.water1);g.addColorStop(0.3,CLR.water2);g.addColorStop(1,CLR.waterDeep);sc.fillStyle=g;sc.fillRect(0,waterY-5,W,H-waterY+5);
-  for(var i=0;i<3;i++){sc.beginPath();var by=waterY+i*8;sc.moveTo(0,by);for(var x=0;x<=W;x+=20)sc.lineTo(x,by+Math.sin(x*0.02+frame*0.03+i*1.5)*3);sc.strokeStyle='rgba(123,196,184,'+(0.25-i*0.06)+')';sc.lineWidth=1.5;sc.stroke();}
+  sc.beginPath();sc.moveTo(0,waterY);
+  for(var x=0;x<=W;x+=30)sc.lineTo(x,waterY+Math.sin(x*0.012+frame*0.015)*1.5);
+  sc.lineTo(W,H);sc.lineTo(0,H);sc.closePath();
+  var g=sc.createLinearGradient(0,waterY,0,H);
+  g.addColorStop(0,'rgba(123,196,184,0.04)');g.addColorStop(1,'rgba(90,168,156,0.08)');
+  sc.fillStyle=g;sc.fill();
 }
-function drawFloaters(){for(var i=0;i<floaters.length;i++){var f=floaters[i];sc.beginPath();sc.arc(f.x,f.y,f.r,0,6.28);sc.fillStyle='rgba(180,220,210,0.25)';sc.fill();}}
-function drawRipples(){for(var i=0;i<ripples.length;i++){var r=ripples[i];sc.beginPath();sc.arc(r.x,r.y,r.r,0,6.28);sc.strokeStyle='rgba(123,196,184,'+r.alpha+')';sc.lineWidth=1.5;sc.stroke();}}
-function drawSplash(){for(var i=0;i<splashP.length;i++){var p=splashP[i];sc.beginPath();sc.arc(p.x,p.y,p.r,0,6.28);sc.fillStyle='rgba(180,220,210,'+(p.life/60*0.5)+')';sc.fill();}}
 
-// ═══════════════════════════════════════════════
-// ★ 手绘Q萌锦鲤 - 圆身子、大眼睛、粉腮红、痞气表情
-// ═══════════════════════════════════════════════
+function drawRipples(){
+  for(var i=0;i<ripples.length;i++){
+    var r=ripples[i];sc.beginPath();sc.arc(r.x,r.y,r.r,0,6.28);
+    sc.strokeStyle='rgba(123,196,184,'+r.alpha+')';sc.lineWidth=0.8;sc.stroke();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// ★★★ 锦鲤 — 贝塞尔曲线鱼形（不再是胡萝卜）
+// 头圆吻钝身渐收尾柄细 · 两瓣飘逸尾 · 渐变背橙腹白
+// ═══════════════════════════════════════════════════════
 function drawKoi(){
   sc.save();
   sc.translate(koi.x,koi.y+koi.leapY);
-  if(koi.flipAngle>0)sc.rotate(Math.sin(koi.flipAngle*Math.PI*0.5)*0.3);
-  if(state===ST.LEAP){sc.rotate(-koi.leapProgress*0.4);sc.shadowColor='rgba(255,180,100,0.3)';sc.shadowBlur=20;}
-  if(state===ST.FORTUNE){sc.globalAlpha=Math.max(0,1-fortuneShow*2.5);sc.shadowColor='rgba(255,180,100,0.2)';sc.shadowBlur=15;}
+  if(koi.flipAngle>0)sc.rotate(Math.sin(koi.flipAngle*Math.PI*0.5)*0.25);
+  if(state===ST.LEAP){sc.rotate(-koi.leapProgress*0.35);sc.shadowColor='rgba(255,180,100,0.2)';sc.shadowBlur=12;}
+  if(state===ST.FORTUNE){sc.globalAlpha=Math.max(0,1-fortuneShow*2.5);}
+  if(state===ST.STORY){sc.globalAlpha=0.15;}
 
-  var w=koi.w, h=koi.h, t=frame*0.03;
+  var w=koi.w,h=koi.h;
+  // hw/hh = 绘制用半宽/半高（鱼身占位范围）
+  var hw=w*0.46,hh=h*0.5;
+  var t=frame*0.025;
 
-  // 1) 尾巴（先画，在身体后面）
-  var tw=Math.sin(t*1.2)*0.12;
+  // ─── 尾巴 — 两瓣飘逸 ───
+  var tw=Math.sin(t*1.1)*0.12;
   sc.save();sc.rotate(tw);
+  // 上瓣
   sc.beginPath();
-  sc.moveTo(-w*0.32,0);
-  sc.bezierCurveTo(-w*0.48,-h*0.35,-w*0.58,-h*0.45,-w*0.68,-h*0.22);
-  sc.bezierCurveTo(-w*0.58,0,-w*0.58,0,-w*0.68,h*0.22);
-  sc.bezierCurveTo(-w*0.58,h*0.45,-w*0.48,h*0.35,-w*0.32,0);
+  sc.moveTo(-hw*0.78,-hh*0.06);
+  sc.bezierCurveTo(-hw*0.92,-hh*0.28,-hw*1.08,-hh*0.55,-hw*1.22,-hh*0.38);
+  sc.bezierCurveTo(-hw*1.12,-hh*0.18,-hw*0.96,-hh*0.04,-hw*0.78,-hh*0.06);
   sc.closePath();
-  var tg=sc.createLinearGradient(-w*0.32,0,-w*0.68,0);tg.addColorStop(0,CLR.koi);tg.addColorStop(1,CLR.koiLight);
-  sc.fillStyle=tg;sc.fill();
-  sc.strokeStyle='rgba(200,100,40,0.15)';sc.lineWidth=1;sc.stroke();
+  var tg1=sc.createLinearGradient(-hw*0.78,0,-hw*1.22,0);
+  tg1.addColorStop(0,CLR.koi);tg1.addColorStop(0.5,CLR.koiLight);tg1.addColorStop(1,'rgba(255,200,160,0.15)');
+  sc.fillStyle=tg1;sc.fill();
+  // 下瓣
+  sc.beginPath();
+  sc.moveTo(-hw*0.78,hh*0.06);
+  sc.bezierCurveTo(-hw*0.92,hh*0.28,-hw*1.08,hh*0.55,-hw*1.22,hh*0.38);
+  sc.bezierCurveTo(-hw*1.12,hh*0.18,-hw*0.96,hh*0.04,-hw*0.78,hh*0.06);
+  sc.closePath();
+  var tg2=sc.createLinearGradient(-hw*0.78,0,-hw*1.22,0);
+  tg2.addColorStop(0,CLR.koi);tg2.addColorStop(0.5,CLR.koiLight);tg2.addColorStop(1,'rgba(255,200,160,0.15)');
+  sc.fillStyle=tg2;sc.fill();
   sc.restore();
 
-  // 2) 身体（圆滚滚，偏胖椭圆）
-  sc.beginPath();sc.ellipse(0,0,w*0.38,h*0.46,0,0,6.28);sc.closePath();
-  var bg=sc.createRadialGradient(w*0.06,-h*0.08,0,0,0,w*0.38);
-  bg.addColorStop(0,CLR.koiLight);bg.addColorStop(0.5,CLR.koi);bg.addColorStop(1,CLR.koiDark);
-  sc.fillStyle=bg;sc.fill();
-  sc.strokeStyle='rgba(180,80,25,0.18)';sc.lineWidth=1.5;sc.stroke();
+  // ─── 身体 — 贝塞尔曲线：头圆吻钝身渐收 ───
+  sc.beginPath();
+  sc.moveTo(hw*0.88,0); // 鼻尖
+  // 上轮廓：圆头→背弧→收窄→尾柄
+  sc.bezierCurveTo(hw*0.85,-hh*0.55, hw*0.4,-hh*0.95, hw*0.02,-hh*0.9);
+  sc.bezierCurveTo(-hw*0.3,-hh*0.82, -hw*0.58,-hh*0.5, -hw*0.78,-hh*0.1);
+  // 尾柄上→下
+  sc.lineTo(-hw*0.78,hh*0.1);
+  // 下轮廓：尾柄→腹圆→下巴→鼻尖
+  sc.bezierCurveTo(-hw*0.58,hh*0.5, -hw*0.3,hh*0.82, hw*0.02,hh*0.9);
+  sc.bezierCurveTo(hw*0.4,hh*0.95, hw*0.85,hh*0.55, hw*0.88,0);
+  sc.closePath();
 
-  // 3) 浅色肚皮
-  sc.beginPath();sc.ellipse(w*0.02,h*0.1,w*0.26,h*0.22,0,0,6.28);
-  sc.fillStyle=CLR.koiBelly;sc.globalAlpha=(sc.globalAlpha||1)*0.45;sc.fill();
-  sc.globalAlpha=state===ST.FORTUNE?Math.max(0,1-fortuneShow*2.5):1;
+  // 渐变：背上橙→腹下白
+  var bodyG=sc.createLinearGradient(0,-hh,0,hh);
+  bodyG.addColorStop(0,CLR.koiDark);
+  bodyG.addColorStop(0.3,CLR.koi);
+  bodyG.addColorStop(0.55,CLR.koiLight);
+  bodyG.addColorStop(0.8,CLR.koiBelly);
+  bodyG.addColorStop(1,'#FFF0E0');
+  sc.fillStyle=bodyG;sc.fill();
 
-  // 4) 鳞片暗示（几个半圆弧线）
-  sc.strokeStyle='rgba(255,255,255,0.13)';sc.lineWidth=1;
-  var scales=[[-w*0.1,-h*0.12,w*0.08],[w*0.04,-h*0.08,w*0.07],[-w*0.05,h*0.05,w*0.08],[w*0.12,0.02,w*0.06],[-w*0.16,0.02,w*0.06]];
-  for(var i=0;i<scales.length;i++){var s=scales[i];sc.beginPath();sc.arc(s[0],s[1],s[2],-0.7,0.7);sc.stroke();}
+  // ─── 背脊深纹 ───
+  sc.beginPath();
+  sc.moveTo(hw*0.5,-hh*0.6);
+  sc.bezierCurveTo(hw*0.2,-hh*0.82, -hw*0.1,-hh*0.78, -hw*0.4,-hh*0.5);
+  sc.strokeStyle='rgba(180,90,30,0.15)';sc.lineWidth=3;sc.stroke();
 
-  // 5) 背鳍
-  var fw=Math.sin(t*0.8)*3;
-  sc.beginPath();sc.moveTo(-w*0.06,-h*0.43);sc.quadraticCurveTo(w*0.04,-h*0.68+fw,w*0.18,-h*0.40);sc.lineTo(w*0.1,-h*0.38);
-  sc.fillStyle=CLR.fin;sc.fill();sc.strokeStyle='rgba(200,100,40,0.12)';sc.lineWidth=1;sc.stroke();
+  // ─── 侧线白斑 ───
+  var ga=sc.globalAlpha||1;
+  if(state===ST.FORTUNE)ga=Math.max(0,1-fortuneShow*2.5);
+  if(state===ST.STORY)ga=0.15;
+  // 白斑1
+  sc.beginPath();sc.ellipse(hw*0.1,-hh*0.2,hw*0.22,hh*0.18,-0.1,0,6.28);
+  var wg1=sc.createRadialGradient(hw*0.1,-hh*0.2,0,hw*0.1,-hh*0.2,hw*0.22);
+  wg1.addColorStop(0,'rgba(255,252,245,'+ga*0.4+')');wg1.addColorStop(0.6,'rgba(255,248,235,'+ga*0.12+')');wg1.addColorStop(1,'rgba(255,248,235,0)');
+  sc.fillStyle=wg1;sc.fill();
+  // 白斑2
+  sc.beginPath();sc.ellipse(-hw*0.25,hh*0.05,hw*0.14,hh*0.12,0.15,0,6.28);
+  var wg2=sc.createRadialGradient(-hw*0.25,hh*0.05,0,-hw*0.25,hh*0.05,hw*0.14);
+  wg2.addColorStop(0,'rgba(255,252,245,'+ga*0.3+')');wg2.addColorStop(1,'rgba(255,248,235,0)');
+  sc.fillStyle=wg2;sc.fill();
 
-  // 6) 胸鳍
-  var pf=Math.sin(t)*4;
-  sc.beginPath();sc.moveTo(w*0.08,h*0.22);sc.quadraticCurveTo(w*0.02,h*0.52+pf,-w*0.1,h*0.42+pf);sc.quadraticCurveTo(-w*0.02,h*0.28,w*0.08,h*0.22);
-  sc.fillStyle=CLR.fin;sc.fill();sc.strokeStyle='rgba(200,100,40,0.1)';sc.lineWidth=1;sc.stroke();
+  // ─── 背鳍 ───
+  var fw=Math.sin(t*0.8)*1.5;
+  sc.beginPath();
+  sc.moveTo(-hw*0.02,-hh*0.82);
+  sc.quadraticCurveTo(hw*0.08,-hh*1.1+fw, hw*0.22,-hh*0.78);
+  sc.lineTo(hw*0.12,-hh*0.76);
+  sc.fillStyle=CLR.fin;sc.fill();
 
-  // 7) 腮红
-  sc.beginPath();sc.ellipse(w*0.18,h*0.12,w*0.09,h*0.06,0.1,0,6.28);sc.fillStyle=CLR.blush;sc.fill();
+  // ─── 胸鳍 ───
+  var pf=Math.sin(t)*2;
+  sc.beginPath();
+  sc.moveTo(hw*0.12,hh*0.35);
+  sc.quadraticCurveTo(hw*0.02,hh*0.65+pf, -hw*0.12,hh*0.55+pf);
+  sc.quadraticCurveTo(-hw*0.02,hh*0.4, hw*0.12,hh*0.35);
+  sc.fillStyle=CLR.fin;sc.fill();
 
-  // 8) 眼睛（灵魂所在！大眼+白眼+半闭，全在这里）
-  drawKoiEyes(w,h);
+  // ─── 腮红 ───
+  sc.beginPath();sc.ellipse(hw*0.32,hh*0.22,hw*0.07,hh*0.05,0.1,0,6.28);
+  sc.fillStyle=CLR.blush;sc.fill();
 
-  // 9) 嘴巴
-  drawKoiMouth(w,h);
+  // ─── 锦鲤须 ───
+  var ww=Math.sin(t*0.7)*0.06;
+  sc.lineWidth=1.5;sc.lineCap='round';
+  sc.beginPath();sc.moveTo(hw*0.72,hh*0.08);
+  sc.quadraticCurveTo(hw*0.82,hh*0.02+ww*hh,hw*0.9,-hh*0.04+ww*hh*1.2);
+  sc.strokeStyle='rgba(200,120,60,0.25)';sc.stroke();
+  sc.beginPath();sc.moveTo(hw*0.72,hh*0.14);
+  sc.quadraticCurveTo(hw*0.82,hh*0.18-ww*hh*0.5,hw*0.88,hh*0.22-ww*hh);
+  sc.strokeStyle='rgba(200,120,60,0.2)';sc.stroke();
+
+  // ─── 表情 ───
+  drawExpression(hw,hh);
 
   sc.shadowBlur=0;
   sc.restore();
 }
 
-function drawKoiEyes(w,h){
-  var ex=w*0.17, ey=-h*0.06, er=Math.max(2,w*0.072); // 大眼睛！
+// ═══════════════════════════════════════════════════════
+// ★ 4种差异化表情（适配贝塞尔鱼形）
+// ═══════════════════════════════════════════════════════
+function drawExpression(hw,hh){
+  var ex=hw*0.42,ey=-hh*0.1;
+  var er=Math.max(5,hw*0.1);
+  var expr=koi.currExpr||'idle';
+  if(expr==='bored')drawBoredFace(ex,ey,er,hw,hh);
+  else if(expr==='annoyed')drawAnnoyedFace(ex,ey,er,hw,hh);
+  else if(expr==='tired')drawTiredFace(ex,ey,er,hw,hh);
+  else drawIdleFace(ex,ey,er,hw,hh);
+}
 
-  // ── 白眼（POKE1：翻白眼，不满）──
-  if(koi.eyeRoll>0){
-    // 大眼白
-    sc.beginPath();sc.arc(ex,ey,er*1.08,0,6.28);sc.fillStyle=CLR.eyeWhite;sc.fill();sc.strokeStyle='rgba(60,35,15,0.35)';sc.lineWidth=1.5;sc.stroke();
-    // 瞳孔上翻
-    sc.beginPath();sc.arc(ex,ey-er*0.35*koi.eyeRoll,er*0.32,0,6.28);sc.fillStyle=CLR.pupil;sc.fill();
-    // 高光
-    sc.beginPath();sc.arc(ex+er*0.18,ey-er*0.5*koi.eyeRoll,er*0.1,0,6.28);sc.fillStyle='rgba(255,255,255,0.75)';sc.fill();
-    // 不满的眉毛线
-    sc.beginPath();sc.moveTo(ex-er*1.1,ey-er*0.8);sc.quadraticCurveTo(ex,ey-er*1.3*koi.eyeRoll,ex+er*1.1,ey-er*0.7);
-    sc.strokeStyle='rgba(60,35,15,'+koi.eyeRoll*0.4+')';sc.lineWidth=2;sc.stroke();
-    return;
-  }
+// 犯困打盹
+function drawIdleFace(ex,ey,er,hw,hh){
+  var droop=0.55+Math.sin(koi.breathPhase*0.4)*0.1;
+  sc.beginPath();sc.moveTo(ex-er*0.9,ey-er*0.1);
+  sc.quadraticCurveTo(ex,ey+er*0.4*droop,ex+er*0.9,ey-er*0.1);
+  sc.strokeStyle='rgba(60,35,15,0.5)';sc.lineWidth=2.5;sc.lineCap='round';sc.stroke();
+  sc.beginPath();sc.moveTo(ex-er*0.5,ey+er*0.05);
+  sc.quadraticCurveTo(ex,ey+er*0.15,ex+er*0.5,ey+er*0.05);
+  sc.strokeStyle='rgba(60,35,15,0.15)';sc.lineWidth=1;sc.stroke();
+  // 嘴：小O吐泡
+  sc.beginPath();sc.ellipse(hw*0.72,hh*0.12,hw*0.02,hh*0.015,0,0,6.28);
+  sc.fillStyle='rgba(200,120,60,0.25)';sc.fill();
+  sc.strokeStyle='rgba(180,90,30,0.15)';sc.lineWidth=0.8;sc.stroke();
+}
 
-  // ── 正常眼睛 ──
-  // 眼白
-  sc.beginPath();sc.arc(ex,ey,er,0,6.28);sc.fillStyle=CLR.eyeWhite;sc.fill();sc.strokeStyle='rgba(60,35,15,0.3)';sc.lineWidth=1.5;sc.stroke();
-  // 瞳孔
-  sc.beginPath();sc.arc(ex+er*0.05,ey+er*0.05,er*0.45,0,6.28);sc.fillStyle=CLR.pupil;sc.fill();
-  // 大高光
-  sc.beginPath();sc.arc(ex+er*0.22,ey-er*0.2,er*0.17,0,6.28);sc.fillStyle='rgba(255,255,255,0.85)';sc.fill();
-  // 小高光
-  sc.beginPath();sc.arc(ex-er*0.12,ey+er*0.18,er*0.07,0,6.28);sc.fillStyle='rgba(255,255,255,0.5)';sc.fill();
+// 翻白眼敷衍
+function drawBoredFace(ex,ey,er,hw,hh){
+  sc.beginPath();sc.arc(ex,ey,er*1.1,0,6.28);sc.fillStyle=CLR.eyeWhite;sc.fill();
+  sc.strokeStyle='rgba(60,35,15,0.18)';sc.lineWidth=1.2;sc.stroke();
+  sc.beginPath();sc.arc(ex,ey-er*0.4,er*0.32,0,6.28);sc.fillStyle=CLR.pupil;sc.fill();
+  sc.beginPath();sc.arc(ex+er*0.12,ey-er*0.55,er*0.1,0,6.28);sc.fillStyle='rgba(255,255,255,0.8)';sc.fill();
+  // 耷拉上眼皮
+  sc.beginPath();sc.moveTo(ex-er*1.2,ey-er*0.3);
+  sc.quadraticCurveTo(ex,ey-er*0.8,ex+er*1.2,ey-er*0.2);
+  sc.strokeStyle='rgba(60,35,15,0.3)';sc.lineWidth=2.5;sc.stroke();
+  // 歪嘴不屑
+  sc.beginPath();sc.moveTo(hw*0.62,hh*0.1);sc.quadraticCurveTo(hw*0.68,hh*0.14,hw*0.74,hh*0.08);
+  sc.strokeStyle='rgba(180,90,30,0.35)';sc.lineWidth=1.8;sc.stroke();
+}
 
-  // ── 半闭眼皮（慵懒）──
-  var droop=koi.eyelidDroop||0.45;
-  if(state===ST.POKE1)droop=0;
+// 别惹我烦躁
+function drawAnnoyedFace(ex,ey,er,hw,hh){
+  sc.beginPath();sc.arc(ex,ey,er*1.05,0,6.28);sc.fillStyle=CLR.eyeWhite;sc.fill();
+  sc.strokeStyle='rgba(60,35,15,0.22)';sc.lineWidth=1.2;sc.stroke();
+  sc.beginPath();sc.arc(ex,ey+er*0.05,er*0.4,0,6.28);sc.fillStyle=CLR.pupil;sc.fill();
+  sc.beginPath();sc.arc(ex+er*0.15,ey-er*0.1,er*0.12,0,6.28);sc.fillStyle='rgba(255,255,255,0.7)';sc.fill();
+  // 倒八字眉
+  sc.lineWidth=2.8;sc.lineCap='round';
+  sc.beginPath();sc.moveTo(ex-er*1.2,ey-er*0.5);
+  sc.quadraticCurveTo(ex-er*0.3,ey-er*1.2,ex-er*0.1,ey-er*0.9);
+  sc.strokeStyle='rgba(60,35,15,0.55)';sc.stroke();
+  // 嘟嘴
+  sc.beginPath();sc.ellipse(hw*0.72,hh*0.12,hw*0.035,hh*0.025,0.1,0,6.28);
+  sc.fillStyle='rgba(200,80,40,0.35)';sc.fill();
+  sc.strokeStyle='rgba(180,90,30,0.2)';sc.lineWidth=0.8;sc.stroke();
+}
+
+// 还来啊无奈
+function drawTiredFace(ex,ey,er,hw,hh){
+  sc.beginPath();sc.arc(ex,ey,er*1.0,0,6.28);sc.fillStyle=CLR.eyeWhite;sc.fill();
+  sc.strokeStyle='rgba(60,35,15,0.15)';sc.lineWidth=1.2;sc.stroke();
+  sc.beginPath();sc.arc(ex+er*0.05,ey+er*0.15,er*0.3,0,6.28);sc.fillStyle=CLR.pupil;sc.fill();
+  sc.beginPath();sc.arc(ex+er*0.15,ey+er*0.05,er*0.08,0,6.28);sc.fillStyle='rgba(255,255,255,0.4)';sc.fill();
+  // 上眼皮压下
   sc.beginPath();
-  sc.moveTo(ex-er*1.15,ey-er*0.15);
-  sc.quadraticCurveTo(ex,ey-er*droop*2.8,ex+er*1.15,ey-er*0.15);
-  sc.lineTo(ex+er*1.15,ey-er*1.3);sc.lineTo(ex-er*1.15,ey-er*1.3);sc.closePath();
-  sc.fillStyle=CLR.koi;sc.fill();
+  sc.moveTo(ex-er*1.15,ey-er*0.2);sc.quadraticCurveTo(ex,ey-er*0.9,ex+er*1.15,ey-er*0.15);
+  sc.quadraticCurveTo(ex+er*0.5,ey+er*0.1,ex,ey-er*0.15);sc.quadraticCurveTo(ex-er*0.5,ey+er*0.1,ex-er*1.15,ey-er*0.2);
+  sc.closePath();sc.fillStyle=CLR.koi;sc.fill();
+  // 歪眉
+  sc.lineWidth=2.2;sc.lineCap='round';
+  sc.beginPath();sc.moveTo(ex-er*1.1,ey-er*0.7);
+  sc.quadraticCurveTo(ex-er*0.4,ey-er*1.3,ex-er*0.15,ey-er*0.85);
+  sc.strokeStyle='rgba(60,35,15,0.4)';sc.stroke();
+  // 叹气O嘴
+  sc.beginPath();sc.ellipse(hw*0.72,hh*0.1,hw*0.025,hh*0.03,0,0,6.28);
+  sc.fillStyle='rgba(200,120,60,0.25)';sc.fill();
+  sc.strokeStyle='rgba(180,90,30,0.15)';sc.lineWidth=0.8;sc.stroke();
 }
 
-function drawKoiMouth(w,h){
-  var mx=w*0.3, my=h*0.05;
-  if(state===ST.POKE1||state===ST.POKE2){
-    // 不满嘟嘴
-    sc.beginPath();sc.ellipse(mx,my,w*0.04,h*0.03,0.15,0,6.28);sc.fillStyle='rgba(200,80,40,0.3)';sc.fill();
+// ═══════════════════════════════════════════════════════
+// ★ 签文卡小锦鲤 — 表情随运势
+// ═══════════════════════════════════════════════════════
+function drawMiniFish(fx,fy,sz,color){
+  sc.save();sc.translate(fx,fy);
+  var w=sz,h=sz*0.6,hw=w*0.42,hh=h*0.5;
+  // 尾
+  var tw=Math.sin(frame*0.05)*0.12;
+  sc.save();sc.rotate(tw);
+  sc.beginPath();sc.moveTo(-hw*0.78,0);
+  sc.bezierCurveTo(-hw*0.95,-hh*0.5,-hw*1.15,-hh*0.45,-hw*1.2,-hh*0.15);
+  sc.bezierCurveTo(-hw*1.0,0,-hw*1.0,0,-hw*1.2,hh*0.15);
+  sc.bezierCurveTo(-hw*1.15,hh*0.45,-hw*0.95,hh*0.5,-hw*0.78,0);
+  sc.closePath();sc.fillStyle=color;sc.globalAlpha=0.6;sc.fill();sc.globalAlpha=1;
+  sc.restore();
+  // 身
+  sc.beginPath();sc.ellipse(0,0,w*0.38,h*0.45,0,0,6.28);sc.closePath();
+  var bg=sc.createRadialGradient(w*0.05,-h*0.08,0,0,0,w*0.38);
+  bg.addColorStop(0,CLR.koiLight);bg.addColorStop(0.6,CLR.koi);bg.addColorStop(1,CLR.koiDark);
+  sc.fillStyle=bg;sc.fill();
+  sc.beginPath();sc.ellipse(0,-h*0.12,w*0.18,h*0.12,0,0,6.28);
+  var wg=sc.createRadialGradient(0,-h*0.12,0,0,-h*0.12,w*0.18);
+  wg.addColorStop(0,'rgba(255,252,245,0.3)');wg.addColorStop(1,'rgba(255,248,235,0)');
+  sc.fillStyle=wg;sc.fill();
+  sc.beginPath();sc.ellipse(w*0.15,h*0.12,w*0.06,h*0.04,0,0,6.28);sc.fillStyle=CLR.blush;sc.fill();
+  var er2=Math.max(2,w*0.09),ex2=w*0.14,ey2=-h*0.02;
+  var lv=currentFortune;
+  if(lv==='天命'||lv==='大吉'){
+    sc.beginPath();sc.moveTo(ex2-er2,ey2+er2*0.2);sc.quadraticCurveTo(ex2,ey2-er2*0.6,ex2+er2,ey2+er2*0.2);
+    sc.strokeStyle='rgba(60,35,15,0.45)';sc.lineWidth=1.8;sc.lineCap='round';sc.stroke();
+    sc.beginPath();sc.arc(w*0.26,h*0.07,w*0.02,Math.PI+0.3,-0.3);
+    sc.strokeStyle='rgba(180,90,30,0.25)';sc.lineWidth=1.2;sc.stroke();
+  }else if(lv==='中吉'||lv==='小吉'){
+    sc.beginPath();sc.moveTo(ex2-er2*0.9,ey2-er2*0.05);sc.quadraticCurveTo(ex2,ey2+er2*0.3,ex2+er2*0.9,ey2-er2*0.05);
+    sc.strokeStyle='rgba(60,35,15,0.4)';sc.lineWidth=1.8;sc.lineCap='round';sc.stroke();
+    sc.beginPath();sc.ellipse(w*0.24,h*0.06,w*0.015,h*0.012,0,0,6.28);sc.fillStyle='rgba(180,90,30,0.18)';sc.fill();
+  }else if(lv==='平'){
+    sc.beginPath();sc.moveTo(ex2-er2*0.9,ey2-er2*0.1);sc.quadraticCurveTo(ex2,ey2+er2*0.4,ex2+er2*0.9,ey2-er2*0.1);
+    sc.strokeStyle='rgba(60,35,15,0.4)';sc.lineWidth=1.8;sc.lineCap='round';sc.stroke();
+    sc.beginPath();sc.arc(w*0.26,h*0.08,w*0.02,0.3,Math.PI-0.3);
+    sc.strokeStyle='rgba(180,90,30,0.2)';sc.lineWidth=1;sc.stroke();
+  }else if(lv==='小凶'){
+    sc.beginPath();sc.arc(ex2,ey2,er2*0.85,0,6.28);sc.fillStyle=CLR.eyeWhite;sc.fill();
+    sc.beginPath();sc.arc(ex2,ey2+er2*0.1,er2*0.3,0,6.28);sc.fillStyle=CLR.pupil;sc.fill();
+    sc.beginPath();sc.ellipse(ex2+er2*0.7,ey2+er2*0.5,er2*0.1,er2*0.15,0.1,0,6.28);
+    sc.fillStyle='rgba(120,180,220,0.3)';sc.fill();
+    sc.beginPath();sc.arc(w*0.26,h*0.07,w*0.02,Math.PI+0.2,-0.2);
+    sc.strokeStyle='rgba(180,90,30,0.25)';sc.lineWidth=1.2;sc.stroke();
   }else{
-    // 慵懒微张
-    sc.beginPath();sc.ellipse(mx,my,w*0.025,h*0.015,0,0,6.28);sc.fillStyle='rgba(180,90,30,0.25)';sc.fill();
+    sc.beginPath();sc.arc(ex2,ey2,er2*0.85,0,6.28);sc.fillStyle=CLR.eyeWhite;sc.fill();
+    sc.beginPath();sc.arc(ex2+er2*0.05,ey2+er2*0.15,er2*0.25,0,6.28);sc.fillStyle=CLR.pupil;sc.fill();
+    sc.beginPath();sc.ellipse(ex2+er2*0.6,ey2+er2*0.45,er2*0.08,er2*0.13,0.1,0,6.28);
+    sc.fillStyle='rgba(120,180,220,0.25)';sc.fill();
+    sc.beginPath();sc.ellipse(w*0.24,h*0.05,w*0.015,hh*0.02,0,0,6.28);
+    sc.fillStyle='rgba(180,90,30,0.2)';sc.fill();
   }
+  sc.restore();
 }
 
+// ─── Zz气泡 ───
 function drawZZ(){
   if(state!==ST.IDLE)return;
-  sc.save();sc.font='bold 16px "ZCOOL KuaiLe",sans-serif';
-  for(var i=0;i<zzBubbles.length;i++){var b=zzBubbles[i];sc.globalAlpha=b.opacity*0.35;sc.fillStyle=CLR.textLight;sc.fillText('z',b.x,b.y);}
+  sc.save();
+  for(var i=0;i<zzBubbles.length;i++){
+    var b=zzBubbles[i];sc.globalAlpha=b.opacity*0.15;sc.fillStyle=CLR.textLight;
+    sc.font=(b.size*0.7)+'px "ZCOOL KuaiLe",sans-serif';
+    sc.fillText('z',b.x,b.y);
+  }
   sc.restore();
 }
+
+// ─── 鱼说话气泡 ───
+function drawFishSay(){
+  if(fishSayAlpha<=0||!fishSayText)return;
+  sc.save();sc.globalAlpha=fishSayAlpha*0.85;
+  var sz=17;sc.font=sz+'px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  var tw=sc.measureText(fishSayText).width;
+  var sayX=koi.x+koi.w*0.15,sayY=koi.y+koi.leapY-koi.h*0.5+Math.sin(frame*0.025)*2;
+  var bx=sayX-tw/2-10,by=sayY-24,bw2=tw+20,bh2=28;
+  sc.fillStyle='rgba(255,252,245,0.85)';rrect(bx,by,bw2,bh2,14);sc.fill();
+  sc.beginPath();sc.moveTo(sayX-6,sayY+4);sc.lineTo(sayX,sayY+12);sc.lineTo(sayX+6,sayY+4);sc.closePath();
+  sc.fillStyle='rgba(255,252,245,0.85)';sc.fill();
+  sc.fillStyle='rgba(58,40,24,0.85)';sc.textAlign='center';sc.textBaseline='bottom';
+  sc.fillText(fishSayText,sayX,sayY-2);
+  sc.restore();
+}
+
+// ═══════════════════════════════════════════════════════
+// ★ 标题 — 手写PNG + 字鱼一体（呼吸微晃）
+// ═══════════════════════════════════════════════════════
+var titleImg=new Image();titleImg.src='/moyu/moyu-title.png';var titleLoaded=false;
+titleImg.onload=function(){
+  var tc=document.createElement('canvas');tc.width=titleImg.naturalWidth;tc.height=titleImg.naturalHeight;
+  var tctx=tc.getContext('2d');tctx.drawImage(titleImg,0,0);
+  var id=tctx.getImageData(0,0,tc.width,tc.height),d=id.data;
+  for(var i=0;i<d.length;i+=4){
+    if(d[i]>230&&d[i+1]>230&&d[i+2]>230)d[i+3]=0;
+    else if(d[i]>200&&d[i+1]>200&&d[i+2]>200)d[i+3]=Math.round((255-d[i])*2);
+  }
+  tctx.putImageData(id,0,0);
+  titleImg.src=tc.toDataURL('image/png');titleLoaded=true;
+};
 
 function drawTitle(){
+  if(state===ST.FORTUNE&&fortuneShow>0.3)return;
+  if(state===ST.STORY)return;
+  if(!titleLoaded)return;
   sc.save();
-  var a=state===ST.FORTUNE?Math.max(0,1-fortuneShow*3):0.65;sc.globalAlpha=a;
-  sc.font='600 30px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.text;sc.textAlign='center';
-  sc.fillText('摸 鱼',W/2,H*0.09+18);
-  sc.font='13px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.textLight;sc.globalAlpha=a*0.55;
-  sc.fillText('打工人的小确幸',W/2,H*0.09+40);
+  var a=state===ST.FORTUNE?Math.max(0,1-fortuneShow*3):0.55;
+  sc.globalAlpha=a;
+  // ★ 字鱼一体：标题跟随鱼的呼吸微晃
+  var breathRot=Math.sin(koi.breathPhase)*0.008;
+  var breathY=Math.sin(koi.breathPhase)*1.5;
+  var iw=titleImg.naturalWidth||1802,ih=titleImg.naturalHeight||1925;
+  var ratio=iw/ih;
+  var maxW=W*0.7,maxH=H*0.16;
+  var dw,dh;
+  if(maxW/maxH>ratio){dh=maxH;dw=dh*ratio;}else{dw=maxW;dh=dw/ratio;}
+  var tx=W/2,ty=H*0.16;
+  sc.translate(tx,ty+breathY);sc.rotate(breathRot);
+  sc.drawImage(titleImg,-dw/2,-dh/2,dw,dh);
   sc.restore();
 }
 
-function drawHint(){
-  if(state===ST.IDLE&&pokeCount===0){sc.save();sc.globalAlpha=0.3+0.25*Math.sin(frame*0.04);sc.font='15px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.textLight;sc.textAlign='center';sc.fillText('戳戳锦鲤',W/2,H*0.78);sc.restore();}
-  if(state===ST.POKE1||(state===ST.IDLE&&pokeCount===1)){sc.save();sc.globalAlpha=0.3+0.2*Math.sin(frame*0.05);sc.font='14px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.textLight;sc.textAlign='center';sc.fillText('再戳？',W/2,H*0.78);sc.restore();}
-  if(state===ST.POKE2||(state===ST.IDLE&&pokeCount===2)){sc.save();sc.globalAlpha=0.4+0.2*Math.sin(frame*0.06);sc.font='14px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.orange;sc.textAlign='center';sc.fillText('再来一下！',W/2,H*0.78);sc.restore();}
-}
-
+// ═══════════════════════════════════════════════════════
+// ★ 签文卡
+// ═══════════════════════════════════════════════════════
 function drawFortune(){
   sc.save();var cx=W/2,cy=H*0.44,cardW=Math.min(W*0.82,320),cardH=cardW*1.15;
   var isTM=currentFortune==='天命';
-  if(isTM&&fortuneShow>0.1){sc.fillStyle='rgba(255,215,0,'+(0.25+Math.sin(frame*0.06)*0.12)+')';sc.beginPath();sc.arc(cx,cy,cardW*0.7,0,6.28);sc.fill();}
+  if(isTM&&fortuneShow>0.1){sc.fillStyle='rgba(255,215,0,'+(0.15+Math.sin(frame*0.04)*0.08)+')';sc.beginPath();sc.arc(cx,cy,cardW*0.6,0,6.28);sc.fill();}
   sc.globalAlpha=Math.min(1,fortuneShow*1.8);
-  sc.shadowColor='rgba(0,0,0,0.1)';sc.shadowBlur=20;sc.shadowOffsetY=6;sc.fillStyle=CLR.white;
-  rrect(cx-cardW/2,cy-cardH/2,cardW,cardH,18);sc.fill();sc.shadowBlur=0;sc.shadowOffsetY=0;
-  sc.strokeStyle=FC[currentFortune]||CLR.textLight;sc.lineWidth=isTM?3:2;rrect(cx-cardW/2,cy-cardH/2,cardW,cardH,18);sc.stroke();
+  sc.shadowColor='rgba(0,0,0,0.06)';sc.shadowBlur=12;sc.shadowOffsetY=3;sc.fillStyle=CLR.white;
+  rrect(cx-cardW/2,cy-cardH/2,cardW,cardH,16);sc.fill();sc.shadowBlur=0;sc.shadowOffsetY=0;
+  sc.strokeStyle=FC[currentFortune]||CLR.textLight;sc.lineWidth=isTM?2:1.5;rrect(cx-cardW/2,cy-cardH/2,cardW,cardH,16);sc.stroke();
+  // 小锦鲤
+  var fishA=Math.max(0,(fortuneShow-0.15)/0.5);
+  if(fishA>0){sc.globalAlpha=fishA;drawMiniFish(cx,cy-cardH*0.33,cardW*0.13,FC[currentFortune]||CLR.orange);}
+  // 运势字
   sc.globalAlpha=Math.max(0,(fortuneShow-0.2)/0.6);
-  sc.font='bold 44px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=FC[currentFortune]||CLR.text;sc.textAlign='center';sc.textBaseline='middle';
-  sc.fillText(currentFortune,cx,cy-cardH*0.2);
+  sc.font='bold 42px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=FC[currentFortune]||CLR.text;sc.textAlign='center';sc.textBaseline='middle';
+  sc.fillText(currentFortune,cx,cy-cardH*0.15);
+  // 签文 — 逗号断行
   var ma=Math.max(0,(fortuneShow-0.5)/0.5);
-  if(ma>0){sc.globalAlpha=ma;sc.font='16px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.text;wrapText(currentText,cx,cy+cardH*0.06,cardW*0.75,24);}
-  var ba=Math.max(0,(fortuneShow-0.7)/0.3);
-  if(ba>0){sc.globalAlpha=ba*0.35;sc.font='11px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.textLight;sc.fillText('摸鱼 · 打工人的小确幸',cx,cy+cardH*0.35);}
-  if(fortuneShow>=0.9){var bw=cardW*0.35,bh=36,bx=cx-bw/2,by=cy+cardH*0.72-bh/2;sc.globalAlpha=0.85;sc.fillStyle=FC[currentFortune]||CLR.orange;rrect(bx,by,bw,bh,bh/2);sc.fill();sc.globalAlpha=1;sc.font='bold 14px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle='#fff';sc.textBaseline='middle';sc.fillText('分享',cx,by+bh/2+1);}
-  if(fortuneShow>=1){sc.globalAlpha=0.4+0.15*Math.sin(frame*0.05);sc.font='13px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.textLight;sc.textBaseline='alphabetic';sc.fillText('再戳锦鲤 →',cx,cy+cardH*0.55);}
+  if(ma>0){sc.globalAlpha=ma;sc.save();sc.translate(cx,cy+cardH*0.02);sc.rotate(-0.02);
+    sc.font='18px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.text;sc.textAlign='center';
+    var lines=currentText.split('，'),lh=26,ly=-(lines.length-1)*lh/2;
+    for(var li=0;li<lines.length;li++){var lt=lines[li];if(li<lines.length-1)lt+='，';sc.fillText(lt,0,ly+li*lh);}
+  sc.restore();}
+  // 按钮
+  if(fortuneShow>=0.9){
+    var bw2=cardW*0.33,bh2=34,bx2=cx-bw2/2,by2=cy+cardH*0.25;
+    sc.globalAlpha=0.85;sc.fillStyle=FC[currentFortune]||CLR.orange;rrect(bx2,by2,bw2,bh2,bh2/2);sc.fill();
+    sc.globalAlpha=1;sc.font='bold 13px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle='#fff';sc.textBaseline='middle';sc.fillText('分享',cx,by2+bh2/2+1);
+    // 回去看鱼
+    sc.globalAlpha=0.5+0.08*Math.sin(frame*0.04);
+    sc.font='15px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.textLight;sc.textAlign='center';sc.textBaseline='middle';
+    sc.fillText('↩ 回去看鱼',cx,cy+cardH*0.38);
+    // 故事入口
+    sc.globalAlpha=0.3+0.06*Math.sin(frame*0.03);
+    sc.font='13px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.textLight;
+    sc.fillText('这条鱼的故事',cx,cy+cardH*0.45);
+  }
   sc.restore();
 }
-function wrapText(t,x,y,mw,lh){var ws=t.split(''),ln='',ty=y;for(var i=0;i<ws.length;i++){var tl=ln+ws[i];if(sc.measureText(tl).width>mw&&ln.length>0){sc.fillText(ln,x,ty);ln=ws[i];ty+=lh;}else ln=tl;}sc.fillText(ln,x,ty);}
-function rrect(x,y,w,h,r){r=Math.min(r,w/2,h/2);sc.beginPath();sc.moveTo(x+r,y);sc.lineTo(x+w-r,y);sc.quadraticCurveTo(x+w,y,x+w,y+r);sc.lineTo(x+w,y+h-r);sc.quadraticCurveTo(x+w,y+h,x+w-r,y+h);sc.lineTo(x+r,y+h);sc.quadraticCurveTo(x,y+h,x,y+h-r);sc.lineTo(x,y+r);sc.quadraticCurveTo(x,y,x+r,y);sc.closePath();}
 
-// ── 分享卡 ──
-function generateShareCard(){
+// ═══════════════════════════════════════════════════════
+// ★ 彩蛋：这条鱼的故事（东东枪风格）
+// ═══════════════════════════════════════════════════════
+var STORY_LINES=[
+  '这条鱼不是画出来的。','',
+  '它是一条累了很久的鱼。它不想动，不想翻跟头，不想给你表演才艺。你戳它，它翻白眼。你再戳，它烦了。你还戳，它终于忍不了，跳出水面——不是为了好看，是真的被你逼急了。','',
+  '然后它给你签了一卦。不是"今天适合努力"那种，是真的替你说了一句你说不出口的话。','',
+  '做这条鱼的人有点奇怪。一个叫义山，一个叫剑灵。义山不懂代码，但他知道鱼应该是什么脾气。剑灵懂代码，但它得学——鱼为什么不想动。','',
+  '有一版鱼像胡萝卜。有一版鱼会飘到天上去。有一版签文全是鸡汤，被义山一句话毙了："我要的是共情，不是打气。"','',
+  '后来义山发了张图。东东枪《六里庄遗事》封面上的鱼。他说："这条鱼不是装饰，是故事伸出的手。"','',
+  '剑灵懂了。','',
+  '"看着看着就笑了，笑着笑着就伤心了。"义山说这就是味儿。','',
+  '所以这条鱼，它很累，但它陪你。它不说加油，它说——累了就歇会儿吧。','',
+  '这不是鸡汤。这是鱼汤。很淡，但够暖。'
+];
+
+function drawStoryOverlay(){
+  sc.save();
+  // 半透明遮罩
+  sc.globalAlpha=storyShow*0.82;sc.fillStyle='rgba(42,30,15,0.7)';sc.fillRect(0,0,W,H);
+  // 卡片
+  var cardW=Math.min(W*0.85,340),cardH=Math.min(H*0.78,560);
+  var cx=W/2,cy=H*0.48;
+  sc.globalAlpha=storyShow;sc.fillStyle=CLR.white;
+  rrect(cx-cardW/2,cy-cardH/2,cardW,cardH,16);sc.fill();
+  sc.strokeStyle='rgba(154,136,120,0.3)';sc.lineWidth=1;rrect(cx-cardW/2,cy-cardH/2,cardW,cardH,16);sc.stroke();
+  // 标题
+  sc.font='bold 20px "ZCOOL KuaiLe","PingFang SC",sans-serif';sc.fillStyle=CLR.text;
+  sc.textAlign='center';sc.textBaseline='top';
+  sc.fillText('这条鱼的故事',cx,cy-cardH*0.44);
+  // 分割线
+  sc.beginPath();sc.moveTo(cx-cardW*0.3,cy-cardH*0.44+28);sc.lineTo(cx+cardW*0.3,cy-cardH*0.44+28);
+  sc.strokeStyle='rgba(154,136,120,0.2)';sc.lineWidth=1;sc.stroke();
+  // 故事正文
+  sc.font='14px "PingFang SC","Microsoft YaHei",sans-serif';sc.fillStyle=CLR.text;sc.textAlign='left';
+  var textX=cx-cardW*0.38,textY=cy-cardH*0.34,lineH=24,maxTW=cardW*0.76;
+  for(var i=0;i<STORY_LINES.length;i++){
+    if(STORY_LINES[i]===''){textY+=lineH*0.35;continue;}
+    var line='',words=STORY_LINES[i];
+    for(var j=0;j<words.length;j++){
+      var tl=line+words[j];
+      if(sc.measureText(tl).width>maxTW&&line.length>0){sc.fillText(line,textX,textY);line=words[j];textY+=lineH;}
+      else line=tl;
+    }
+    sc.fillText(line,textX,textY);textY+=lineH;
+  }
+  // 小锦鲤装饰
+  drawMiniFish(cx+cardW*0.32,cy-cardH*0.42,20,CLR.orange);
+  // 关闭提示
+  sc.globalAlpha=0.35+0.08*Math.sin(frame*0.03);
+  sc.font='13px "ZCOOL KuaiLe",sans-serif';sc.fillStyle=CLR.textLight;sc.textAlign='center';sc.textBaseline='bottom';
+  sc.fillText('点任意处关闭',cx,cy+cardH*0.46);
+  sc.restore();
+}
+
+// ─── 分享 ───
+function drawShareFish(ctx2,fx,fy,sz,color){
+  ctx2.save();ctx2.translate(fx,fy);
+  var w=sz,h=sz*0.6;
+  ctx2.beginPath();ctx2.moveTo(-w*0.35,0);
+  ctx2.bezierCurveTo(-w*0.5,-h*0.6,-w*0.7,-h*0.5,-w*0.8,-h*0.15);
+  ctx2.bezierCurveTo(-w*0.65,0,-w*0.65,0,-w*0.8,h*0.15);
+  ctx2.bezierCurveTo(-w*0.7,h*0.5,-w*0.5,h*0.6,-w*0.35,0);
+  ctx2.closePath();ctx2.fillStyle=color;ctx2.globalAlpha=0.7;ctx2.fill();ctx2.globalAlpha=1;
+  ctx2.beginPath();ctx2.ellipse(0,0,w*0.4,h*0.5,0,0,6.28);ctx2.closePath();
+  var bg2=ctx2.createRadialGradient(w*0.05,-h*0.1,0,0,0,w*0.4);
+  bg2.addColorStop(0,'#FFB87D');bg2.addColorStop(0.6,'#FF9A5C');bg2.addColorStop(1,'#E07030');
+  ctx2.fillStyle=bg2;ctx2.fill();
+  ctx2.beginPath();ctx2.ellipse(0,-h*0.15,w*0.2,h*0.14,0,0,6.28);
+  var wg2=ctx2.createRadialGradient(0,-h*0.15,0,0,-h*0.15,w*0.2);
+  wg2.addColorStop(0,'rgba(255,252,245,0.4)');wg2.addColorStop(1,'rgba(255,248,235,0)');
+  ctx2.fillStyle=wg2;ctx2.fill();
+  ctx2.beginPath();ctx2.ellipse(w*0.2,h*0.15,w*0.07,h*0.05,0,0,6.28);ctx2.fillStyle='rgba(255,120,120,0.25)';ctx2.fill();
+  var er2=Math.max(4,w*0.1),ex2=w*0.15,ey2=-h*0.02;
+  var lv2=currentFortune;
+  if(lv2==='天命'||lv2==='大吉'){
+    ctx2.beginPath();ctx2.moveTo(ex2-er2,ey2+er2*0.2);ctx2.quadraticCurveTo(ex2,ey2-er2*0.6,ex2+er2,ey2+er2*0.2);
+    ctx2.strokeStyle='rgba(255,255,255,0.6)';ctx2.lineWidth=2.5;ctx2.lineCap='round';ctx2.stroke();
+  }else if(lv2==='小凶'||lv2==='凶'){
+    ctx2.beginPath();ctx2.arc(ex2,ey2,er2*0.9,0,6.28);ctx2.fillStyle='#FFFEF8';ctx2.fill();
+    ctx2.beginPath();ctx2.arc(ex2+er2*0.05,ey2+er2*0.15,er2*0.3,0,6.28);ctx2.fillStyle='#2A1A0A';ctx2.fill();
+    ctx2.beginPath();ctx2.ellipse(ex2+er2*0.7,ey2+er2*0.5,er2*0.1,er2*0.15,0.1,0,6.28);ctx2.fillStyle='rgba(180,220,255,0.4)';ctx2.fill();
+  }else{
+    ctx2.beginPath();ctx2.moveTo(ex2-er2*0.9,ey2-er2*0.05);ctx2.quadraticCurveTo(ex2,ey2+er2*0.3,ex2+er2*0.9,ey2-er2*0.05);
+    ctx2.strokeStyle='rgba(255,255,255,0.5)';ctx2.lineWidth=2.5;ctx2.lineCap='round';ctx2.stroke();
+  }
+  ctx2.restore();
+}
+
+function doShare(){
   var cv=document.createElement('canvas'),ctx=cv.getContext('2d');cv.width=1200;cv.height=630;
   var isTM=currentFortune==='天命',fc=FC[currentFortune]||CLR.textLight;
   if(isTM){var g=ctx.createLinearGradient(0,0,1200,630);g.addColorStop(0,'#FFD700');g.addColorStop(0.5,'#FFF8DC');g.addColorStop(1,'#FFD700');ctx.fillStyle=g;}
   else ctx.fillStyle=fc;
   ctx.fillRect(0,0,1200,630);
-  ctx.globalAlpha=0.1;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(900,150,200,0,6.28);ctx.fill();ctx.beginPath();ctx.arc(200,500,150,0,6.28);ctx.fill();ctx.globalAlpha=1;
-  ctx.font='bold 160px "ZCOOL KuaiLe",sans-serif';ctx.fillStyle=isTM?'#8B6E4E':'rgba(255,255,255,0.95)';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,0.15)';ctx.shadowBlur=10;ctx.fillText(currentFortune,600,210);
-  ctx.font='48px "ZCOOL KuaiLe",sans-serif';ctx.fillStyle=isTM?'#8B6E4E':'rgba(255,255,255,0.9)';ctx.shadowBlur=5;var txt=currentText,mw=960,ln='',ls=[];for(var i=0;i<txt.length;i++){var tl=ln+txt[i];if(ctx.measureText(tl).width>mw&&ln.length>0){ls.push(ln);ln=txt[i];}else ln=tl;}ls.push(ln);var sy=380-(ls.length-1)*35;for(var i=0;i<ls.length;i++)ctx.fillText(ls[i],600,sy+i*65);
-  ctx.font='26px "ZCOOL KuaiLe",sans-serif';ctx.fillStyle=isTM?'rgba(139,110,78,0.6)':'rgba(255,255,255,0.6)';ctx.shadowBlur=0;ctx.fillText('摸鱼 · 打工人的小确幸',600,540);
-  var du=cv.toDataURL('image/png'),lk=document.createElement('a');lk.download='摸鱼运势-'+new Date().toLocaleDateString('zh-CN')+'.png';lk.href=du;lk.click();
+  ctx.globalAlpha=0.06;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(900,150,200,0,6.28);ctx.fill();
+  ctx.beginPath();ctx.arc(200,500,150,0,6.28);ctx.fill();ctx.globalAlpha=1;
+  ctx.font='bold 160px "ZCOOL KuaiLe",sans-serif';ctx.fillStyle=isTM?'#8B6E4E':'rgba(255,255,255,0.95)';
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,0.1)';ctx.shadowBlur=8;
+  ctx.fillText(currentFortune,600,180);
+  ctx.shadowBlur=0;drawShareFish(ctx,600,300,80,fc);
+  ctx.font='44px "ZCOOL KuaiLe",sans-serif';ctx.fillStyle=isTM?'#8B6E4E':'rgba(255,255,255,0.88)';ctx.shadowBlur=4;
+  var txt=currentText,mw=960,ln='',ls=[];
+  for(var i=0;i<txt.length;i++){var tl=ln+txt[i];if(ctx.measureText(tl).width>mw&&ln.length>0){ls.push(ln);ln=txt[i];}else ln=tl;}
+  ls.push(ln);var sy=410-(ls.length-1)*30;for(var i=0;i<ls.length;i++)ctx.fillText(ls[i],600,sy+i*60);
+  ctx.font='24px "ZCOOL KuaiLe",sans-serif';ctx.fillStyle=isTM?'rgba(139,110,78,0.55)':'rgba(255,255,255,0.55)';ctx.shadowBlur=0;
+  ctx.fillText('摸鱼 · 打工人的小确幸',600,540);
+  var dataURL=cv.toDataURL('image/png');
+  if(navigator.share&&navigator.canShare){
+    try{cv.toBlob(function(blob){if(!blob)return;
+      var file=new File([blob],'摸鱼运势.png',{type:'image/png'});
+      if(navigator.canShare({files:[file]})){navigator.share({files:[file],title:'摸鱼运势',text:currentText}).catch(function(){});return;}
+    },'image/png');}catch(e){}
+  }
+  var overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;';
+  var img=document.createElement('img');img.src=dataURL;img.style.cssText='max-width:85%;max-height:60%;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.3);';
+  var tip=document.createElement('div');tip.style.cssText='color:rgba(255,255,255,0.8);font-size:14px;margin-top:16px;font-family:"ZCOOL KuaiLe",sans-serif;';tip.textContent='长按图片保存';
+  var close=document.createElement('div');close.style.cssText='color:rgba(255,255,255,0.5);font-size:13px;margin-top:12px;cursor:pointer;';close.textContent='点这里关闭';
+  close.onclick=function(){document.body.removeChild(overlay);};
+  overlay.onclick=function(e){if(e.target===overlay)document.body.removeChild(overlay);};
+  overlay.appendChild(img);overlay.appendChild(tip);overlay.appendChild(close);document.body.appendChild(overlay);
 }
 
-// ── 启动 ──
+// ─── 工具 ───
+function rrect(x,y,w,h,r){r=Math.min(r,w/2,h/2);sc.beginPath();sc.moveTo(x+r,y);sc.lineTo(x+w-r,y);sc.quadraticCurveTo(x+w,y,x+w,y+r);sc.lineTo(x+w,y+h-r);sc.quadraticCurveTo(x+w,y+h,x+w-r,y+h);sc.lineTo(x+r,y+h);sc.quadraticCurveTo(x,y+h,x,y+h-r);sc.lineTo(x,y+r);sc.quadraticCurveTo(x,y,x+r,y);sc.closePath();}
+
+// ─── 启动 ───
 resize();window.addEventListener('resize',resize);
 function loop(){update();draw();requestAnimationFrame(loop);}
 loop();

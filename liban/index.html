@@ -405,7 +405,7 @@ body {
 
 <div class="game-area">
     <div class="board-container">
-        <div class="board-title">锦鲤合成台</div>
+        <div class="board-title">拖拽同级锦鲤合成 | 点下方收取</div>
         <div class="board" id="board"></div>
     </div>
     
@@ -486,6 +486,7 @@ const FORTUNES = [
 
 // ===== 状态 =====
 let board = Array(GRID_SIZE * GRID_SIZE).fill(null);
+board[0] = 1; board[1] = 1;
 let pondEggs = 3;
 let stamina = MAX_STAMINA;
 let lastGenTime = Date.now() - 60000;
@@ -555,6 +556,12 @@ function initPond() {
 function initEvents() {
     // 运势按钮
     document.getElementById('fortuneBtn').addEventListener('click', showFortune);
+    document.getElementById('fortuneOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeFortune();
+    });
+    document.getElementById('shareOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeShare();
+    });
     document.getElementById('energyBtn').addEventListener('click', addEnergy);
     document.getElementById('collectBtn').addEventListener('click', collectEggs);
     
@@ -847,21 +854,22 @@ function addFloatText(x, y, text, color, size) {
 function collectEggs() {
     if (pondEggs === 0) return;
     
-    // 找一个空位放蛋
     let placed = 0;
     for (let i = 0; i < board.length && pondEggs > 0; i++) {
         if (board[i] === null) {
-            board[i] = 0; // 蛋是0级
+            board[i] = 1; // 直接送1级小锦鲤
             pondEggs--;
             placed++;
         }
     }
     
     if (placed > 0) {
-        addFloatText(window.innerWidth / 2, window.innerHeight / 2, `+${placed}锦鲤蛋`, '#F97316', 20);
+        addFloatText(window.innerWidth / 2, window.innerHeight / 2, '+' + placed + '条小锦鲤!', '#F97316', 22);
         saveGame();
         renderBoard();
         updateUI();
+    } else {
+        addFloatText(window.innerWidth / 2, window.innerHeight / 2, '棋盘已满!', '#EF4444', 20);
     }
 }
 
@@ -903,7 +911,12 @@ function checkFortune() {
     localStorage.setItem('liban_fortune', JSON.stringify(fortune));
     
     // 首次显示
-    setTimeout(() => showFortune(), 500);
+    // 不自动弹运势窗，改为运势按钮显示提示
+    if (fortune) {
+        const btn = document.getElementById('fortuneBtn');
+        btn.style.boxShadow = '0 0 0 3px #F97316, 0 2px 8px rgba(249,115,22,0.5)';
+        btn.textContent = fortune.name.charAt(0);
+    }
 }
 
 function showFortune() {
@@ -1040,6 +1053,7 @@ function loadGame() {
         try {
             const data = JSON.parse(saved);
             board = data.board || Array(GRID_SIZE * GRID_SIZE).fill(null);
+            if (!data.board) { board[0] = 1; board[1] = 1; }
             pondEggs = data.pondEggs !== undefined ? data.pondEggs : 3;
             stamina = data.stamina || MAX_STAMINA;
             lastGenTime = data.lastGenTime || Date.now();

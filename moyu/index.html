@@ -34,8 +34,8 @@ function resize(){
   sc.setTransform(dpr,0,0,dpr,0,0);
   initLayout();
 }
-resize();
-window.addEventListener('resize',resize);
+
+
 
 // ── 颜色 ──
 var CLR={
@@ -124,7 +124,7 @@ function initFloaters(){
   }
 }
 
-initLayout();
+resize();window.addEventListener('resize',resize);
 
 // ── 缘分派算法 ──
 function getUserSeed(){

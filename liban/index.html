@@ -7,100 +7,93 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-:root { --primary: #F97316; --accent: #8B5CF6; --gold: #FFD700; }
-body, html { width: 100%; height: 100%; overflow: hidden; touch-action: none; font-family: 'Noto Sans SC', sans-serif; }
-#game-world { position: relative; width: 100%; height: 100%; background: linear-gradient(180deg, #57c5b6 0%, #1a5f7a 100%); }
+body, html { width: 100%; height: 100%; overflow: hidden; touch-action: none; font-family: 'Noto Sans SC', sans-serif; background: #1a5f7a; }
+#game-world { position: relative; width: 100%; height: 100%; }
 #game-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-.top-bar {
-    position: absolute; top: 0; left: 0; right: 0; z-index: 20;
-    padding: 12px 16px; display: flex; align-items: center; gap: 10px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 100%);
+.pond-title {
+    position: absolute; top: max(env(safe-area-inset-top), 14px); left: 18px; z-index: 20;
+    font-family: 'Noto Serif SC', serif; font-size: 17px; font-weight: 700;
+    color: rgba(255,215,0,0.75); text-shadow: 0 1px 8px rgba(0,0,0,0.5), 0 0 12px rgba(255,215,0,0.15);
+    pointer-events: none;
 }
-.top-logo { font-family: 'Noto Serif SC', serif; font-size: 20px; font-weight: 700; color: var(--gold); text-shadow: 0 1px 6px rgba(0,0,0,0.4); }
-.top-spacer { flex: 1; }
 .fortune-btn {
-    width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--gold);
-    background: linear-gradient(135deg, var(--accent), var(--primary));
+    position: absolute; top: max(env(safe-area-inset-top), 14px); right: 18px; z-index: 20;
+    width: 36px; height: 36px; border-radius: 50%; border: none;
+    background: radial-gradient(circle at 40% 40%, rgba(139,92,246,0.5), rgba(249,115,22,0.35));
+    box-shadow: 0 0 10px rgba(255,215,0,0.25), inset 0 0 6px rgba(255,255,255,0.15);
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 700; color: #fff; cursor: pointer;
-    box-shadow: 0 2px 12px rgba(249,115,22,0.4);
+    font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.85); cursor: pointer;
 }
-.fortune-btn:active { transform: scale(0.92); }
+.fortune-btn:active { transform: scale(0.9); }
 
 .tap-hint {
-    position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
-    font-size: 18px; font-weight: 500; color: #fff;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 0 20px rgba(255,215,0,0.3);
-    animation: pulse 2s ease-in-out infinite; pointer-events: none; z-index: 10;
-    background: rgba(0,0,0,0.25); padding: 10px 24px; border-radius: 30px;
-    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    position: absolute; bottom: 58px; left: 50%; transform: translateX(-50%);
+    font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.5);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    animation: hintPulse 3s ease-in-out infinite; pointer-events: none; z-index: 10;
+    white-space: nowrap;
 }
-@keyframes pulse {
-    0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
-    50% { opacity: 1; transform: translateX(-50%) scale(1.03); }
-}
+@keyframes hintPulse { 0%, 100% { opacity: .4; } 50% { opacity: .75; } }
 
 .merge-entry {
-    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-    z-index: 15; display: flex; gap: 12px;
+    position: absolute; bottom: max(env(safe-area-inset-bottom), 12px); left: 50%; transform: translateX(-50%);
+    z-index: 15; display: flex; gap: 28px;
 }
 .merge-btn {
-    padding: 12px 24px; border-radius: 30px; border: none; cursor: pointer;
-    font-family: 'Noto Sans SC', sans-serif; font-size: 14px; font-weight: 700;
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: transform 0.15s;
+    padding: 0; border: none; cursor: pointer; font-family: 'Noto Sans SC', sans-serif;
+    font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.45);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3); background: none; transition: color 0.2s;
 }
-.merge-btn:active { transform: scale(0.95); }
-.btn-merge { background: linear-gradient(135deg, var(--primary), #ffb347); color: #fff; box-shadow: 0 4px 15px rgba(249,115,22,0.5); }
-.btn-collection { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.merge-btn:active { color: rgba(255,255,255,0.8); }
 
 .fortune-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); display: flex; flex-direction: column;
+    background: rgba(0,0,0,0.5); display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; z-index: 100;
 }
 .fortune-overlay.visible { opacity: 1; visibility: visible; }
 .fortune-card-container {
-    position: relative; width: min(380px, 85vw); aspect-ratio: 2/3;
-    transform: scale(0.8) translateY(50px); opacity: 0;
+    position: relative; width: min(320px, 78vw); aspect-ratio: 2/3;
+    transform: scale(0.8) translateY(40px); opacity: 0;
     transition: transform 0.5s cubic-bezier(0.68,-0.6,0.32,1.6), opacity 0.3s;
 }
 .fortune-overlay.visible .fortune-card-container { transform: scale(1) translateY(0); opacity: 1; }
 .fortune-card {
     width: 100%; height: 100%; position: relative;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 50px 30px; border-radius: 20px; overflow: hidden;
+    padding: 44px 24px; border-radius: 14px; overflow: hidden;
 }
 .fortune-card-bg {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; border-radius: 20px;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; border-radius: 14px;
 }
 .fortune-chinese {
-    font-family: 'Noto Serif SC', serif; font-size: 64px; font-weight: 700;
-    color: var(--gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,215,0,0.5); margin-bottom: 12px;
+    font-family: 'Noto Serif SC', serif; font-size: 50px; font-weight: 700;
+    color: #ffd700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 16px rgba(255,215,0,0.4); margin-bottom: 8px;
 }
-.fortune-english { font-size: 22px; font-weight: 600; color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); margin-bottom: 20px; }
-.fortune-message { font-size: 16px; color: #ffe4b5; text-align: center; max-width: 280px; line-height: 1.6; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+.fortune-english { font-size: 16px; font-weight: 600; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); margin-bottom: 14px; }
+.fortune-message { font-size: 14px; color: #ffe4b5; text-align: center; max-width: 240px; line-height: 1.6; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
 .fortune-bonus {
-    margin-top: 16px; padding: 8px 20px; border-radius: 20px;
-    background: linear-gradient(135deg, var(--accent), var(--primary));
-    color: #fff; font-size: 14px; font-weight: 700; box-shadow: 0 2px 12px rgba(249,115,22,0.4);
+    margin-top: 12px; padding: 5px 14px; border-radius: 14px;
+    background: linear-gradient(135deg, rgba(139,92,246,0.75), rgba(249,115,22,0.75));
+    color: #fff; font-size: 12px; font-weight: 700;
 }
-.fortune-buttons { display: flex; gap: 12px; margin-top: 24px; width: 100%; max-width: 320px; padding: 0 16px; }
+.fortune-buttons { display: flex; gap: 10px; margin-top: 18px; width: 100%; max-width: 280px; }
 .fortune-btn-action {
-    flex: 1; padding: 16px; font-family: 'Noto Sans SC', sans-serif;
-    font-size: 16px; font-weight: 600; border: none; border-radius: 50px; cursor: pointer;
-    min-height: 56px; display: flex; align-items: center; justify-content: center; transition: transform 0.15s;
+    flex: 1; padding: 12px; font-family: 'Noto Sans SC', sans-serif;
+    font-size: 14px; font-weight: 600; border: none; border-radius: 40px; cursor: pointer;
+    min-height: 44px; display: flex; align-items: center; justify-content: center; transition: transform 0.15s;
 }
 .fortune-btn-action:active { transform: scale(0.95); }
-.btn-share { background: linear-gradient(135deg, var(--gold), #ffb347); color: #8b4513; box-shadow: 0 4px 15px rgba(255,215,0,0.4); }
-.btn-close { background: rgba(255,255,255,0.2); color: #fff; border: 2px solid rgba(255,255,255,0.5); }
+.btn-share { background: linear-gradient(135deg, #ffd700, #ffb347); color: #8b4513; box-shadow: 0 3px 10px rgba(255,215,0,0.3); }
+.btn-close { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); }
 
 .toast {
-    position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: rgba(0,0,0,0.85); color: #fff; padding: 12px 24px; border-radius: 30px;
-    font-size: 14px; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 200;
-    pointer-events: none; text-align: center; max-width: 80%;
+    position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(12px);
+    background: rgba(0,0,0,0.65); color: rgba(255,255,255,0.85); padding: 8px 18px; border-radius: 20px;
+    font-size: 12px; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 200;
+    pointer-events: none; text-align: center; max-width: 75%; white-space: nowrap;
 }
 .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
@@ -108,15 +101,12 @@ body, html { width: 100%; height: 100%; overflow: hidden; touch-action: none; fo
 <body>
 <div id="game-world">
     <canvas id="game-canvas"></canvas>
-    <div class="top-bar">
-        <div class="top-logo">鲤伴</div>
-        <div class="top-spacer"></div>
-        <button class="fortune-btn" id="fortuneBtn" title="今日运势">运</button>
-    </div>
+    <div class="pond-title">鲤伴</div>
+    <button class="fortune-btn" id="fortuneBtn">运</button>
     <div class="tap-hint" id="tap-hint">点一点锦鲤，看看今日运势</div>
     <div class="merge-entry">
-        <button class="merge-btn btn-collection" id="collectionBtn">锦鲤图鉴</button>
-        <button class="merge-btn btn-merge" id="mergeBtn">合成台</button>
+        <button class="merge-btn" id="collectionBtn">图鉴</button>
+        <button class="merge-btn" id="mergeBtn">合成</button>
     </div>
     <div class="fortune-overlay" id="fortune-overlay">
         <div class="fortune-card-container">
@@ -182,60 +172,157 @@ function playSnd(key, vol=0.5) { if (!audioCtx || !audioBufs[key]) return; if (a
 
 const S = { koiX:0, koiY:0, koiAngle:0, swimT:0, koiState:'swimming', jumpP:0, jx:0, jy:0, spA:0, spS:0, ripples:[], sparkles:[], lotus:[], showF:false, fortune:null, audioOn:false };
 const canvas = document.getElementById('game-canvas'), ctx = canvas.getContext('2d');
-function resize() { canvas.width = innerWidth * devicePixelRatio; canvas.height = innerHeight * devicePixelRatio; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+const dpr = window.devicePixelRatio || 1;
+let W = 0, H = 0;
+function resize() { W = window.innerWidth; H = window.innerHeight; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
 resize(); addEventListener('resize', resize);
 
-function initLotus() { S.lotus = [{x:.12,y:.10,t:'f',s:.7},{x:.88,y:.13,t:'p',s:.8},{x:.06,y:.38,t:'p',s:.6},{x:.92,y:.42,t:'f',s:.75},{x:.18,y:.78,t:'p',s:.65},{x:.80,y:.80,t:'f',s:.7}]; }
+function initLotus() {
+    S.lotus = [
+        { x: 0.10, y: 0.18, t: 'f', s: 0.50 },
+        { x: 0.90, y: 0.14, t: 'p', s: 0.55 },
+        { x: 0.05, y: 0.45, t: 'p', s: 0.45 },
+        { x: 0.93, y: 0.50, t: 'f', s: 0.50 },
+        { x: 0.15, y: 0.82, t: 'p', s: 0.40 },
+        { x: 0.85, y: 0.84, t: 'f', s: 0.45 }
+    ];
+}
 
 function drawWater() {
-    const w=innerWidth, h=innerHeight;
-    const g=ctx.createLinearGradient(0,0,0,h); g.addColorStop(0,'#57c5b6'); g.addColorStop(1,'#1a5f7a'); ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
-    const t=S.swimT; ctx.globalAlpha=0.06;
-    for(let i=0;i<8;i++){ const cx=w*(0.15+0.7*((Math.sin(t*0.3+i*1.7)+1)/2)), cy=h*(0.1+0.7*((Math.cos(t*0.2+i*2.3)+1)/2)), r=40+30*Math.sin(t*0.5+i); const g2=ctx.createRadialGradient(cx,cy,0,cx,cy,r); g2.addColorStop(0,'#ffffff'); g2.addColorStop(1,'transparent'); ctx.fillStyle=g2; ctx.fillRect(cx-r,cy-r,r*2,r*2); }
-    ctx.globalAlpha=1;
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#57c5b6'); g.addColorStop(0.5, '#3a9eab'); g.addColorStop(1, '#1a5f7a');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const t = S.swimT;
+    for (let i = 0; i < 6; i++) {
+        const cx = W * (0.15 + 0.7 * ((Math.sin(t * 0.3 + i * 1.7) + 1) / 2));
+        const cy = H * (0.1 + 0.75 * ((Math.cos(t * 0.2 + i * 2.3) + 1) / 2));
+        const r = 25 + 15 * Math.sin(t * 0.5 + i);
+        ctx.globalAlpha = 0.035;
+        const g2 = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        g2.addColorStop(0, '#ffffff'); g2.addColorStop(1, 'transparent');
+        ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
 }
+
 function drawRipples(dt) {
-    if(Math.random()<0.02&&S.koiState==='swimming') S.ripples.push({x:S.koiX+(Math.random()-.5)*50,y:S.koiY+(Math.random()-.5)*30,r:5,mr:35+Math.random()*25,a:.4});
-    for(let i=S.ripples.length-1;i>=0;i--){ const p=S.ripples[i]; p.r+=dt*40; p.a=.4*(1-p.r/p.mr); if(p.r>=p.mr){S.ripples.splice(i,1);continue;} ctx.beginPath(); ctx.strokeStyle=`rgba(255,255,255,${p.a})`; ctx.lineWidth=1.5; ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.stroke(); }
+    if (Math.random() < 0.015 && S.koiState === 'swimming') {
+        S.ripples.push({ x: S.koiX + (Math.random() - .5) * 35, y: S.koiY + (Math.random() - .5) * 20, r: 3, mr: 25 + Math.random() * 18, a: .25 });
+    }
+    for (let i = S.ripples.length - 1; i >= 0; i--) {
+        const p = S.ripples[i]; p.r += dt * 30; p.a = .25 * (1 - p.r / p.mr);
+        if (p.r >= p.mr) { S.ripples.splice(i, 1); continue; }
+        ctx.beginPath(); ctx.strokeStyle = `rgba(255,255,255,${p.a})`; ctx.lineWidth = 1; ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.stroke();
+    }
 }
+
 function drawSparkles(dt) {
-    if(Math.random()<0.04) S.sparkles.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,sc:.3+Math.random()*.5,a:0,ph:'in',l:1.5+Math.random()*2});
-    for(let i=S.sparkles.length-1;i>=0;i--){ const p=S.sparkles[i]; p.l-=dt; if(p.l<=0){S.sparkles.splice(i,1);continue;} if(p.ph==='in'){p.a+=dt*2;if(p.a>=1){p.a=1;p.ph='out';}}else p.a-=dt*.5; if(images.sparkle){ctx.globalAlpha=Math.max(0,p.a);const sz=32*p.sc;ctx.drawImage(images.sparkle,p.x-sz/2,p.y-sz/2,sz,sz);ctx.globalAlpha=1;} }
+    if (Math.random() < 0.025) {
+        S.sparkles.push({ x: Math.random() * W, y: Math.random() * H, sc: .15 + Math.random() * .3, a: 0, ph: 'in', l: 1.5 + Math.random() * 2 });
+    }
+    for (let i = S.sparkles.length - 1; i >= 0; i--) {
+        const p = S.sparkles[i]; p.l -= dt;
+        if (p.l <= 0) { S.sparkles.splice(i, 1); continue; }
+        if (p.ph === 'in') { p.a += dt * 1.2; if (p.a >= 1) { p.a = 1; p.ph = 'out'; } } else { p.a -= dt * .35; }
+        if (images.sparkle) {
+            ctx.globalAlpha = Math.max(0, p.a) * 0.5; const sz = 20 * p.sc;
+            ctx.drawImage(images.sparkle, p.x - sz / 2, p.y - sz / 2, sz, sz); ctx.globalAlpha = 1;
+        }
+    }
 }
-function drawLotus() { for(const l of S.lotus){const x=l.x*innerWidth,y=l.y*innerHeight,img=l.t==='f'?images.lotusFlower:images.lotusPad;if(img){const sz=100*l.s;ctx.drawImage(img,x-sz/2,y-sz/2,sz,sz);}} }
+
+function drawLotus() {
+    for (const l of S.lotus) {
+        const x = l.x * W, y = l.y * H, img = l.t === 'f' ? images.lotusFlower : images.lotusPad;
+        if (img) { const sz = 70 * l.s; ctx.drawImage(img, x - sz / 2, y - sz / 2, sz, sz); }
+    }
+}
 
 function updateKoi(dt) {
-    if(S.koiState==='swimming'){S.swimT+=dt*.6;const cx=innerWidth/2,cy=innerHeight*.5,rx=innerWidth*.22,ry=innerHeight*.1,t=S.swimT;const nx=cx+Math.sin(t)*rx,ny=cy+Math.sin(t*2)*ry;const dx=nx-S.koiX,dy=ny-S.koiY;if(Math.abs(dx)>.1||Math.abs(dy)>.1)S.koiAngle=Math.atan2(dy,dx);S.koiX=nx;S.koiY=ny;}
-    else if(S.koiState==='jumping'){S.jumpP+=dt*1.5;S.spS+=dt*2;S.spA-=dt*1.5;if(S.jumpP>=1){S.koiState='swimming';S.koiX=S.jx;S.koiY=S.jy;for(let i=0;i<4;i++)S.ripples.push({x:S.koiX+(Math.random()-.5)*40,y:S.koiY+(Math.random()-.5)*30,r:5,mr:45+Math.random()*25,a:.5});setTimeout(showFortuneCard,250);}}
+    if (S.koiState === 'swimming') {
+        S.swimT += dt * 0.55;
+        const cx = W / 2, cy = H * 0.40, rx = W * 0.20, ry = H * 0.07, t = S.swimT;
+        const nx = cx + Math.sin(t) * rx, ny = cy + Math.sin(t * 2) * ry;
+        const dx = nx - S.koiX, dy = ny - S.koiY;
+        if (Math.abs(dx) > .1 || Math.abs(dy) > .1) S.koiAngle = Math.atan2(dy, dx);
+        S.koiX = nx; S.koiY = ny;
+    } else if (S.koiState === 'jumping') {
+        S.jumpP += dt * 1.4; S.spS += dt * 2; S.spA -= dt * 1.5;
+        if (S.jumpP >= 1) {
+            S.koiState = 'swimming'; S.koiX = S.jx; S.koiY = S.jy;
+            for (let i = 0; i < 3; i++) S.ripples.push({ x: S.koiX + (Math.random() - .5) * 35, y: S.koiY + (Math.random() - .5) * 25, r: 3, mr: 35 + Math.random() * 18, a: .35 });
+            setTimeout(showFortuneCard, 250);
+        }
+    }
 }
+
 function drawKoi() {
-    const img=S.koiState==='jumping'?images.koiJump:images.koiSwim;if(!img)return;const bs=Math.min(220,innerWidth*.35),ar=img.width/img.height,w=bs,h=bs/ar;let x=S.koiX,y=S.koiY,rot=S.koiAngle,sc=1;
-    if(S.koiState==='jumping'){const p=S.jumpP;y=S.jy-Math.sin(p*Math.PI)*130;rot=-Math.PI/4+p*Math.PI/2;sc=1+Math.sin(p*Math.PI)*.15;}
-    ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.scale(sc,sc);if(S.koiState==='swimming'&&Math.cos(S.koiAngle)<0)ctx.scale(1,-1);ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore();
+    const img = S.koiState === 'jumping' ? images.koiJump : images.koiSwim; if (!img) return;
+    const bs = Math.min(160, W * 0.30), ar = img.width / img.height, w = bs, h = bs / ar;
+    let x = S.koiX, y = S.koiY, rot = S.koiAngle, sc = 1;
+    if (S.koiState === 'jumping') { const p = S.jumpP; y = S.jy - Math.sin(p * Math.PI) * 100; rot = -Math.PI / 4 + p * Math.PI / 2; sc = 1 + Math.sin(p * Math.PI) * .1; }
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sc, sc);
+    if (S.koiState === 'swimming' && Math.cos(S.koiAngle) < 0) ctx.scale(1, -1);
+    ctx.drawImage(img, -w / 2, -h / 2, w, h); ctx.restore();
 }
-function drawSplash() { if(S.spA<=0||!images.splash)return;ctx.globalAlpha=Math.max(0,S.spA);const sz=160*S.spS;ctx.drawImage(images.splash,S.jx-sz/2,S.jy-sz/2,sz,sz);ctx.globalAlpha=1; }
 
-function isOnKoi(px,py){const dx=px-S.koiX,dy=py-S.koiY;return Math.sqrt(dx*dx+dy*dy)<120;}
-function triggerJump(){if(S.koiState!=='swimming'||S.showF)return;S.koiState='jumping';S.jumpP=0;S.jx=S.koiX;S.jy=S.koiY;S.spA=1;S.spS=.5;for(let i=0;i<5;i++)S.ripples.push({x:S.koiX+(Math.random()-.5)*60,y:S.koiY+(Math.random()-.5)*40,r:10,mr:55+Math.random()*35,a:.6});playSnd('splash',.6);}
+function drawSplash() {
+    if (S.spA <= 0 || !images.splash) return;
+    ctx.globalAlpha = Math.max(0, S.spA) * 0.6; const sz = 120 * S.spS;
+    ctx.drawImage(images.splash, S.jx - sz / 2, S.jy - sz / 2, sz, sz); ctx.globalAlpha = 1;
+}
 
-function showFortuneCard(){S.fortune=getTodayFortune();S.showF=true;document.getElementById('fortune-chinese').textContent=S.fortune.chinese;document.getElementById('fortune-english').textContent=S.fortune.english;document.getElementById('fortune-message').textContent=S.fortune.message;document.getElementById('fortune-bonus').textContent=S.fortune.bonus;document.getElementById('fortune-overlay').classList.add('visible');document.getElementById('tap-hint').style.display='none';playSnd('fortune',.5);}
-function hideFC(){S.showF=false;document.getElementById('fortune-overlay').classList.remove('visible');document.getElementById('tap-hint').style.display='block';playSnd('tap',.4);}
-function shareF(){const f=S.fortune;if(!f)return;const t=`鲤伴 · 今日运势\n\n${f.chinese} - ${f.english}\n"${f.message}"\n\n来抽你的锦鲤运势 →`;if(navigator.share)navigator.share({text:t}).catch(()=>cpTxt(t));else cpTxt(t);}
-function cpTxt(t){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>showToast('已复制，分享给好友吧!'));else showToast('请截图分享');}
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('visible');setTimeout(()=>t.classList.remove('visible'),2000);}
+function isOnKoi(px, py) { const dx = px - S.koiX, dy = py - S.koiY; return Math.sqrt(dx * dx + dy * dy) < 90; }
 
-canvas.addEventListener('pointerdown',e=>{initAudio();const r=canvas.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;if(!S.showF&&isOnKoi(x,y))triggerJump();});
-document.getElementById('fortuneBtn').addEventListener('click',showFortuneCard);
-document.getElementById('close-btn').addEventListener('click',hideFC);
-document.getElementById('share-btn').addEventListener('click',shareF);
-document.getElementById('fortune-overlay').addEventListener('click',e=>{if(e.target.id==='fortune-overlay')hideFC();});
-document.getElementById('mergeBtn').addEventListener('click',()=>showToast('合成台开发中...'));
-document.getElementById('collectionBtn').addEventListener('click',()=>showToast('锦鲤图鉴开发中...'));
+function triggerJump() {
+    if (S.koiState !== 'swimming' || S.showF) return;
+    S.koiState = 'jumping'; S.jumpP = 0; S.jx = S.koiX; S.jy = S.koiY; S.spA = 1; S.spS = .5;
+    for (let i = 0; i < 4; i++) S.ripples.push({ x: S.koiX + (Math.random() - .5) * 45, y: S.koiY + (Math.random() - .5) * 30, r: 6, mr: 45 + Math.random() * 25, a: .45 });
+    playSnd('splash', .6);
+}
 
-let lastT=0;
-function loop(ts){const dt=Math.min((ts-lastT)/1000,.1);lastT=ts;drawWater();drawRipples(dt);drawLotus();drawSparkles(dt);updateKoi(dt);drawSplash();drawKoi();requestAnimationFrame(loop);}
+function showFortuneCard() {
+    S.fortune = getTodayFortune(); S.showF = true;
+    document.getElementById('fortune-chinese').textContent = S.fortune.chinese;
+    document.getElementById('fortune-english').textContent = S.fortune.english;
+    document.getElementById('fortune-message').textContent = S.fortune.message;
+    document.getElementById('fortune-bonus').textContent = S.fortune.bonus;
+    document.getElementById('fortune-overlay').classList.add('visible');
+    document.getElementById('tap-hint').style.display = 'none';
+    playSnd('fortune', .5);
+}
+function hideFC() {
+    S.showF = false;
+    document.getElementById('fortune-overlay').classList.remove('visible');
+    document.getElementById('tap-hint').style.display = 'block';
+    playSnd('tap', .4);
+}
+function shareF() {
+    const f = S.fortune; if (!f) return;
+    const t = `鲤伴 · 今日运势\n\n${f.chinese} - ${f.english}\n"${f.message}"\n\n来抽你的锦鲤运势 →`;
+    if (navigator.share) navigator.share({ text: t }).catch(() => cpTxt(t)); else cpTxt(t);
+}
+function cpTxt(t) { if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => showToast('已复制，分享给好友吧!')); else showToast('请截图分享'); }
+function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('visible'); setTimeout(() => t.classList.remove('visible'), 2000); }
 
-async function start(){initLotus();S.koiX=innerWidth/2;S.koiY=innerHeight*.5;await Promise.all([loadImg('koiSwim',ASSETS.koiSwim),loadImg('koiJump',ASSETS.koiJump),loadImg('lotusFlower',ASSETS.lotusFlower),loadImg('lotusPad',ASSETS.lotusPad),loadImg('sparkle',ASSETS.sparkle),loadImg('splash',ASSETS.splash)]);document.getElementById('card-bg').src=ASSETS.cardBg;loadAud('splash',ASSETS.splashSnd);loadAud('fortune',ASSETS.fortuneSnd);loadAud('tap',ASSETS.tapSnd);requestAnimationFrame(loop);}
+canvas.addEventListener('pointerdown', e => { initAudio(); const r = canvas.getBoundingClientRect(); if (!S.showF && isOnKoi(e.clientX - r.left, e.clientY - r.top)) triggerJump(); });
+document.getElementById('fortuneBtn').addEventListener('click', showFortuneCard);
+document.getElementById('close-btn').addEventListener('click', hideFC);
+document.getElementById('share-btn').addEventListener('click', shareF);
+document.getElementById('fortune-overlay').addEventListener('click', e => { if (e.target.id === 'fortune-overlay') hideFC(); });
+document.getElementById('mergeBtn').addEventListener('click', () => showToast('合成台开发中...'));
+document.getElementById('collectionBtn').addEventListener('click', () => showToast('锦鲤图鉴开发中...'));
+
+let lastT = 0;
+function loop(ts) { const dt = Math.min((ts - lastT) / 1000, .1); lastT = ts; drawWater(); drawRipples(dt); drawLotus(); drawSparkles(dt); updateKoi(dt); drawSplash(); drawKoi(); requestAnimationFrame(loop); }
+
+async function start() {
+    initLotus(); S.koiX = W / 2; S.koiY = H * 0.40;
+    await Promise.all([loadImg('koiSwim', ASSETS.koiSwim), loadImg('koiJump', ASSETS.koiJump), loadImg('lotusFlower', ASSETS.lotusFlower), loadImg('lotusPad', ASSETS.lotusPad), loadImg('sparkle', ASSETS.sparkle), loadImg('splash', ASSETS.splash)]);
+    document.getElementById('card-bg').src = ASSETS.cardBg;
+    loadAud('splash', ASSETS.splashSnd); loadAud('fortune', ASSETS.fortuneSnd); loadAud('tap', ASSETS.tapSnd);
+    requestAnimationFrame(loop);
+}
 start();
 </script>
 </body>

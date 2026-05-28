@@ -539,13 +539,32 @@ function drawTitle(){
 }
 
 function drawHint(){
-  if(state!==STATE.IDLE||pokeCount>0) return;
-  var pulse=0.3+0.25*Math.sin(frame*0.04);
-  sc.save();sc.globalAlpha=pulse;
-  sc.font='15px "ZCOOL KuaiLe","PingFang SC",sans-serif';
-  sc.fillStyle=CLR.textLight;sc.textAlign='center';
-  sc.fillText('戳一下锦鲤',W/2,H*0.78);
-  sc.restore();
+  if(state===STATE.IDLE&&pokeCount===0){
+    var pulse=0.3+0.25*Math.sin(frame*0.04);
+    sc.save();sc.globalAlpha=pulse;
+    sc.font='15px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+    sc.fillStyle=CLR.textLight;sc.textAlign='center';
+    sc.fillText('戳戳锦鲤',W/2,H*0.78);
+    sc.restore();
+  }
+  // 第一戳后提示
+  if(state===STATE.POKE1||(state===STATE.IDLE&&pokeCount===1)){
+    var pulse2=0.3+0.2*Math.sin(frame*0.05);
+    sc.save();sc.globalAlpha=pulse2;
+    sc.font='14px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+    sc.fillStyle=CLR.textLight;sc.textAlign='center';
+    sc.fillText('再戳？',W/2,H*0.78);
+    sc.restore();
+  }
+  // 第二戳后提示
+  if(state===STATE.POKE2||(state===STATE.IDLE&&pokeCount===2)){
+    var pulse3=0.4+0.2*Math.sin(frame*0.06);
+    sc.save();sc.globalAlpha=pulse3;
+    sc.font='14px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+    sc.fillStyle=CLR.orange;sc.textAlign='center';
+    sc.fillText('再来一下！',W/2,H*0.78);
+    sc.restore();
+  }
 }
 
 function drawFortune(){

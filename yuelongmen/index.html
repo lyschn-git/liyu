@@ -709,24 +709,24 @@ function drawBubbles(){
     var b=bubbles[i];
     var isAction=b.action||false;
     var lifeRatio=isAction?(b.life/b.maxLife):1;
-    sc.globalAlpha=isAction?(0.4+0.4*lifeRatio):(0.15+Math.sin(b.wobble)*0.05);
+    sc.globalAlpha=isAction?(0.5+0.4*lifeRatio):(0.25+Math.sin(b.wobble)*0.08);
     var drawR=isAction?b.r*(0.6+0.4*lifeRatio):b.r;
     if(isAction){
-      sc.fillStyle='rgba(200,240,255,'+(0.15*lifeRatio)+')';
+      sc.fillStyle='rgba(100,200,220,'+(0.3*lifeRatio)+')';
       sc.beginPath();
       sc.arc(b.x,b.y,drawR*1.2,0,Math.PI*2);
       sc.fill();
     }
-    sc.strokeStyle=isAction?'rgba(180,230,255,'+(0.6*lifeRatio)+')':'rgba(123,196,184,0.4)';
+    sc.strokeStyle=isAction?'rgba(60,160,200,'+(0.8*lifeRatio)+')':'rgba(80,170,190,0.5)';
     sc.lineWidth=isAction?1.0:0.8;
     sc.beginPath();
     sc.arc(b.x,b.y,drawR,0,Math.PI*2);
     sc.stroke();
     // 高光
-    var hlAlpha=isAction?0.6*lifeRatio:0.3;
+    var hlAlpha=isAction?0.8*lifeRatio:0.4;
     sc.fillStyle='rgba(255,255,255,'+hlAlpha+')';
     sc.beginPath();
-    sc.arc(b.x-drawR*0.3,b.y-drawR*0.3,drawR*0.3,0,Math.PI*2);
+    sc.arc(b.x-drawR*0.3,b.y-drawR*0.3,drawR*0.35,0,Math.PI*2);
     sc.fill();
   }
   sc.restore();

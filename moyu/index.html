@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta property="og:title" content="摸鱼 · 打工人的小确幸">
+<meta property="og:description" content="戳一下，让锦鲤替你翻个运">
+<meta property="og:image" content="https://liyu.yisan.run/moyu/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<title>摸鱼 · 打工人的小确幸</title>
+<link href="https://fonts.font.im/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#F5F0E8;position:fixed;top:0;left:0;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<canvas id="gc"></canvas>
+<script>
+// ═══════════════════════════════════════════════
+// 摸鱼 · 打工人的小确幸 · MVP
+// ═══════════════════════════════════════════════
+
+var c=document.getElementById('gc');
+var sc=c.getContext('2d');
+var W,H,dpr;
+
+function resize(){
+  dpr=window.devicePixelRatio||1;
+  W=window.innerWidth;H=window.innerHeight;
+  c.width=W*dpr;c.height=H*dpr;
+  sc.setTransform(dpr,0,0,dpr,0,0);
+}
+resize();
+window.addEventListener('resize',resize);
+
+// ── 状态 ──
+var STATE={IDLE:0,POKE1:1,POKE2:2,LEAP:3,FORTUNE:4,SHARE:5};
+var state=STATE.IDLE;
+var pokeTimer=0;
+var leapProgress=0;
+var fortuneShow=0;
+
+// ── 锦鲤图片 ──
+var koiImg=new Image();var koiLoaded=false;
+koiImg.onload=function(){koiLoaded=true;};
+var koiB64='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';
+koiImg.src='data:image/png;base64,'+koiB64;
+
+// ── 颜色 ──
+var CLR={
+  bg:'#F5F0E8',
+  water1:'#7BC4B8',
+  water2:'#5AA89C',
+  waterDeep:'#3D8E82',
+  gold:'#FFD700',
+  orange:'#FF9A5C',
+  orangeDark:'#E8723A',
+  text:'#3A2818',
+  textLight:'#8B6E4E',
+  white:'#FFFDF8'
+};
+
+// ── 锦鲤状态 ──
+var koi={
+  x:0,y:0,
+  baseY:0,
+  w:0,h:0,
+  breathPhase:0,
+  eyeRoll:0,      // 白眼程度 0-1
+  flipAngle:0,    // 翻身角度
+  leapY:0,        // 跃起偏移
+  snoreSize:0,    // 呼噜泡泡大小
+  snorePhase:0
+};
+
+// ── 呼噜泡泡 ──
+var snoreBubbles=[];
+
+// ── 戳击次数 ──
+var pokeCount=0;
+var pokeResetTimer=0;
+
+// ── 缘分派算法 ──
+function getUserSeed(){
+  var s=localStorage.getItem('moyu_seed');
+  if(!s){s=''+Date.now()+Math.random();localStorage.setItem('moyu_seed',s);}
+  return s;
+}
+
+function hashStr(s){
+  var h=0;
+  for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}
+  return h;
+}
+
+function todayFortune(){
+  var d=new Date();
+  var key=getUserSeed()+'-'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  var h=hashStr(key);
+  var r=Math.abs(h)%1000;
+  // 天命签3%
+  if(r<30) return {level:'tianming',name:'天命',color:'#FFD700'};
+  if(r<100) return {level:'daji',name:'大吉',color:'#FF9A5C'};
+  if(r<280) return {level:'zhongji',name:'中吉',color:'#7BC4B8'};
+  if(r<500) return {level:'xiaoji',name:'小吉',color:'#A8D5C8'};
+  if(r<700) return {level:'ping',name:'平',color:'#C4B89A'};
+  if(r<880) return {level:'xiaoxiong',name:'小凶',color:'#C49A8A'};
+  return {level:'xiong',name:'凶',color:'#B87C6A'};
+}
+
+// ── 打工人签文 ──
+var FORTUNES={
+  daji:[
+    '今日宜摸鱼，老板不在，天助你也',
+    '下午会有好事发生，先摸为敬',
+    '今天的你，连摸鱼都是天选',
+    '有贵人在帮你，你只管躺',
+    '锦鲤说：今天运气全给你了'
+  ],
+  zhongji:[
+    '下午3点会有一杯咖啡主动走向你',
+    '今日适合假装很忙，实际效率翻倍',
+    '中午的饭不会难吃，信我',
+    '有个好消息正在路上，快递那种',
+    '今天开会不会被点名，放心坐后排'
+  ],
+  xiaoji:[
+    '今天的饭不会难吃',
+    '摸鱼不会被发现的概率很高',
+    '下班前能搞定手头的事',
+    '下午比上午顺，撑住',
+    '今天水逆绕着你走'
+  ],
+  ping:[
+    '今日平平，但至少没开会',
+    '运气一般，但也没坏事',
+    '普通的一天，安稳就是福',
+    '不咸不淡，正好摸鱼',
+    '锦鲤翻了个身又睡过去了'
+  ],
+  xiaoxiong:[
+    '有人要找你开会，假装没看见',
+    '今天不宜做任何重要决定',
+    '外卖可能迟到，提前点',
+    '少说话多喝水，保平安',
+    '锦鲤说：今天低调点'
+  ],
+  xiong:[
+    '今天不宜加班，宜早退',
+    '运势低迷，但摸鱼无罪',
+    '可能有锅飞来，注意闪避',
+    '锦鲤都替你发愁，但它也无能为力',
+    '今天适合装病，真的'
+  ],
+  tianming:[
+    '命运说：这条鱼专门为你跃的',
+    '天命所归，今天的锦鲤只属于你',
+    '万年一遇的天命签，赶紧许愿',
+    '今天你被选中了，做什么都顺利',
+    '锦鲤化龙了——它说等你很久了'
+  ]
+};
+
+function getFortuneText(level){
+  var arr=FORTUNES[level]||FORTUNES.ping;
+  var d=new Date();
+  var idx=Math.abs(hashStr(getUserSeed()+d.getDate()))%arr.length;
+  return arr[idx];
+}
+
+var currentFortune=null;
+var currentText='';
+
+// ── 水面 ──
+var waterY=0;
+
+// ── 小装饰 ──
+var floaters=[];
+
+function initFloaters(){
+  floaters=[];
+  for(var i=0;i<8;i++){
+    floaters.push({
+      x:Math.random()*W,
+      y:waterY+Math.random()*(H-waterY),
+      r:2+Math.random()*3,
+      speed:0.15+Math.random()*0.3,
+      phase:Math.random()*Math.PI*2
+    });
+  }
+}
+
+// ── 涟漪 ──
+var ripples=[];
+
+function addRipple(x,y){
+  ripples.push({x:x,y:y,r:5,maxR:40+Math.random()*20,alpha:0.6});
+}
+
+// ── 初始化 ──
+function init(){
+  var sz=Math.min(W,H);
+  koi.w=sz*0.45;
+  koi.h=koi.w*0.542;
+  koi.x=W/2;
+  waterY=H*0.42;
+  koi.baseY=waterY;
+  koi.y=waterY;
+  initFloaters();
+}
+
+init();
+window.addEventListener('resize',function(){resize();init();});
+
+// ── 触摸 ──
+function handlePoke(x,y){
+  // 检查是否点在锦鲤身上（宽松判定）
+  var dx=x-koi.x,dy=y-koi.y;
+  var hitW=koi.w*0.7,hitH=koi.h*0.8;
+  if(Math.abs(dx)>hitW/2||Math.abs(dy)>hitH/2) return;
+
+  if(state===STATE.FORTUNE||state===STATE.SHARE) return;
+
+  addRipple(x,y);
+
+  if(state===STATE.IDLE){
+    pokeCount++;
+    pokeResetTimer=120; // 2秒内不戳就重置
+    if(pokeCount===1){
+      state=STATE.POKE1;
+      pokeTimer=40;
+      koi.eyeRoll=1;
+    }else if(pokeCount===2){
+      state=STATE.POKE2;
+      pokeTimer=40;
+      koi.flipAngle=1;
+    }else{
+      // 第三下或更多：直接跃起
+      state=STATE.LEAP;
+      leapProgress=0;
+      currentFortune=todayFortune();
+      currentText=getFortuneText(currentFortune.level);
+    }
+  }else if(state===STATE.POKE1){
+    pokeCount++;
+    if(pokeCount>=2){
+      state=STATE.POKE2;
+      pokeTimer=40;
+      koi.flipAngle=1;
+    }
+  }else if(state===STATE.POKE2){
+    pokeCount++;
+    if(pokeCount>=3){
+      state=STATE.LEAP;
+      leapProgress=0;
+      currentFortune=todayFortune();
+      currentText=getFortuneText(currentFortune.level);
+    }
+  }
+}
+
+c.addEventListener('touchstart',function(e){
+  e.preventDefault();
+  handlePoke(e.touches[0].clientX,e.touches[0].clientY);
+},{passive:false});
+c.addEventListener('mousedown',function(e){handlePoke(e.clientX,e.clientY);});
+
+// ── 更新 ──
+var frame=0;
+
+function update(){
+  frame++;
+  koi.breathPhase+=0.03;
+
+  // 呼噜泡泡
+  koi.snorePhase+=0.04;
+  if(state===STATE.IDLE&&frame%30===0){
+    snoreBubbles.push({
+      x:koi.x+koi.w*0.3,
+      y:koi.y-koi.h*0.2,
+      r:3+Math.random()*4,
+      life:60,
+      maxLife:60
+    });
+  }
+  for(var i=snoreBubbles.length-1;i>=0;i--){
+    snoreBubbles[i].y-=0.4;
+    snoreBubbles[i].x+=Math.sin(frame*0.05+i)*0.3;
+    snoreBubbles[i].life--;
+    snoreBubbles[i].r+=0.02;
+    if(snoreBubbles[i].life<=0) snoreBubbles.splice(i,1);
+  }
+
+  // Poke状态计时
+  if(state===STATE.POKE1||state===STATE.POKE2){
+    pokeTimer--;
+    if(pokeTimer<=0){
+      if(pokeCount<3){
+        state=STATE.IDLE;
+        koi.eyeRoll=0;
+        koi.flipAngle=0;
+        // 2秒后重置戳击计数
+        pokeResetTimer=120;
+      }
+    }
+  }
+
+  // 戳击重置
+  if(state===STATE.IDLE&&pokeResetTimer>0){
+    pokeResetTimer--;
+    if(pokeResetTimer<=0) pokeCount=0;
+  }
+
+  // 跃起动画
+  if(state===STATE.LEAP){
+    leapProgress+=0.015;
+    if(leapProgress>=1){
+      state=STATE.FORTUNE;
+      fortuneShow=0;
+    }
+    koi.leapY=-Math.sin(leapProgress*Math.PI)*H*0.35;
+  }
+
+  // 签文显现
+  if(state===STATE.FORTUNE){
+    fortuneShow=Math.min(1,fortuneShow+0.02);
+  }
+
+  // 锦鲤呼吸浮动
+  if(state===STATE.IDLE){
+    koi.y=koi.baseY+Math.sin(koi.breathPhase)*3;
+  }
+
+  // 涟漪
+  for(var i=ripples.length-1;i>=0;i--){
+    ripples[i].r+=1.5;
+    ripples[i].alpha-=0.015;
+    if(ripples[i].alpha<=0) ripples.splice(i,1);
+  }
+
+  // 装饰泡泡
+  for(var i=0;i<floaters.length;i++){
+    floaters[i].y-=floaters[i].speed;
+    floaters[i].x+=Math.sin(frame*0.01+floaters[i].phase)*0.3;
+    if(floaters[i].y<waterY-20){
+      floaters[i].y=H+10;
+      floaters[i].x=Math.random()*W;
+    }
+  }
+}
+
+// ── 绘制 ──
+function draw(){
+  sc.clearRect(0,0,W,H);
+
+  // 背景
+  drawBg();
+
+  // 水面
+  drawWater();
+
+  // 装饰泡泡
+  drawFloaters();
+
+  // 涟漪
+  drawRipples();
+
+  // 锦鲤
+  drawKoi();
+
+  // 呼噜泡泡
+  drawSnoreBubbles();
+
+  // 签文
+  if(state===STATE.FORTUNE||state===STATE.SHARE) drawFortune();
+
+  // 提示
+  if(state===STATE.IDLE&&pokeCount===0) drawHint();
+
+  // 标题
+  drawTitle();
+}
+
+function drawBg(){
+  // 暖色背景渐变
+  var g=sc.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#F5F0E8');
+  g.addColorStop(0.4,'#EDE6D8');
+  g.addColorStop(1,'#E0D5C5');
+  sc.fillStyle=g;
+  sc.fillRect(0,0,W,H);
+}
+
+function drawWater(){
+  sc.save();
+  // 水面渐变
+  var g=sc.createLinearGradient(0,waterY-10,0,H);
+  g.addColorStop(0,'rgba(123,196,184,0.08)');
+  g.addColorStop(0.3,'rgba(90,168,156,0.12)');
+  g.addColorStop(1,'rgba(61,142,130,0.15)');
+  sc.fillStyle=g;
+  sc.fillRect(0,waterY-5,W,H-waterY+5);
+
+  // 水面波纹
+  sc.globalAlpha=0.15;
+  sc.strokeStyle=CLR.water1;
+  sc.lineWidth=1;
+  var t=frame*0.02;
+  for(var i=0;i<3;i++){
+    sc.beginPath();
+    var by=waterY+i*8;
+    for(var x=0;x<=W;x+=3){
+      var yy=by+Math.sin(x*0.015+t+i*1.5)*3;
+      x===0?sc.moveTo(x,yy):sc.lineTo(x,yy);
+    }
+    sc.stroke();
+  }
+  sc.globalAlpha=1;
+
+  // 水面光斑
+  sc.globalAlpha=0.06;
+  sc.fillStyle='#FFFFFF';
+  for(var i=0;i<4;i++){
+    var sx=W*0.2+i*W*0.2+Math.sin(t*0.5+i)*20;
+    var sy=waterY+20+i*25+Math.cos(t*0.3+i)*10;
+    sc.beginPath();
+    sc.ellipse(sx,sy,15+i*3,4,0,0,Math.PI*2);
+    sc.fill();
+  }
+  sc.globalAlpha=1;
+  sc.restore();
+}
+
+function drawFloaters(){
+  sc.save();
+  for(var i=0;i<floaters.length;i++){
+    var f=floaters[i];
+    sc.globalAlpha=0.12;
+    sc.strokeStyle='rgba(123,196,184,0.5)';
+    sc.lineWidth=0.6;
+    sc.beginPath();sc.arc(f.x,f.y,f.r,0,Math.PI*2);sc.stroke();
+  }
+  sc.restore();
+}
+
+function drawRipples(){
+  sc.save();
+  for(var i=0;i<ripples.length;i++){
+    var r=ripples[i];
+    sc.globalAlpha=r.alpha*0.5;
+    sc.strokeStyle=CLR.water1;
+    sc.lineWidth=1;
+    sc.beginPath();sc.arc(r.x,r.y,r.r,0,Math.PI*2);sc.stroke();
+  }
+  sc.restore();
+}
+
+function drawKoi(){
+  if(!koiLoaded){
+    sc.save();sc.translate(koi.x,koi.y+koi.leapY);
+    sc.fillStyle='#FF9A5C';sc.beginPath();sc.ellipse(0,0,koi.w/2,koi.h/2,0,0,Math.PI*2);sc.fill();
+    sc.restore();return;
+  }
+
+  sc.save();
+  sc.translate(koi.x,koi.y+koi.leapY);
+
+  // 翻身动画
+  if(state===STATE.POKE2||koi.flipAngle>0){
+    var flipAngle=Math.sin(koi.flipAngle*Math.PI*0.5)*0.3;
+    sc.rotate(flipAngle);
+    koi.flipAngle=Math.max(0,koi.flipAngle-0.03);
+  }
+
+  // 锦鲤光晕
+  if(state===STATE.LEAP||state===STATE.FORTUNE){
+    sc.shadowColor='rgba(255,180,100,0.3)';
+    sc.shadowBlur=20;
+  }
+
+  var kw=koi.w,kh=koi.h;
+  sc.drawImage(koiImg,-kw/2,-kh/2,kw,kh);
+  sc.shadowBlur=0;
+
+  // 白眼动画
+  if(koi.eyeRoll>0){
+    // 画半闭的白眼
+    var eyeX=kw*0.15,eyeY=-kh*0.08;
+    var eyeR=kw*0.06;
+    sc.fillStyle='rgba(255,255,255,'+koi.eyeRoll*0.8+')';
+    sc.beginPath();
+    sc.ellipse(eyeX,eyeY-eyeR*0.3*koi.eyeRoll,eyeR,eyeR*0.4,0,0,Math.PI*2);
+    sc.fill();
+    // 小黑点瞳孔上移
+    sc.fillStyle='rgba(40,30,20,'+koi.eyeRoll*0.6+')';
+    sc.beginPath();
+    sc.arc(eyeX,eyeY-eyeR*0.6*koi.eyeRoll,eyeR*0.25,0,Math.PI*2);
+    sc.fill();
+    // 逐渐恢复
+    if(state!==STATE.POKE1) koi.eyeRoll=Math.max(0,koi.eyeRoll-0.02);
+  }
+
+  // 跃起时的水花效果
+  if(state===STATE.LEAP&&leapProgress<0.3){
+    var splash=1-leapProgress/0.3;
+    sc.globalAlpha=splash*0.4;
+    for(var i=0;i<5;i++){
+      var angle=-Math.PI*0.3+i*Math.PI*0.15;
+      var dist=20+splash*30;
+      var sx=Math.cos(angle)*dist;
+      var sy=Math.sin(angle)*dist+kh*0.3;
+      sc.fillStyle='rgba(123,196,184,0.5)';
+      sc.beginPath();sc.arc(sx,sy,2+splash*3,0,Math.PI*2);sc.fill();
+    }
+    sc.globalAlpha=1;
+  }
+
+  sc.restore();
+}
+
+function drawSnoreBubbles(){
+  sc.save();
+  for(var i=0;i<snoreBubbles.length;i++){
+    var b=snoreBubbles[i];
+    var alpha=b.life/b.maxLife;
+    sc.globalAlpha=alpha*0.3;
+    sc.strokeStyle='rgba(139,110,78,0.4)';
+    sc.lineWidth=0.8;
+    sc.beginPath();sc.arc(b.x,b.y,b.r,0,Math.PI*2);sc.stroke();
+    // 小z
+    if(b.r>4){
+      sc.font='8px sans-serif';
+      sc.fillStyle='rgba(139,110,78,'+alpha*0.3+')';
+      sc.textAlign='center';
+      sc.fillText('z',b.x,b.y);
+    }
+  }
+  sc.restore();
+}
+
+function drawHint(){
+  var pulse=0.4+0.3*Math.sin(frame*0.04);
+  sc.save();
+  sc.globalAlpha=pulse;
+  sc.font='600 15px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  sc.fillStyle=CLR.textLight;
+  sc.textAlign='center';
+  sc.fillText('戳一下锦鲤',W/2,H*0.72);
+  sc.restore();
+}
+
+function drawTitle(){
+  sc.save();
+  // "摸鱼"标题
+  sc.font='600 28px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  sc.fillStyle=CLR.text;
+  sc.textAlign='center';
+  sc.globalAlpha=0.7;
+  sc.fillText('摸鱼',W/2,H*0.08+20);
+  // 副标题
+  sc.font='13px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  sc.fillStyle=CLR.textLight;
+  sc.globalAlpha=0.4;
+  sc.fillText('打工人的小确幸',W/2,H*0.08+42);
+  sc.restore();
+}
+
+function drawFortune(){
+  sc.save();
+  var cx=W/2,cy=H*0.38;
+  var cardW=Math.min(W*0.82,320);
+  var cardH=cardW*1.1;
+
+  // 卡片背景
+  var fadeIn=Math.min(1,fortuneShow*1.5);
+  sc.globalAlpha=fadeIn;
+
+  // 天命签金光
+  if(currentFortune.level==='tianming'&&fadeIn>0.3){
+    var glow=0.3+Math.sin(frame*0.05)*0.15;
+    sc.fillStyle='rgba(255,215,0,'+glow+')';
+    sc.beginPath();sc.arc(cx,cy,cardW*0.7,0,Math.PI*2);sc.fill();
+  }
+
+  // 签卡底色
+  sc.fillStyle=CLR.white;
+  sc.shadowColor='rgba(0,0,0,0.08)';
+  sc.shadowBlur=15;
+  sc.shadowOffsetY=4;
+  roundRect(cx-cardW/2,cy-cardH/2,cardW,cardH,16);
+  sc.fill();
+  sc.shadowBlur=0;sc.shadowOffsetY=0;
+
+  // 签卡边框
+  sc.strokeStyle=currentFortune.color;
+  sc.lineWidth=2;
+  roundRect(cx-cardW/2,cy-cardH/2,cardW,cardH,16);
+  sc.stroke();
+
+  // 运势级别
+  var textAlpha=Math.max(0,(fortuneShow-0.2)/0.8);
+  sc.globalAlpha=textAlpha;
+
+  sc.font='bold 42px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  sc.fillStyle=currentFortune.color;
+  sc.textAlign='center';
+  sc.textBaseline='middle';
+  sc.fillText(currentFortune.name,cx,cy-cardH*0.2);
+
+  // 签文（延迟出现）
+  var msgAlpha=Math.max(0,(fortuneShow-0.5)/0.5);
+  if(msgAlpha>0){
+    sc.globalAlpha=msgAlpha;
+    sc.font='16px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+    sc.fillStyle=CLR.text;
+    // 自动换行
+    wrapText(currentText,cx,cy+cardH*0.05,cardW*0.75,22);
+  }
+
+  // 底部品牌
+  var brandAlpha=Math.max(0,(fortuneShow-0.7)/0.3);
+  if(brandAlpha>0){
+    sc.globalAlpha=brandAlpha*0.35;
+    sc.font='11px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+    sc.fillStyle=CLR.textLight;
+    sc.fillText('摸鱼 · 打工人的小确幸',cx,cy+cardH*0.38);
+  }
+
+  // 再来一签按钮
+  if(fortuneShow>=1){
+    sc.globalAlpha=0.6+0.2*Math.sin(frame*0.05);
+    sc.font='14px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+    sc.fillStyle=CLR.orange;
+    sc.fillText('再戳锦鲤 →',cx,cy+cardH*0.45);
+  }
+
+  sc.restore();
+}
+
+function wrapText(text,x,y,maxW,lineH){
+  var words=text.split('');
+  var line='';
+  var ty=y;
+  for(var i=0;i<words.length;i++){
+    var testLine=line+words[i];
+    if(sc.measureText(testLine).width>maxW&&line.length>0){
+      sc.fillText(line,x,ty);
+      line=words[i];
+      ty+=lineH;
+    }else{
+      line=testLine;
+    }
+  }
+  sc.fillText(line,x,ty);
+}
+
+function roundRect(x,y,w,h,r){
+  r=Math.min(r,w/2,h/2);
+  sc.beginPath();
+  sc.moveTo(x+r,y);sc.lineTo(x+w-r,y);
+  sc.quadraticCurveTo(x+w,y,x+w,y+r);
+  sc.lineTo(x+w,y+h-r);
+  sc.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  sc.lineTo(x+r,y+h);
+  sc.quadraticCurveTo(x,y+h,x,y+h-r);
+  sc.lineTo(x,y+r);
+  sc.quadraticCurveTo(x,y,x+r,y);
+  sc.closePath();
+}
+
+// ── 主循环 ──
+function loop(){
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>

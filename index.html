@@ -2,6 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#FF9A5C">
+<link rel="apple-touch-icon" href="/pwa-icons/liyu-192.png">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta property="og:title" content="鲤·遇 · 有意义的偶然">
 <meta property="og:description" content="轻触锦鲤，遇见有意义的偶然">
@@ -942,5 +945,6 @@ document.addEventListener('touchmove', function(e){if(e.target.closest('#scene-r
 if(window.visualViewport){window.visualViewport.addEventListener('resize',()=>{try{resizeCanvas();}catch(e){}});}
 }catch(e){console.error('鲤遇主脚本错误:',e);document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#FFF8F0;color:#4A3828;font-size:16px;text-align:center;padding:20px">鲤·遇 加载出错<br><br><small style="color:#B8A898;word-break:break-all">'+(e.stack||e.message)+'</small></div>';}
 </script>
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.register('/sw.js')}</script>
 </body>
 </html>

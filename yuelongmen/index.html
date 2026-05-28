@@ -349,14 +349,15 @@ c.addEventListener('touchstart',function(e){
     document.getElementById('pauseOverlay').style.display='flex';
     return;
   }
-  // 菜单页齿轮点击检测
+  // 菜单页振感开关点击检测
   if(state===STATE.MENU){
     var tx=e.touches[0].clientX,ty=e.touches[0].clientY;
-    var dpr=window.devicePixelRatio||1;
-    var dx=tx-((W/dpr)-36),dy=ty-(36/dpr);
-    if(dx*dx+dy*dy<30*30){
+    var dpr2=window.devicePixelRatio||1;
+    // 开关区域：右上角 swX-70 ~ swX, swY-20 ~ swY+20
+    var swR=W/dpr2-16;
+    if(tx>swR-70&&tx<swR&&ty>22&&ty<62){
       vibrateOn=!vibrateOn;
-      try{localStorage.setItem('ylm_vib',vibrateOn?'1':'0');}catch(e){}
+      try{localStorage.setItem('ylm_vib',vibrateOn?'1':'0');}catch(e3){}
       if(vibrateOn)doVibrate(20);
       return;
     }
@@ -365,10 +366,10 @@ c.addEventListener('touchstart',function(e){
 },{passive:false});
 c.addEventListener('mousedown',function(e){
   if(state===STATE.MENU){
-    var dx=e.clientX-((W/(window.devicePixelRatio||1))-36),dy=e.clientY-36;
-    if(dx*dx+dy*dy<30*30){
+    var swR2=W/(window.devicePixelRatio||1)-16;
+    if(e.clientX>swR2-70&&e.clientX<swR2&&e.clientY>22&&e.clientY<62){
       vibrateOn=!vibrateOn;
-      try{localStorage.setItem('ylm_vib',vibrateOn?'1':'0');}catch(e2){}
+      try{localStorage.setItem('ylm_vib',vibrateOn?'1':'0');}catch(e4){}
       if(vibrateOn)doVibrate(20);
       return;
     }
@@ -1031,27 +1032,35 @@ function drawMenu(){
   sc.textAlign='center';
   sc.fillText('鲤·遇出品',W/2,H*0.92);
 
-  // 设置齿轮（右上角）
-  var gearX=W-36,gearY=36,gearR=14;
+  // 振感开关（右上角，文字+滑块，零学习成本）
+  var dpr=window.devicePixelRatio||1;
+  var swX=W/dpr-16,swY=42;
   sc.save();
-  sc.globalAlpha=0.35;
-  sc.translate(gearX,gearY);
-  sc.rotate(Date.now()*0.0005);
-  sc.strokeStyle='#8B6E4E';
-  sc.lineWidth=2;
-  sc.beginPath();sc.arc(0,0,gearR*0.55,0,Math.PI*2);sc.stroke();
-  for(var gi=0;gi<6;gi++){
-    var ga=gi*Math.PI/3;
-    sc.beginPath();
-    sc.moveTo(Math.cos(ga)*gearR*0.45,Math.sin(ga)*gearR*0.45);
-    sc.lineTo(Math.cos(ga)*gearR,Math.sin(ga)*gearR);
-    sc.stroke();
-  }
-  sc.restore();
-  // 振感状态小圆点
-  sc.save();
-  sc.fillStyle=vibrateOn?'rgba(255,154,92,0.7)':'rgba(180,130,80,0.25)';
-  sc.beginPath();sc.arc(gearX,gearY+gearR+8,3,0,Math.PI*2);sc.fill();
+  // 标签
+  sc.font='12px "ZCOOL KuaiLe","PingFang SC",sans-serif';
+  sc.fillStyle='rgba(139,110,78,0.5)';
+  sc.textAlign='right';
+  sc.textBaseline='middle';
+  sc.fillText('振感',swX-36,swY);
+  // 滑块轨道
+  var trackW=32,trackH=16,trackX=swX-30,trackY=swY-trackH/2;
+  sc.fillStyle=vibrateOn?'rgba(255,154,92,0.5)':'rgba(180,130,80,0.2)';
+  sc.beginPath();
+  sc.moveTo(trackX+trackH/2,trackY);
+  sc.lineTo(trackX+trackW-trackH/2,trackY);
+  sc.quadraticCurveTo(trackX+trackW,trackY,trackX+trackW,trackY+trackH/2);
+  sc.quadraticCurveTo(trackX+trackW,trackY+trackH,trackX+trackW-trackH/2,trackY+trackH);
+  sc.lineTo(trackX+trackH/2,trackY+trackH);
+  sc.quadraticCurveTo(trackX,trackY+trackH,trackX,trackY+trackH/2);
+  sc.quadraticCurveTo(trackX,trackY,trackX+trackH/2,trackY);
+  sc.closePath();
+  sc.fill();
+  // 滑块圆点
+  var dotX=vibrateOn?trackX+trackW-8:trackX+8;
+  sc.fillStyle=vibrateOn?'#FF9A5C':'rgba(180,130,80,0.4)';
+  sc.beginPath();
+  sc.arc(dotX,swY,6,0,Math.PI*2);
+  sc.fill();
   sc.restore();
 
   sc.restore();

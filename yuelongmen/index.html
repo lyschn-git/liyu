@@ -201,7 +201,7 @@ var waterY=0;
 var bubbles=[];
 function initBubbles(){
   bubbles=[];
-  for(var i=0;i<12;i++){
+  for(var i=0;i<20;i++){
     bubbles.push({
       x:Math.random()*W,
       y:waterY+Math.random()*(H-waterY),
@@ -209,6 +209,23 @@ function initBubbles(){
       speed:0.2+Math.random()*0.5,
       wobble:Math.random()*Math.PI*2,
       wobbleSpeed:0.01+Math.random()*0.02
+    });
+  }
+}
+
+// ── 动作气泡（拍翅/过门时爆发）──
+function spawnActionBubbles(x,y,count){
+  for(var i=0;i<count;i++){
+    bubbles.push({
+      x:x+(Math.random()-0.5)*35,
+      y:y+(Math.random()-0.5)*20,
+      r:3+Math.random()*7,
+      speed:0.8+Math.random()*1.5,
+      wobble:Math.random()*Math.PI*2,
+      wobbleSpeed:0.03+Math.random()*0.04,
+      life:35+Math.random()*25,
+      maxLife:60,
+      action:true
     });
   }
 }
@@ -306,8 +323,10 @@ function flap(){
     if(graceFrames>0){
       graceFrames=0;
       koi.vy=koi.flapPower;
+      spawnActionBubbles(koi.x-koi.w*0.4,koi.y,4);
     }else{
       koi.vy=koi.flapPower;
+      spawnActionBubbles(koi.x-koi.w*0.4,koi.y,4);
     }
   }
 }
@@ -359,13 +378,16 @@ function update(){
     return;
   }
 
-  // 气泡
-  for(var i=0;i<bubbles.length;i++){
+  // 气泡（含动作气泡生命周期）
+  for(var i=bubbles.length-1;i>=0;i--){
     var b=bubbles[i];
     b.y-=b.speed;
     b.wobble+=b.wobbleSpeed;
     b.x+=Math.sin(b.wobble)*0.3;
-    if(b.y<waterY){
+    if(b.action){
+      b.life--;
+      if(b.life<=0){bubbles.splice(i,1);continue;}
+    }else if(b.y<waterY){
       b.y=H;
       b.x=Math.random()*W;
     }
@@ -431,7 +453,8 @@ function update(){
       else ft=FORTUNE_1[Math.floor(Math.random()*FORTUNE_1.length)];
       var big=(score%10===0&&score>0)?1:(score%5===0&&score>0)?0.8:0;
       floatingTexts.push({text:ft,x:koi.x+koi.w,y:koi.y-koi.h*0.5,life:80,alpha:1,scale:2.0+big*0.5,big:big});
-      // 过门闪光
+      // 过门闪光+气泡爆发
+      spawnActionBubbles(koi.x,koi.y,8);
       for(var j=0;j<6;j++){
         sparkles.push({
           x:koi.x,y:koi.y,
@@ -684,16 +707,26 @@ function drawBubbles(){
   sc.save();
   for(var i=0;i<bubbles.length;i++){
     var b=bubbles[i];
-    sc.globalAlpha=0.15+Math.sin(b.wobble)*0.05;
-    sc.strokeStyle='rgba(123,196,184,0.4)';
-    sc.lineWidth=0.8;
+    var isAction=b.action||false;
+    var lifeRatio=isAction?(b.life/b.maxLife):1;
+    sc.globalAlpha=isAction?(0.4+0.4*lifeRatio):(0.15+Math.sin(b.wobble)*0.05);
+    var drawR=isAction?b.r*(0.6+0.4*lifeRatio):b.r;
+    if(isAction){
+      sc.fillStyle='rgba(200,240,255,'+(0.15*lifeRatio)+')';
+      sc.beginPath();
+      sc.arc(b.x,b.y,drawR*1.2,0,Math.PI*2);
+      sc.fill();
+    }
+    sc.strokeStyle=isAction?'rgba(180,230,255,'+(0.6*lifeRatio)+')':'rgba(123,196,184,0.4)';
+    sc.lineWidth=isAction?1.0:0.8;
     sc.beginPath();
-    sc.arc(b.x,b.y,b.r,0,Math.PI*2);
+    sc.arc(b.x,b.y,drawR,0,Math.PI*2);
     sc.stroke();
     // 高光
-    sc.fillStyle='rgba(255,255,255,0.3)';
+    var hlAlpha=isAction?0.6*lifeRatio:0.3;
+    sc.fillStyle='rgba(255,255,255,'+hlAlpha+')';
     sc.beginPath();
-    sc.arc(b.x-b.r*0.3,b.y-b.r*0.3,b.r*0.25,0,Math.PI*2);
+    sc.arc(b.x-drawR*0.3,b.y-drawR*0.3,drawR*0.3,0,Math.PI*2);
     sc.fill();
   }
   sc.restore();

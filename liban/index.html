@@ -486,9 +486,9 @@ const FORTUNES = [
 
 // ===== 状态 =====
 let board = Array(GRID_SIZE * GRID_SIZE).fill(null);
-let pondEggs = 0;
+let pondEggs = 3;
 let stamina = MAX_STAMINA;
-let lastGenTime = Date.now();
+let lastGenTime = Date.now() - 60000;
 let lastStaminaTime = Date.now();
 let fortune = null;
 let dragItem = null;
@@ -885,14 +885,18 @@ function checkFortune() {
         }
     }
     
-    // 抽签
-    const seed = (new Date().getTime() + Math.random()) % 100;
+    // 缘分派抽签（与鲤·遇一致：用户种子+日期→运势）
+    const userSeed = parseInt(localStorage.getItem('liban_user_seed') || (Date.now() % 100000));
+    localStorage.setItem('liban_user_seed', userSeed.toString());
+    const dateNum = parseInt(today.replace(/-/g, ''));
+    const hash = ((userSeed * 2654435761) ^ dateNum) >>> 0;
+    const roll = hash % 100;
     let idx;
-    if (seed < 10) idx = 0; // 大吉 10%
-    else if (seed < 30) idx = 1; // 中吉 20%
-    else if (seed < 55) idx = 2; // 小吉 25%
-    else if (seed < 85) idx = 3; // 平 30%
-    else idx = 4; // 小凶 15%
+    if (roll < 10) idx = 0;       // 大吉 10%
+    else if (roll < 30) idx = 1;   // 中吉 20%
+    else if (roll < 55) idx = 2;   // 小吉 25%
+    else if (roll < 85) idx = 3;   // 平 30%
+    else idx = 4;                  // 小凶 15%
     
     fortune = FORTUNES[idx];
     localStorage.setItem('liban_fortune_date', today);
@@ -1036,7 +1040,7 @@ function loadGame() {
         try {
             const data = JSON.parse(saved);
             board = data.board || Array(GRID_SIZE * GRID_SIZE).fill(null);
-            pondEggs = data.pondEggs || 0;
+            pondEggs = data.pondEggs !== undefined ? data.pondEggs : 3;
             stamina = data.stamina || MAX_STAMINA;
             lastGenTime = data.lastGenTime || Date.now();
             lastStaminaTime = data.lastStaminaTime || Date.now();

@@ -565,7 +565,7 @@ function chineseToPinyin(chinese) {
  * @returns {number} 缩减后的数字 (1-9 或 11、22、33)
  */
 function reduceNumber(n, keepMaster = true) {
-    if (n <= 0) { return 1; }  // 姓名数字不返回0
+    if (n < 0) { return 0; }
     if (n < 10) {
         return n;
     }

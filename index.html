@@ -969,10 +969,11 @@
     (function() {
       function getCounter() {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://counterapi.com/api/jian.yisan.me/koi-life-card/view', true);
+        xhr.open('GET', 'https://counterapi.com/api/jian.yisan.me/view/koi-life-card', true);
+        xhr.responseType = 'json';
         xhr.onload = function() {
           if (xhr.status === 200) {
-            var res = JSON.parse(xhr.responseText);
+            var res = xhr.response;
             document.getElementById('counterVal').textContent = res.value.toLocaleString();
           }
         };

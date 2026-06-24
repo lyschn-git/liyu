@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>锦鲤生命卡 | 解锁你的生命数字密码</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --primary: #FF7A45;
+      --primary-glow: #FF9B6A;
+      --accent-green: #4AE68C;
+      --accent-purple: #B794F6;
+      --accent-cyan: #7DF9FF;
+      --bg-dark: #0A0B0F;
+      --bg-card: rgba(255, 255, 255, 0.05);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(255, 122, 69, 0.3);
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(255, 255, 255, 0.6);
+      --text-muted: rgba(255, 255, 255, 0.4);
+    }
+    
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      color: var(--text-primary);
+    }
+    
+    /* 赛博深色背景 */
+    .cyber-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: 
+        radial-gradient(ellipse at 30% 10%, rgba(183, 148, 246, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 30%, rgba(74, 230, 140, 0.06) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 80%, rgba(255, 122, 69, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #0A0B0F 0%, #12141A 40%, #0A0B0F 100%);
+    }
+    
+    /* 细网格 */
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+      min-height: 100vh;
+    }
+    
+    /* ===== 顶部导航 ===== */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0 16px;
+    }
+    
+    .brand {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .nav-tag {
+      background: rgba(74, 230, 140, 0.15);
+      border: 1px solid rgba(74, 230, 140, 0.3);
+      color: var(--accent-green);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    
+    /* ===== Hero区域 ===== */
+    .hero {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 122, 69, 0.1);
+      border: 1px solid rgba(255, 122, 69, 0.2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--primary);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+    
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: blink 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    
+    .hero-title {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    
+    .hero-title span {
+      background: linear-gradient(135deg, var(--primary), var(--primary-glow));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .hero-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 300;
+    }
+    
+    /* ===== 锦鲤展示区 ===== */
+    .koi-showcase {
+      position: relative;
+      width: 100%;
+      height: 140px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+    
+    .koi-main {
+      position: relative;
+      z-index: 2;
+      width: 100px;
+      height: auto;
+      animation: swim 3.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 18px rgba(255, 122, 69, 0.4))
+              drop-shadow(0 0 40px rgba(255, 180, 80, 0.15));
+      transform-origin: center center;
+    }
+    
+    @keyframes swim {
+      0%   { transform: translateY(0px) rotate(0deg) scale(1); }
+      15%  { transform: translateY(-8px) rotate(2.5deg) scale(1.02); }
+      30%  { transform: translateY(-14px) rotate(-1deg) scale(1.04); }
+      45%  { transform: translateY(-8px) rotate(1.5deg) scale(1.02); }
+      60%  { transform: translateY(-2px) rotate(-0.5deg) scale(1); }
+      75%  { transform: translateY(-10px) rotate(2deg) scale(1.03); }
+      100% { transform: translateY(0px) rotate(0deg) scale(1); }
+    }
+    
+    /* 鱼周围的光晕 */
+    .koi-aura {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(255, 122, 69, 0.18) 0%, rgba(255, 180, 80, 0.08) 50%, transparent 70%);
+      animation: aura-pulse 2.5s ease-in-out infinite;
+      z-index: 1;
+    }
+    
+    @keyframes aura-pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+      50% { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+    }
+    
+    /* 浮动粒子 */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 3;
+      animation: sparkle 2s ease-in-out infinite;
+    }
+    
+    .particle:nth-child(1) { width: 5px; height: 5px; top: 18%; left: 18%; background: var(--accent-green); animation: float-p1 3s ease-in-out infinite 0s; }
+    .particle:nth-child(2) { width: 3px; height: 3px; top: 65%; left: 10%; background: var(--accent-purple); animation: float-p2 2.8s ease-in-out infinite 0.5s; }
+    .particle:nth-child(3) { width: 4px; height: 4px; top: 22%; right: 16%; background: var(--accent-cyan); animation: float-p3 3.5s ease-in-out infinite 1s; }
+    .particle:nth-child(4) { width: 3px; height: 3px; top: 68%; right: 20%; background: var(--primary); animation: float-p4 2.5s ease-in-out infinite 0.3s; }
+    .particle:nth-child(5) { width: 3px; height: 3px; top: 42%; left: 22%; background: var(--accent-cyan); animation: float-p5 4s ease-in-out infinite 0.8s; }
+    .particle:nth-child(6) { width: 4px; height: 4px; top: 52%; right: 12%; background: var(--accent-green); animation: float-p6 3.2s ease-in-out infinite 1.3s; }
+    
+    @keyframes float-p1 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+      50% { transform: translate(8px, -18px) scale(1.8); opacity: 1; }
+    }
+    @keyframes float-p2 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+      50% { transform: translate(-6px, -22px) scale(2); opacity: 0.9; }
+    }
+    @keyframes float-p3 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+      50% { transform: translate(-10px, -14px) scale(1.6); opacity: 1; }
+    }
+    @keyframes float-p4 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+      50% { transform: translate(5px, -20px) scale(1.9); opacity: 0.8; }
+    }
+    @keyframes float-p5 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+      50% { transform: translate(12px, -16px) scale(1.7); opacity: 1; }
+    }
+    @keyframes float-p6 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+      50% { transform: translate(-8px, -24px) scale(2.1); opacity: 0.9; }
+    }
+    
+    /* ===== 输入卡片 ===== */
+    .input-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 28px 24px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .input-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 122, 69, 0.5), transparent);
+    }
+    
+    .input-group {
+      margin-bottom: 18px;
+    }
+    
+    .input-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+    
+    .input-label::before {
+      content: '';
+      width: 3px;
+      height: 10px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .input-field {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 15px 16px;
+      font-size: 16px;
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 122, 69, 0.1);
+    }
+    
+    .input-field::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+    }
+    
+    .date-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .date-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 15px 8px;
+      font-size: 17px;
+      color: var(--text-primary);
+      text-align: center;
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+    
+    .date-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 122, 69, 0.1);
+    }
+    
+    .date-input::-webkit-inner-spin-button,
+    .date-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+    
+    .date-sep {
+      color: var(--text-muted);
+      font-size: 16px;
+      font-weight: 300;
+    }
+    
+    /* 错误提示 */
+    .error-msg {
+      background: rgba(255, 69, 58, 0.1);
+      border: 1px solid rgba(255, 69, 58, 0.2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #FF8080;
+      margin-bottom: 14px;
+      display: none;
+      animation: shake-in 0.4s ease;
+    }
+    
+    .error-msg.show { display: block; }
+    
+    @keyframes shake-in {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    
+    /* ===== 生成按钮 ===== */
+    .generate-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #FF7A45 0%, #FF9066 100%);
+      border: none;
+      border-radius: 14px;
+      padding: 17px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      font-family: inherit;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(255, 122, 69, 0.35);
+      letter-spacing: 0.5px;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
+      pointer-events: auto;
+      z-index: 10;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255, 122, 69, 0.5);
+    }
+
+    .generate-btn:active {
+      transform: translateY(0) scale(0.97);
+      box-shadow: 0 2px 10px rgba(255, 122, 69, 0.3);
+    }
+
+    .generate-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+      animation: shimmer 2.5s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    /* 底部说明 */
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+    
+    .footer-note span {
+      color: var(--text-secondary);
+    }
+    
+    /* ===== 结果页面 ===== */
+    .result-page {
+      display: none;
+      animation: page-in 0.5s ease;
+    }
+    
+    .result-page.active {
+      display: block;
+    }
+    
+    @keyframes page-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 结果顶部 */
+    .result-hero {
+      text-align: center;
+      padding: 20px 0 24px;
+    }
+    
+    .result-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .result-birth {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    /* 锦鲤结果图 */
+    .result-koi {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+    
+    .result-koi .koi-main {
+      width: 180px;
+      animation: float-koi 4s ease-in-out infinite;
+    }
+    
+    /* 生命数字核心 */
+    .core-number {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    
+    .core-circle {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 14px;
+      position: relative;
+    }
+    
+    .core-circle svg {
+      width: 100%;
+      height: 100%;
+      animation: rotate-ring 12s linear infinite;
+    }
+    
+    @keyframes rotate-ring {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .core-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90px;
+      height: 90px;
+      background: rgba(255, 122, 69, 0.08);
+      border: 2px solid rgba(255, 122, 69, 0.4);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(255, 122, 69, 0.2);
+    }
+    
+    .core-value {
+      font-size: 36px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #FF9B6A, #FF7A45);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    
+    .core-label {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 3px;
+    }
+    
+    .core-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    /* 分隔标题 */
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-align: center;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .section-title::before,
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    }
+    
+    /* 九宫格 */
+    .magic-grid-wrap {
+      margin-bottom: 28px;
+    }
+    
+    .magic-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-width: 210px;
+      margin: 0 auto;
+    }
+    
+    .grid-cell {
+      aspect-ratio: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .grid-cell:hover {
+      border-color: var(--primary);
+      background: rgba(255, 122, 69, 0.05);
+    }
+    
+    .grid-num {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFFFFF, rgba(255,255,255,0.7));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .grid-lbl {
+      font-size: 8px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+    
+    /* 数字卡片网格 */
+    .num-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    
+    .num-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .num-card-t {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    
+    .num-card-name {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .num-card-val {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    
+    .num-card-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    
+    /* 解读区 */
+    .interp-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 122, 69, 0.15);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(20px);
+    }
+    
+    .interp-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .interp-icon {
+      font-size: 18px;
+    }
+    
+    .interp-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .interp-body {
+      font-size: 13px;
+      line-height: 1.9;
+      color: var(--text-secondary);
+    }
+    
+    /* 重置按钮 */
+    .reset-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .reset-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(255, 122, 69, 0.05);
+    }
+    
+    /* 返回按钮 */
+    .back-btn {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      background: rgba(10, 11, 15, 0.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-primary);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+      background: rgba(255, 122, 69, 0.15);
+      border-color: var(--primary);
+    }
+    
+    .back-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .share-hint {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
+    /* 响应式 */
+    @media (max-width: 380px) {
+      .hero-title { font-size: 26px; }
+      .koi-showcase { height: 160px; }
+      .result-koi .koi-main { width: 160px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cyber-bg"></div>
+  <div class="grid-overlay"></div>
+  
+  <button class="back-btn" id="backBtn" style="display: none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+  </button>
+  
+  <div class="container">
+    <!-- 输入页面 -->
+    <div id="inputPage">
+      <div class="top-bar">
+        <span class="brand">锦鲤生命卡</span>
+        <span class="nav-tag">BETA</span>
+      </div>
+      
+      <div class="hero">
+        <div class="hero-badge">✨ 生命数字 · 赛博解读</div>
+        <h1 class="hero-title">你的<span>锦鲤</span>命格卡</h1>
+        <p class="hero-sub">输入姓名与出生日期，解锁专属生命数字</p>
+      </div>
+      
+      <div class="koi-showcase">
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <div class="koi-aura"></div>
+        <img class="koi-main" src="koi-cyber.png" alt="赛博锦鲤" onerror="this.style.display='none'">
+      </div>
+      
+      <div class="input-card">
+        <div class="error-msg" id="errorMsg"></div>
+        
+        <div class="input-group">
+          <label class="input-label">你的名字</label>
+          <input type="text" class="input-field" id="nameInput" placeholder="输入中文姓名" maxlength="10" autocomplete="off">
+        </div>
+        
+        <div class="input-group">
+          <label class="input-label">出生日期</label>
+          <div class="date-row">
+            <input type="number" class="date-input" id="yearInput" placeholder="年" min="1900" max="2026">
+            <span class="date-sep">/</span>
+            <input type="number" class="date-input" id="monthInput" placeholder="月" min="1" max="12">
+            <span class="date-sep">/</span>
+            <input type="number" class="date-input" id="dayInput" placeholder="日" min="1" max="31">
+          </div>
+        </div>
+        
+        <button class="generate-btn" id="generateBtn">解锁生命密码 ✨</button>
+      </div>
+      
+      <p class="footer-note">
+        基于毕达哥拉斯生命数学<br>
+        <span>认识自我 · 理解他人 · 找到方向</span>
+      </p>
+    </div>
+    
+    <!-- 结果页面 -->
+    <div class="result-page" id="resultPage">
+      <div class="result-hero">
+        <h2 class="result-name" id="resultName"></h2>
+        <p class="result-birth" id="resultBirth"></p>
+      </div>
+      
+      <div class="result-koi">
+        <div class="koi-aura"></div>
+        <img class="koi-main" src="koi-cyber.png" alt="赛博锦鲤" onerror="this.style.display='none'">
+      </div>
+      
+      <div class="core-number">
+        <div class="core-circle">
+          <svg viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="47" fill="none" stroke="url(#gRing)" stroke-width="1.5" stroke-dasharray="6 3"/>
+            <defs>
+              <linearGradient id="gRing" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FF7A45"/>
+                <stop offset="50%" stop-color="#B794F6"/>
+                <stop offset="100%" stop-color="#4AE68C"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="core-inner">
+            <span class="core-value" id="lifeNumberDisplay"></span>
+            <span class="core-label">Life</span>
+          </div>
+        </div>
+        <p class="core-name" id="lifeNumberName"></p>
+      </div>
+      
+      <div class="magic-grid-wrap">
+        <div class="section-title">生命地图</div>
+        <div class="magic-grid" id="magicGrid"></div>
+      </div>
+      
+      <div class="num-cards" id="numCards"></div>
+      
+      <div class="interp-card">
+        <div class="interp-head">
+          <span class="interp-icon">🔮</span>
+          <span class="interp-title" id="interpTitle"></span>
+        </div>
+        <p class="interp-body" id="interpText"></p>
+      </div>
+      
+      <button class="reset-btn" id="resetBtn">← 再算一次</button>
+      <p class="share-hint">长按保存结果图 · 分享给朋友</p>
+    </div>
+  </div>
+  
+  <script src="numerology.js"></script>
+  <script>
+    const inputPage = document.getElementById('inputPage');
+    const resultPage = document.getElementById('resultPage');
+    const generateBtn = document.getElementById('generateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const backBtn = document.getElementById('backBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const nameInput = document.getElementById('nameInput');
+    const yearInput = document.getElementById('yearInput');
+    const monthInput = document.getElementById('monthInput');
+    const dayInput = document.getElementById('dayInput');
+    
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('show');
+      setTimeout(() => errorMsg.classList.remove('show'), 3500);
+    }
+    
+    function validateInputs() {
+      const name = nameInput.value.trim();
+      const year = parseInt(yearInput.value);
+      const month = parseInt(monthInput.value);
+      const day = parseInt(dayInput.value);
+      
+      if (!name) { showError('请输入你的名字'); return null; }
+      if (!/^[\u4e00-\u9fa5]+$/.test(name)) { showError('请输入中文名字'); return null; }
+      if (!year || year < 1900 || year > 2026) { showError('请输入正确的年份'); return null; }
+      if (!month || month < 1 || month > 12) { showError('请输入正确的月份'); return null; }
+      if (!day || day < 1 || day > 31) { showError('请输入正确的日期'); return null; }
+      const maxDay = new Date(year, month, 0).getDate();
+      if (day > maxDay) { showError('这个月份没有这一天'); return null; }
+      
+      return { name, year, month, day };
+    }
+    
+    function generateResult() {
+      const data = validateInputs();
+      if (!data) return;
+      
+      const r = calculateAll(data.name, data.year, data.month, data.day);
+      
+      document.getElementById('resultName').textContent = data.name + ' 的生命卡';
+      document.getElementById('resultBirth').textContent = `${data.year}.${String(data.month).padStart(2,'0')}.${String(data.day).padStart(2,'0')}`;
+      document.getElementById('lifeNumberDisplay').textContent = r.lifePath;
+      document.getElementById('lifeNumberName').textContent = r.lifePathName;
+      
+      // 九宫格
+      const grid = [
+        [r.grid.northeast, '东北'], [r.grid.north, '北'], [r.grid.northwest, '西北'],
+        [r.grid.east, '东'], [r.grid.center, '中'], [r.grid.west, '西'],
+        [r.grid.southeast, '东南'], [r.grid.south, '南'], [r.grid.southwest, '西南']
+      ];
+      document.getElementById('magicGrid').innerHTML = grid.map(([num, lbl]) =>
+        `<div class="grid-cell"><span class="grid-num">${num}</span><span class="grid-lbl">${lbl}</span></div>`
+      ).join('');
+      
+      // 数字卡片
+      const cards = [
+        ['命运数', r.destiny, r.destinyMeaning],
+        ['生日数', r.birthDay, '你与生俱来的天赋'],
+        ['表达数', r.expression, r.expressionMeaning],
+        ['挑战数', r.challenge, r.challengeMeaning],
+        ['高峰①', r.pinnacle1, '18-35岁人生课题'],
+        ['内在数', r.innerDream, r.innerMeaning]
+      ];
+      document.getElementById('numCards').innerHTML = cards.map(([n, v, d]) =>
+        `<div class="num-card"><div class="num-card-t"><span class="num-card-name">${n}</span><span class="num-card-val">${v}</span></div><p class="num-card-desc">${d}</p></div>`
+      ).join('');
+      
+      // 解读
+      document.getElementById('interpTitle').textContent = `生命灵数 ${r.lifePath} · ${r.lifePathName}`;
+      document.getElementById('interpText').textContent = r.lifePathInterpretation;
+      
+      inputPage.style.display = 'none';
+      resultPage.classList.add('active');
+      backBtn.style.display = 'flex';
+      window.scrollTo(0, 0);
+    }
+    
+    generateBtn.addEventListener('click', generateResult);
+    
+    resetBtn.addEventListener('click', () => {
+      resultPage.classList.remove('active');
+      inputPage.style.display = 'block';
+      backBtn.style.display = 'none';
+      [nameInput, yearInput, monthInput, dayInput].forEach(i => i.value = '');
+      window.scrollTo(0, 0);
+    });
+    
+    backBtn.addEventListener('click', () => {
+      resultPage.classList.remove('active');
+      inputPage.style.display = 'block';
+      backBtn.style.display = 'none';
+      window.scrollTo(0, 0);
+    });
+    
+    [nameInput, yearInput, monthInput, dayInput].forEach(inp => {
+      inp.addEventListener('keypress', e => { if (e.key === 'Enter') generateResult(); });
+      inp.addEventListener('input', () => errorMsg.classList.remove('show'));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="生命数字密码完整解读指南，详解1-9数字含义、生命灵数、命运数、九宫格矩阵等核心概念">
+  <meta property="og:title" content="生命数字解读指南 | 锦鲤生命卡">
+  <meta property="og:description" content="详解生命数字1-9的核心含义，以及生命灵数、命运数、天赋挑战等关键概念">
+  <meta property="og:image" content="https://jian.yisan.me/koi-life-card/koi-cyber.png">
+  <title>生命数字解读指南 | 锦鲤生命卡</title>
+  <link rel="canonical" href="https://jian.yisan.me/koi-life-card/guide.html">
+  <style>
+    :root {
+      --primary: #FF7A45;
+      --primary-dim: rgba(255, 122, 69, 0.15);
+      --primary-glow: rgba(255, 122, 69, 0.4);
+      --accent: #FFD580;
+      --accent-dim: rgba(255, 213, 128, 0.12);
+      --bg: #0B0F1A;
+      --card: rgba(20, 28, 48, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text: #E8ECF4;
+      --text-dim: rgba(232, 236, 244, 0.55);
+      --grid-color: rgba(255, 255, 255, 0.03);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .page-wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* Header */
+    .guide-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding: 2.5rem 1.5rem;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .guide-header::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%; transform: translateX(-50%);
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .guide-header .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      color: var(--primary);
+      background: var(--primary-dim);
+      border: 1px solid rgba(255, 122, 69, 0.25);
+      padding: 0.25rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+    .guide-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+    }
+    .guide-header p {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.82rem;
+      margin-bottom: 1.5rem;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--primary); }
+
+    /* Section */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px; height: 1em;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    .section-sub {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      margin-bottom: 1.2rem;
+      padding-left: 0.85rem;
+    }
+
+    /* Number Grid */
+    .num-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+    .num-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 0.9rem 0.75rem;
+      text-align: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .num-card:hover {
+      border-color: rgba(255, 122, 69, 0.3);
+      background: rgba(255, 122, 69, 0.05);
+    }
+    .num-card .num {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .num-card .label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+    }
+    .num-card .desc {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .num-card .key {
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-top: 0.4rem;
+      font-weight: 500;
+    }
+
+    /* Concept cards */
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .concept-item {
+      padding: 1rem 1.1rem;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      border-left: 3px solid var(--primary);
+    }
+    .concept-item .name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+    .concept-item .meaning {
+      font-size: 0.75rem;
+      color: var(--primary);
+      margin-bottom: 0.4rem;
+    }
+    .concept-item .detail {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* Nine Grid section */
+    .nine-grid-demo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .nine-grid-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .nine-cell {
+      width: 52px; height: 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      gap: 2px;
+    }
+    .nine-cell .num { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    .nine-cell .label { font-size: 0.6rem; color: var(--text-dim); }
+
+    /* Quote */
+    .quote-block {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      background: var(--accent-dim);
+      border: 1px solid rgba(255, 213, 128, 0.1);
+      border-radius: 14px;
+      margin: 1.25rem 0;
+    }
+    .quote-block .txt {
+      font-size: 0.95rem;
+      color: var(--accent);
+      font-style: italic;
+      line-height: 1.7;
+    }
+    .quote-block .src {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.5rem;
+    }
+
+    /* CTA */
+    .cta-box {
+      text-align: center;
+      padding: 1.75rem 1.5rem;
+      background: var(--primary-dim);
+      border: 1px solid rgba(255, 122, 69, 0.2);
+      border-radius: 16px;
+      margin-top: 0.5rem;
+    }
+    .cta-box .cta-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+    .cta-box .cta-sub {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.7rem 1.8rem;
+      border-radius: 999px;
+      box-shadow: 0 4px 20px rgba(255, 122, 69, 0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .cta-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(255, 122, 69, 0.5);
+    }
+
+    /* Footer note */
+    .footer-note {
+      text-align: center;
+      font-size: 0.72rem;
+      color: rgba(232, 236, 244, 0.25);
+      margin-top: 1.5rem;
+      padding: 0 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .num-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+      .num-card { padding: 0.7rem 0.5rem; }
+      .num-card .num { font-size: 1.3rem; }
+      .num-card .desc { display: none; }
+      .nine-cell { width: 44px; height: 44px; }
+      .nine-cell .num { font-size: 0.95rem; }
+      .nine-cell .label { font-size: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- Back link -->
+  <a href="./" class="back-link">← 重新测算</a>
+
+  <!-- Header -->
+  <div class="guide-header">
+    <span class="badge">生命数字指南</span>
+    <h1>数字里藏着你的生命密码</h1>
+    <p>出生日期是一串加密的数字，每个数字都携带着独特的能量，塑造着你的性格、天赋与人生课题。</p>
+  </div>
+
+  <!-- Numbers 1-9 -->
+  <div class="section">
+    <div class="section-title">1-9 数字核心解读</div>
+    <div class="section-sub">每个数字都是一种独特的生命能量，了解自己数字的正面与阴影，活出更完整的自己</div>
+    <div class="num-grid">
+
+      <div class="num-card">
+        <div class="num">1</div>
+        <div class="label">开创者</div>
+        <div class="desc">独立、勇敢、原创</div>
+        <div class="key">阳性 · 领导力</div>
+      </div>
+
+      <div class="num-card">
+        <div class="num">2</div>
+        <div class="label">协调者</div>
+        <div class="desc">感知、平衡、直觉</div>
+        <div class="key">阴性 · 合作力</div>
+      </div>
+
+      <div class="num-card">
+        <div class="num">3</div>
+        <div class="label">表达者</div>
+        <div class="desc">创意、热情、魅力</div>
+        <div class="key">阳性 · 沟通力</div>
+      </div>
+
+      <div class="num-card">
+        <div class="num">4</div>
+        <div class="label">实践者</div>
+        <div class="desc">稳健、务实、忠诚</div>
+        <div class="key">阴性 · 执行力</div>
+      </div>
+
+      <div class="num-card">
+        <div class="num">5</div>
+        <div class="label">探险者</div>
+        <div class="desc">自由、多变、适应力</div>
+        <div class="key">阳性 · 变革力</div>
+      </div>
+
+      <div class="num-card">
+        <div class="num">6</div>
+        <div class="label">守护者</div>
+        <div class="desc">爱、责任、滋养</div>
+        <div class="key">阴性 · 感召力</div>
+      </div>
+
+      <div class="num-card">
+        <div class="num">7</div>
+        <div class="label">探索者</div>
+        <div class="desc">智慧、内省、洞察</div>
+        <div class="key">阳性 · 穿透力</div>
+      </div>
+
+      <div class="num-card">
+        <div class="num">8</div>
+        <div class="label">成就者</div>
+        <div class="desc">权力、丰盛、韧性</div>
+        <div class="key">阴性 · 整合力</div>
+      </div>
+
+      <div class="num-card">
+        <div class="num">9</div>
+        <div class="label">觉醒者</div>
+        <div class="desc">博爱、智慧、慈悲</div>
+        <div class="key">阳性 · 辐射力</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Number details -->
+  <div class="section">
+    <div class="section-title">数字深层解读</div>
+    <div class="section-sub">每个数字都有其光芒与阴影，正确理解才能真正用好生命给你的这份礼物</div>
+
+    <div class="concept-list">
+
+      <div class="concept-item">
+        <div class="name">1 · 开创之光</div>
+        <div class="meaning">阳性数字 · 阳历新年第一个数字</div>
+        <div class="detail">正面：独立自主、有主见、敢为人先，是天然的领导者。<br>
+        阴影：过于自我、固执、害怕依赖，可能在人际关系中制造距离。<br>
+        课题：学会在坚持自我与信任他人之间找到平衡。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">2 · 和谐之力</div>
+        <div class="meaning">阴性数字 · 最敏感的质数</div>
+        <div class="detail">正面：感知细腻、善于协调、在关系中极具包容力，是天生的倾听者。<br>
+        阴影：优柔寡断、过度依赖他人认可、压抑自身需求。<br>
+        课题：学会表达自己的感受，在关系中既柔软也有力量。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">3 · 表达之火</div>
+        <div class="meaning">阳性数字 · 创造力的原始火种</div>
+        <div class="detail">正面：表达力强、创意十足、到哪里都能带来欢乐，是人群中的光。<br>
+        阴影：说话不经过滤、难以专注、容易活在表面。<br>
+        课题：学会深度倾听，把创意转化为真实的行动。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">4 · 根基之土</div>
+        <div class="meaning">阴性数字 · 稳定是大地的礼物</div>
+        <div class="detail">正面：脚踏实地、任劳任怨、值得信赖，是团队最坚实的依靠。<br>
+        阴影：固执、不懂变通、用忙碌来掩盖焦虑。<br>
+        课题：学会允许变化发生，在稳定与灵活之间找到自己的节奏。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">5 · 自由之风</div>
+        <div class="meaning">阳性数字 · 生命力最活跃的数字</div>
+        <div class="detail">正面：适应力极强、热爱自由、充满好奇心，是天生的探险家。<br>
+        阴影：三分钟热度、逃避责任、害怕被束缚。<br>
+        课题：真正的自由来自自律，找到热爱并持续深耕。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">6 · 滋养之水</div>
+        <div class="meaning">阴性数字 · 爱的化身</div>
+        <div class="detail">正面：有责任感、重视家庭、善于照顾他人，是温暖的港湾。<br>
+        阴影：过度付出、控制欲强、容易背负不属于自己的责任。<br>
+        课题：先学会爱自己，才能真正不带牺牲感地爱他人。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">7 · 智慧之冰</div>
+        <div class="meaning">阳性数字 · 最内省的数字</div>
+        <div class="detail">正面：洞察力强、追求真相、享受独处带来的深度思考。<br>
+        阴影：封闭自己、过度分析导致行动瘫痪、不善表达情感。<br>
+        课题：智慧需要落地，独处之后还要能走回人群中。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">8 · 丰盛之金</div>
+        <div class="meaning">阴性数字 · 力量与财富的象征</div>
+        <div class="detail">正面：务实、有魄力、对商业和权力有天然的敏锐度，善于资源整合。<br>
+        阴影：权力欲膨胀、物质主义、压抑情感。<br>
+        课题：权力和财富是工具而非目的，学会让力量为更大的善服务。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">9 · 博爱之火</div>
+        <div class="meaning">阳性数字 · 最高振动频率</div>
+        <div class="detail">正面：视野宽广、慈悲利他、有强大的人格感召力，是天生的引路人。<br>
+        阴影：救世主情结、沉溺过去、难以放手。<br>
+        课题：放下助人情结，专注自己的生命，真正的慈悲从自我觉醒开始。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Key concepts -->
+  <div class="section">
+    <div class="section-title">生命卡核心概念</div>
+    <div class="section-sub">每个数字在你的生命地图上占据不同的位置，代表不同的生命维度</div>
+
+    <div class="concept-list">
+
+      <div class="concept-item">
+        <div class="name">生命灵数</div>
+        <div class="meaning">主性格 · 决定你约60%的行为模式</div>
+        <div class="detail">出生日期所有数字之和缩减至个位数（保留11、22、33主数）。这是你与生俱来的核心性格特质，是你人生舞台的主角人设，影响着你做决定的方式、面对世界的基本姿态。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">命运数</div>
+        <div class="meaning">先天潜能 · 你带来这个世界的礼物</div>
+        <div class="detail">年、月、日各自数位和相加后再缩减。这个数字代表你出生时自带的天赋能量，是你在这个世界上行走的"工具箱"，是你最容易被他人认可的能力领域。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">生日数</div>
+        <div class="meaning">天赋数字 · 与生俱来的才华</div>
+        <div class="detail">仅取出生日数字（1-9，不足两位数则直接取用，如12日取12而非3）。这是你最天然的能量表达方式，是你不需要努力就能散发光彩的地方。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">挑战数</div>
+        <div class="meaning">成长课题 · 生命中的修行方向</div>
+        <div class="detail">从出生日期推导出的中间数字，代表你需要面对和克服的生命课题。这不是缺陷，而是你需要用一生时间来修炼的功课——正视它，反而能成为你最强大的力量。</div>
+      </div>
+
+      <div class="concept-item">
+        <div class="name">高峰数</div>
+        <div class="meaning">人生阶段 · 不同时期的生命高峰</div>
+        <div class="detail">四个阶段（青年/中年/壮年/全生命周期）的主导能量。这些数字揭示了你人生不同阶段的主题——有些阶段顺遂充盈，有些阶段则布满挑战，都是完整生命的一部分。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Nine Grid -->
+  <div class="section">
+    <div class="section-title">九宫格生命地图</div>
+    <div class="section-sub">3×3矩阵承载着你的能量分布，数字出现次数越多，该能量越强；数字缺失则代表需要后天学习的课题</div>
+
+    <div class="nine-grid-demo">
+      <div class="nine-grid-row">
+        <div class="nine-cell"><span class="num">4</span><span class="label">东北</span></div>
+        <div class="nine-cell"><span class="num">9</span><span class="label">北</span></div>
+        <div class="nine-cell"><span class="num">2</span><span class="label">西北</span></div>
+      </div>
+      <div class="nine-grid-row">
+        <div class="nine-cell"><span class="num">3</span><span class="label">东</span></div>
+        <div class="nine-cell"><span class="num">5</span><span class="label">中</span></div>
+        <div class="nine-cell"><span class="num">7</span><span class="label">西</span></div>
+      </div>
+      <div class="nine-grid-row">
+        <div class="nine-cell"><span class="num">8</span><span class="label">东南</span></div>
+        <div class="nine-cell"><span class="num">1</span><span class="label">南</span></div>
+        <div class="nine-cell"><span class="num">6</span><span class="label">西南</span></div>
+      </div>
+    </div>
+
+    <div class="concept-list" style="margin-top:1rem;">
+      <div class="concept-item">
+        <div class="name">九宫格解读</div>
+        <div class="detail">
+          <strong>横向：</strong>左列（4-3-8）思维与行动 · 中列（9-5-1）意志与决策 · 右列（2-7-6）直觉与感召<br><br>
+          <strong>纵向：</strong>上行（4-9-2）精神与思考 · 中行（3-5-7）灵魂与核心 · 下行（8-1-6）物质与行动<br><br>
+          <strong>对角线：</strong>3-5-7是灵性通道，1-5-9是创造通道。连线数字代表天赋通道，空缺数字是需要后天补足的课题。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote -->
+  <div class="quote-block">
+    <div class="txt">"每个数字都携带着独特的振动频率。理解它们，不是为了算命，而是为了照见——看见自己未曾注意的那一面。"</div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box">
+    <div class="cta-title">想更深入地了解自己？</div>
+    <div class="cta-sub">输入你的出生日期，解锁属于你的完整生命卡</div>
+    <a href="./" class="cta-btn">立即解锁生命密码 ✨</a>
+  </div>
+
+  <div class="footer-note">
+    基于毕达哥拉斯生命数字体系 · 锦鲤生命卡<br>
+    数字是工具，真正的答案永远在你心中
+  </div>
+  <div class="visitor-counter" id="visitorCounter">
+    <span class="counter-icon">🐟</span>
+    <span class="counter-val" id="counterVal">—</span>
+    <span class="counter-unit">次测算</span>
+  </div>
+
+  <script>
+  (function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://counterapi.com/api/jian.yisan.me/koi-life-card/view', true);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        document.getElementById('counterVal').textContent = JSON.parse(xhr.responseText).value.toLocaleString();
+      }
+    };
+    xhr.send();
+  })();
+  </script>
+
+</div>
+</body>
+</html>

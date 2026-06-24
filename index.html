@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>锦鲤生命卡 | 解锁你的生命数字密码</title>
+  <meta name="description" content="探索生命数字密码，从新的角度认识自己。">
+  <meta property="og:title" content="锦鲤生命卡 | 解锁你的生命数字密码">
+  <meta property="og:description" content="探索生命数字密码，从新的角度认识自己。">
+  <meta property="og:image" content="https://jian.yisan.me/koi-life-card/koi-cyber.png">
+  <meta property="og:url" content="https://jian.yisan.me/koi-life-card/">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://jian.yisan.me/koi-life-card/">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
     
@@ -179,7 +186,7 @@
       z-index: 2;
       width: 100px;
       height: auto;
-      animation: swim 3.5s ease-in-out infinite;
+      animation: swim 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
       filter: drop-shadow(0 0 18px rgba(255, 122, 69, 0.4))
               drop-shadow(0 0 40px rgba(255, 180, 80, 0.15));
       transform-origin: center center;
@@ -187,11 +194,10 @@
     
     @keyframes swim {
       0%   { transform: translateY(0px) rotate(0deg) scale(1); }
-      15%  { transform: translateY(-8px) rotate(2.5deg) scale(1.02); }
-      30%  { transform: translateY(-14px) rotate(-1deg) scale(1.04); }
-      45%  { transform: translateY(-8px) rotate(1.5deg) scale(1.02); }
-      60%  { transform: translateY(-2px) rotate(-0.5deg) scale(1); }
-      75%  { transform: translateY(-10px) rotate(2deg) scale(1.03); }
+      20%  { transform: translateY(-10px) rotate(1.5deg) scale(1.03); }
+      40%  { transform: translateY(-16px) rotate(-0.8deg) scale(1.05); }
+      60%  { transform: translateY(-10px) rotate(1deg) scale(1.03); }
+      80%  { transform: translateY(-4px) rotate(-0.3deg) scale(1.01); }
       100% { transform: translateY(0px) rotate(0deg) scale(1); }
     }
     
@@ -257,14 +263,12 @@
     
     /* ===== 输入卡片 ===== */
     .input-card {
-      background: var(--bg-card);
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-subtle);
       border-radius: 20px;
       padding: 28px 24px;
       margin-bottom: 20px;
-      backdrop-filter: blur(20px);
       position: relative;
-      overflow: hidden;
     }
     
     .input-card::before {
@@ -441,7 +445,35 @@
     .footer-note span {
       color: var(--text-secondary);
     }
-    
+
+    .visitor-counter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      opacity: 0.7;
+    }
+    .counter-icon { font-size: 13px; }
+    .counter-val { font-weight: 600; color: var(--primary); font-size: 14px; }
+    .counter-unit { font-size: 11px; }
+
+    /* ===== 结果页底部链接 ===== */
+    .guide-link {
+      display: block;
+      text-align: center;
+      font-size: 13px;
+      color: var(--primary);
+      text-decoration: none;
+      margin: 12px auto 0;
+      padding: 6px 0;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    .guide-link:hover { opacity: 1; }
+
     /* ===== 结果页面 ===== */
     .result-page {
       display: none;
@@ -634,7 +666,6 @@
       border: 1px solid var(--border-subtle);
       border-radius: 14px;
       padding: 16px;
-      backdrop-filter: blur(10px);
     }
     
     .num-card-t {
@@ -670,7 +701,6 @@
       border-radius: 18px;
       padding: 22px;
       margin-bottom: 24px;
-      backdrop-filter: blur(20px);
     }
     
     .interp-head {
@@ -733,7 +763,6 @@
       justify-content: center;
       cursor: pointer;
       color: var(--text-primary);
-      backdrop-filter: blur(10px);
       transition: all 0.3s ease;
     }
     
@@ -807,7 +836,7 @@
         <div class="input-group">
           <label class="input-label">出生日期</label>
           <div class="date-row">
-            <input type="number" class="date-input" id="yearInput" placeholder="年" min="1900" max="2026">
+            <input type="number" class="date-input" id="yearInput" placeholder="年" min="1900" max="2026" maxlength="4">
             <span class="date-sep">/</span>
             <input type="number" class="date-input" id="monthInput" placeholder="月" min="1" max="12">
             <span class="date-sep">/</span>
@@ -822,6 +851,11 @@
         基于毕达哥拉斯生命数学<br>
         <span>认识自我 · 理解他人 · 找到方向</span>
       </p>
+      <div class="visitor-counter" id="visitorCounter">
+        <span class="counter-icon">🐟</span>
+        <span class="counter-val" id="counterVal">—</span>
+        <span class="counter-unit">次测算</span>
+      </div>
     </div>
     
     <!-- 结果页面 -->
@@ -872,12 +906,30 @@
       </div>
       
       <button class="reset-btn" id="resetBtn">← 再算一次</button>
+      <a href="guide.html" class="guide-link">📖 数字解读指南</a>
       <p class="share-hint">长按保存结果图 · 分享给朋友</p>
     </div>
   </div>
   
   <script src="numerology.js"></script>
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // 访问计数器
+    (function() {
+      function getCounter() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://counterapi.com/api/jian.yisan.me/koi-life-card/view', true);
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            var res = JSON.parse(xhr.responseText);
+            document.getElementById('counterVal').textContent = res.value.toLocaleString();
+          }
+        };
+        xhr.send();
+      }
+      getCounter();
+    })();
+
     const inputPage = document.getElementById('inputPage');
     const resultPage = document.getElementById('resultPage');
     const generateBtn = document.getElementById('generateBtn');
@@ -976,6 +1028,7 @@
     [nameInput, yearInput, monthInput, dayInput].forEach(inp => {
       inp.addEventListener('keypress', e => { if (e.key === 'Enter') generateResult(); });
       inp.addEventListener('input', () => errorMsg.classList.remove('show'));
+    });
     });
   </script>
 </body>

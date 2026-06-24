@@ -565,6 +565,7 @@ function chineseToPinyin(chinese) {
  * @returns {number} 缩减后的数字 (1-9 或 11、22、33)
  */
 function reduceNumber(n, keepMaster = true) {
+    if (n <= 0) { return 1; }  // 姓名数字不返回0
     if (n < 10) {
         return n;
     }
@@ -790,7 +791,7 @@ function nameToNumbers(name) {
     // 移除空格和非字母字符，转大写
     const cleanName = name.replace(/[^a-zA-Z]/g, '').toUpperCase();
     
-    return cleanName.split('').map(c => PITHAGOREAN_CHART[c] || 0);
+    return cleanName.split('').map(c => PITHAGOREAN_CHART[c] || 0).filter(n => n > 0);
 }
 
 /**
@@ -801,7 +802,8 @@ function nameToNumbers(name) {
  * @returns {number} 表达数
  */
 function expressionNumber(name) {
-    const nums = nameToNumbers(name);
+    const nums = nameToNumbers(name).filter(n => n > 0);  // 过滤掉无法识别的字符
+    if (nums.length === 0) { return 1; }
     const total = nums.reduce((sum, n) => sum + n, 0);
     return reduceNumber(total);
 }

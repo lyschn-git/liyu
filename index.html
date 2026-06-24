@@ -461,6 +461,51 @@
     .counter-unit { font-size: 11px; }
 
     /* ===== 结果页底部链接 ===== */
+    /* 保存按钮 */
+    .save-btn {
+      width: 100%;
+      background: rgba(74, 230, 140, 0.1);
+      border: 1px solid rgba(74, 230, 140, 0.3);
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--accent-green);
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .save-btn:hover {
+      background: rgba(74, 230, 140, 0.15);
+      border-color: rgba(74, 230, 140, 0.5);
+    }
+    .save-btn:active { transform: scale(0.97); }
+    .save-btn.saving { opacity: 0.6; pointer-events: none; }
+
+    /* 保存提示 */
+    .save-toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.85);
+      border: 1px solid rgba(74,230,140,0.4);
+      border-radius: 12px;
+      padding: 16px 28px;
+      font-size: 14px;
+      color: #fff;
+      z-index: 999;
+      display: none;
+      animation: fade-in 0.3s ease;
+    }
+    .save-toast.show { display: block; }
+    @keyframes fade-in { from { opacity: 0; transform: translate(-50%,-48%); } to { opacity: 1; transform: translate(-50%,-50%); } }
+
     .guide-link {
       display: block;
       text-align: center;
@@ -785,6 +830,7 @@
       .result-koi .koi-main { width: 160px; }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
   <div class="cyber-bg"></div>
@@ -901,10 +947,20 @@
       </div>
       
       <button class="reset-btn" id="resetBtn">← 再算一次</button>
+      <button class="save-btn" id="saveBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        保存结果图
+      </button>
+      <div style="display:flex; justify-content:center; margin-top:16px;">
+        <img id="resultQR" src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://jian.yisan.me/koi-life-card/&margin=2" alt="二维码" style="border-radius:8px; opacity:0.7;">
+      </div>
+      <p style="text-align:center; font-size:11px; color:var(--text-muted); margin-top:6px;">扫码体验 · 探索你的生命数字</p>
       <a href="guide.html" class="guide-link">📖 数字解读指南</a>
       
     </div>
   </div>
+  
+  <div class="save-toast" id="saveToast">生成中…</div>
   
   <script src="numerology.js"></script>
   <script>
@@ -1023,6 +1079,49 @@
     [nameInput, yearInput, monthInput, dayInput].forEach(inp => {
       inp.addEventListener('keypress', e => { if (e.key === 'Enter') generateResult(); });
       inp.addEventListener('input', () => errorMsg.classList.remove('show'));
+    });
+
+    // 保存结果图
+    document.getElementById('saveBtn').addEventListener('click', function() {
+      const btn = this;
+      const toast = document.getElementById('saveToast');
+      btn.classList.add('saving');
+      toast.textContent = '生成中…';
+      toast.classList.add('show');
+
+      // 隐藏不需要的按钮和返回键
+      btn.style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'none';
+      document.querySelector('.guide-link').style.display = 'none';
+      backBtn.style.display = 'none';
+
+      html2canvas(document.getElementById('resultPage'), {
+        backgroundColor: '#0A0B0F',
+        scale: 2,
+        useCORS: true,
+        logging: false
+      }).then(function(canvas) {
+        // 恢复按钮
+        btn.style.display = '';
+        document.getElementById('resetBtn').style.display = '';
+        document.querySelector('.guide-link').style.display = '';
+        backBtn.style.display = 'flex';
+        toast.classList.remove('show');
+
+        // 触发下载
+        const link = document.createElement('a');
+        link.download = '锦鲤生命卡.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }).catch(function() {
+        btn.classList.remove('saving');
+        btn.textContent = '生成失败，请重试';
+        setTimeout(() => {
+          btn.classList.remove('saving');
+          btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>保存结果图';
+        }, 2000);
+        toast.classList.remove('show');
+      });
     });
     });
   </script>

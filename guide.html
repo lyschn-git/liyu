@@ -308,6 +308,198 @@
       .nine-cell .num { font-size: 0.95rem; }
       .nine-cell .label { font-size: 0.5rem; }
     }
+  /* ===== Narrative Generator ===== */
+    .narrative-section {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .narrative-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .narrative-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px; height: 1.1em;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    .narrative-disclaimer {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+    .narrative-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    .form-label {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+    .form-select, .form-input {
+      background: rgba(15, 20, 35, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 0.6rem 0.75rem;
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23E8ECF4' fill-opacity='0.5' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+    }
+    .form-select:focus, .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 122, 69, 0.15);
+    }
+    .form-select option, .form-input option {
+      background: #1a2035;
+      color: var(--text);
+    }
+    .generate-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), #FF9966);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 18px rgba(255, 122, 69, 0.3);
+      margin-top: 0.5rem;
+    }
+    .generate-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(255, 122, 69, 0.45);
+    }
+    .generate-btn:active {
+      transform: translateY(0);
+    }
+    .narrative-output {
+      display: none;
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .narrative-output.show {
+      display: block;
+    }
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+    .output-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .copy-btn {
+      background: rgba(255, 122, 69, 0.12);
+      border: 1px solid rgba(255, 122, 69, 0.25);
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      color: var(--primary);
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover {
+      background: rgba(255, 122, 69, 0.2);
+    }
+    .output-text {
+      background: rgba(10, 15, 25, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1.25rem;
+      font-size: 0.82rem;
+      line-height: 1.85;
+      color: var(--text);
+      white-space: pre-wrap;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .output-text::-webkit-scrollbar {
+      width: 6px;
+    }
+    .output-text::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.03);
+      border-radius: 3px;
+    }
+    .output-text::-webkit-scrollbar-thumb {
+      background: rgba(255,122,69,0.3);
+      border-radius: 3px;
+    }
+
+    .loading-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1.5rem;
+      margin-top: 1rem;
+      color: var(--text-dim);
+      font-size: 0.88rem;
+    }
+    .spinner {
+      width: 22px; height: 22px;
+      border: 2.5px solid rgba(255, 122, 69, 0.2);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .narrative-error {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 80, 80, 0.1);
+      border: 1px solid rgba(255, 80, 80, 0.2);
+      border-radius: 10px;
+      color: #ff6b6b;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .narrative-form { grid-template-columns: 1fr; }
+      .form-group.full-width { grid-column: 1; }
+    }
   </style>
 </head>
 <body>
@@ -557,6 +749,68 @@
     <div class="txt">"每个数字都携带着独特的振动频率。理解它们，不是为了算命，而是为了照见——看见自己未曾注意的那一面。"</div>
   </div>
 
+  <!-- Narrative Generator -->
+  <div class="narrative-section">
+    <div class="narrative-title">读懂你的生命叙事</div>
+    <div class="narrative-disclaimer">
+      生命数字是自我观察工具，不是科学预测，不适合据此做重大人生决策。
+    </div>
+
+    <div class="narrative-form">
+      <div class="form-group full-width">
+        <label class="form-label">生日数（你出生那天的日期，如 23）</label>
+        <input type="number" class="form-input" id="inputBirthday" min="1" max="31" placeholder="请输入出生日，如 23">
+      </div>
+      <div class="form-group">
+        <label class="form-label">生命灵数（主性格）</label>
+        <select class="form-select" id="inputLifePath">
+          <option value="">请选择</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">命运数（先天潜能）</label>
+        <select class="form-select" id="inputDestiny">
+          <option value="">请选择</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">表达数（外在表达）</label>
+        <select class="form-select" id="inputExpression">
+          <option value="">请选择</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">内在数（内心渴望）</label>
+        <select class="form-select" id="inputInner">
+          <option value="">请选择</option>
+        </select>
+      </div>
+      <div class="form-group full-width">
+        <label class="form-label">挑战数（成长课题，选填，0表示无挑战数）</label>
+        <select class="form-select" id="inputChallenge">
+          <option value="0">无挑战数</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="generate-btn" id="generateBtn" onclick="generateNarrative()">生成我的生命叙事 ✨</button>
+
+    <div id="loadingIndicator" class="loading-indicator" style="display:none;">
+      <div class="spinner"></div>
+      <span>正在为你编织生命叙事…</span>
+    </div>
+
+    <div class="narrative-output" id="narrativeOutput">
+      <div class="output-header">
+        <span class="output-title">🌱 你的生命叙事</span>
+        <button class="copy-btn" id="copyBtn" onclick="copyNarrative()">复制文字</button>
+      </div>
+      <div class="output-text" id="outputText"></div>
+    </div>
+
+    <div id="narrativeError" class="narrative-error" style="display:none;"></div>
+  </div>
+
   <!-- CTA -->
   <div class="cta-box">
     <div class="cta-title">想更深入地了解自己？</div>
@@ -575,6 +829,46 @@
   </div>
 
   <script>
+  // ===== Populate select options =====
+  (function() {
+    // Life Path: 1-9 + master numbers 11, 22, 33
+    var lifePathSelect = document.getElementById('inputLifePath');
+    for (var i = 1; i <= 9; i++) {
+      lifePathSelect.add(new Option(i, i));
+    }
+    lifePathSelect.add(new Option('11 (主数)', '11'));
+    lifePathSelect.add(new Option('22 (主数)', '22'));
+    lifePathSelect.add(new Option('33 (主数)', '33'));
+
+    // Destiny: 1-9 + master numbers
+    var destinySelect = document.getElementById('inputDestiny');
+    for (var i = 1; i <= 9; i++) {
+      destinySelect.add(new Option(i, i));
+    }
+    destinySelect.add(new Option('11 (主数)', '11'));
+    destinySelect.add(new Option('22 (主数)', '22'));
+    destinySelect.add(new Option('33 (主数)', '33'));
+
+    // Expression: 1-9
+    var exprSelect = document.getElementById('inputExpression');
+    for (var i = 1; i <= 9; i++) {
+      exprSelect.add(new Option(i, i));
+    }
+
+    // Inner: 1-9
+    var innerSelect = document.getElementById('inputInner');
+    for (var i = 1; i <= 9; i++) {
+      innerSelect.add(new Option(i, i));
+    }
+
+    // Challenge: 0 (no challenge) + 1-9
+    var challengeSelect = document.getElementById('inputChallenge');
+    for (var i = 1; i <= 9; i++) {
+      challengeSelect.add(new Option(i, i));
+    }
+  })();
+
+  // ===== Visitor Counter =====
   (function() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'https://counterapi.com/api/jian.yisan.me/koi-life-card/view', true);
@@ -585,6 +879,125 @@
     };
     xhr.send();
   })();
+
+  // ===== Narrative Generator =====
+  var NARRATIVE_API = 'https://api.liyu.yisan.run/generate-narrative';
+
+  function showLoading() {
+    document.getElementById('loadingIndicator').style.display = 'flex';
+    document.getElementById('narrativeOutput').style.display = 'none';
+    document.getElementById('narrativeError').style.display = 'none';
+    document.getElementById('generateBtn').disabled = true;
+    document.getElementById('generateBtn').textContent = '生成中…';
+    document.getElementById('generateBtn').style.opacity = '0.6';
+  }
+
+  function hideLoading() {
+    document.getElementById('loadingIndicator').style.display = 'none';
+    document.getElementById('generateBtn').disabled = false;
+    document.getElementById('generateBtn').textContent = '生成我的生命叙事 ✨';
+    document.getElementById('generateBtn').style.opacity = '1';
+  }
+
+  function showOutput() {
+    hideLoading();
+    document.getElementById('narrativeOutput').style.display = 'block';
+    document.getElementById('narrativeError').style.display = 'none';
+  }
+
+  function showError(msg) {
+    hideLoading();
+    document.getElementById('narrativeOutput').style.display = 'none';
+    var errEl = document.getElementById('narrativeError');
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
+  }
+
+  async function generateNarrative() {
+    var birthdayRaw = document.getElementById('inputBirthday').value;
+    var lifePath = document.getElementById('inputLifePath').value;
+    var destiny = document.getElementById('inputDestiny').value;
+    var expression = document.getElementById('inputExpression').value;
+    var inner = document.getElementById('inputInner').value;
+    var challenge = document.getElementById('inputChallenge').value;
+
+    // Validate required fields
+    if (!birthdayRaw || !lifePath || !expression || !inner) {
+      showError('请至少填写生日数、生命灵数、表达数和内在数');
+      return;
+    }
+
+    var birthdayNum = parseInt(birthdayRaw, 10);
+    if (isNaN(birthdayNum) || birthdayNum < 1 || birthdayNum > 31) {
+      showError('生日数请输入 1-31 之间的数字');
+      return;
+    }
+
+    showLoading();
+
+    try {
+      var requestBody = {
+        lifePath: parseInt(lifePath, 10),
+        birthdayRaw: birthdayNum,
+        expression: parseInt(expression, 10),
+        inner: parseInt(inner, 10),
+        challenge: challenge && challenge !== '0' ? parseInt(challenge, 10) : null,
+        destiny: destiny ? parseInt(destiny, 10) : null
+      };
+
+      var response = await fetch(NARRATIVE_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+
+      var data = await response.json();
+
+      if (data.success && data.text) {
+        document.getElementById('outputText').textContent = data.text;
+        showOutput();
+      } else {
+        showError(data.error || '生成失败，请稍后重试');
+      }
+    } catch (err) {
+      showError('网络连接失败，请检查网络后重试');
+    }
+  }
+
+  function copyNarrative() {
+    var text = document.getElementById('outputText').textContent;
+    if (!text) return;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        var btn = document.getElementById('copyBtn');
+        btn.textContent = '已复制 ✓';
+        setTimeout(function() { btn.textContent = '复制文字'; }, 2000);
+      }).catch(function() {
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+  }
+
+  function fallbackCopy(text) {
+    var textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      var btn = document.getElementById('copyBtn');
+      btn.textContent = '已复制 ✓';
+      setTimeout(function() { btn.textContent = '复制文字'; }, 2000);
+    } catch (e) {
+      // silently fail
+    }
+    document.body.removeChild(textarea);
+  }
   </script>
 
 </div>

@@ -750,7 +750,7 @@
   </div>
 
   <!-- Narrative Generator -->
-  <div class="narrative-section">
+  <div class="narrative-section" id="narrativeSection">
     <div class="narrative-title">读懂你的生命叙事</div>
     <div class="narrative-disclaimer">
       生命数字是自我观察工具，不是科学预测，不适合据此做重大人生决策。
@@ -865,6 +865,41 @@
     var challengeSelect = document.getElementById('inputChallenge');
     for (var i = 1; i <= 9; i++) {
       challengeSelect.add(new Option(i, i));
+    }
+
+    // ===== Auto-fill from URL params =====
+    var params = new URLSearchParams(window.location.search);
+    var hasParams = false;
+    
+    if (params.get('lifePath')) {
+      lifePathSelect.value = params.get('lifePath');
+      hasParams = true;
+    }
+    if (params.get('birthdayRaw')) {
+      document.getElementById('inputBirthday').value = params.get('birthdayRaw');
+      hasParams = true;
+    }
+    if (params.get('expression')) {
+      exprSelect.value = params.get('expression');
+      hasParams = true;
+    }
+    if (params.get('inner')) {
+      innerSelect.value = params.get('inner');
+      hasParams = true;
+    }
+    if (params.get('challenge')) {
+      challengeSelect.value = params.get('challenge');
+      hasParams = true;
+    }
+    
+    // If params were filled, scroll to the narrative section
+    if (hasParams) {
+      setTimeout(function() {
+        var narrativeSection = document.getElementById('narrativeSection');
+        if (narrativeSection) {
+          narrativeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 300);
     }
   })();
 

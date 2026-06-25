@@ -506,6 +506,30 @@
     .save-toast.show { display: block; }
     @keyframes fade-in { from { opacity: 0; transform: translate(-50%,-48%); } to { opacity: 1; transform: translate(-50%,-50%); } }
 
+    /* 生命叙事 CTA 按钮 */
+    .narrative-cta-btn {
+      display: block;
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto 20px;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #FF7A45 0%, #FF9A6C 100%);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 50px;
+      box-shadow: 0 4px 20px rgba(255, 122, 69, 0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .narrative-cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(255, 122, 69, 0.5);
+    }
+    .narrative-cta-btn:active { transform: scale(0.97); }
+
     .guide-link {
       display: block;
       text-align: center;
@@ -1002,6 +1026,8 @@
         </div>
       </div>
       
+      <a href="#" id="narrativeBtn" class="narrative-cta-btn">✨ 生成我的生命叙事</a>
+      
       <button class="reset-btn" id="resetBtn">← 再算一次</button>
       <button class="save-btn" id="saveBtn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1113,6 +1139,9 @@
       document.getElementById('interpShadow').textContent = lpData.shadow || '';
       document.getElementById('interpLesson').textContent = lpData.lesson || '';
       
+      // 设置生命叙事按钮链接
+      document.getElementById('narrativeBtn').href = `guide.html?lifePath=${r.lifePath}&birthdayRaw=${r.birthDay}&expression=${r.expression}&inner=${r.innerDream}&challenge=${r.challenge || ''}`;
+      
       inputPage.style.display = 'none';
       resultPage.classList.add('active');
       backBtn.style.display = 'flex';
@@ -1153,6 +1182,7 @@
       btn.style.display = 'none';
       document.getElementById('resetBtn').style.display = 'none';
       document.querySelector('.guide-link').style.display = 'none';
+      document.getElementById('narrativeBtn').style.display = 'none';
       backBtn.style.display = 'none';
 
       html2canvas(document.getElementById('resultPage'), {
@@ -1165,6 +1195,7 @@
         btn.style.display = '';
         document.getElementById('resetBtn').style.display = '';
         document.querySelector('.guide-link').style.display = '';
+        document.getElementById('narrativeBtn').style.display = '';
         backBtn.style.display = 'flex';
         toast.classList.remove('show');
 

@@ -770,6 +770,54 @@
       line-height: 1.9;
       color: var(--text-secondary);
     }
+
+    .interp-shadow {
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: rgba(255, 80, 80, 0.08);
+      border-left: 3px solid rgba(255, 100, 100, 0.5);
+      border-radius: 0 10px 10px 0;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .interp-shadow-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 120, 120, 0.9);
+      white-space: nowrap;
+    }
+
+    .interp-shadow-text {
+      font-size: 12px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .interp-lesson {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: rgba(74, 230, 140, 0.07);
+      border-left: 3px solid rgba(74, 230, 140, 0.45);
+      border-radius: 0 10px 10px 0;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .interp-lesson-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(74, 230, 140, 0.9);
+      white-space: nowrap;
+    }
+
+    .interp-lesson-text {
+      font-size: 12px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.55);
+    }
     
     /* 重置按钮 */
     .reset-btn {
@@ -944,6 +992,14 @@
           <span class="interp-title" id="interpTitle"></span>
         </div>
         <p class="interp-body" id="interpText"></p>
+        <div class="interp-shadow">
+          <span class="interp-shadow-label">🌑 阴影</span>
+          <span class="interp-shadow-text" id="interpShadow"></span>
+        </div>
+        <div class="interp-lesson">
+          <span class="interp-lesson-label">✨ 课题</span>
+          <span class="interp-lesson-text" id="interpLesson"></span>
+        </div>
       </div>
       
       <button class="reset-btn" id="resetBtn">← 再算一次</button>
@@ -1053,6 +1109,9 @@
       // 解读
       document.getElementById('interpTitle').textContent = `生命灵数 ${r.lifePath} · ${r.lifePathName}`;
       document.getElementById('interpText').textContent = r.lifePathInterpretation;
+      const lpData = Numerology.LIFE_PATH_INTERPRETATIONS[r.lifePath] || {};
+      document.getElementById('interpShadow').textContent = lpData.shadow || '';
+      document.getElementById('interpLesson').textContent = lpData.lesson || '';
       
       inputPage.style.display = 'none';
       resultPage.classList.add('active');

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>锦鲤祈福池 · 接财纳福</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#1a0800;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* ===== LAYER 0: WARM AMBIENT BG ===== */
+.ambient-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(ellipse at 50% 30%,rgba(255,160,0,.15) 0%,rgba(180,60,0,.08) 40%,rgba(20,5,0,.95) 100%)}
+
+/* ===== LAYER 1: VIDEO ===== */
+#videoBg{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:.55;mix-blend-mode:screen}
+
+/* ===== LAYER 2: GOLD WASH ===== */
+.gold-wash{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(255,200,0,.06) 0%,transparent 30%,transparent 70%,rgba(255,150,0,.04) 100%);mix-blend-mode:screen}
+
+/* ===== LAYER 3: PARTICLE CANVAS ===== */
+#particleCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:3;pointer-events:none}
+
+/* ===== LAYER 4: FLOATING COINS & INGOTS ===== */
+.float-layer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:4;pointer-events:none;overflow:hidden}
+
+.fcoin{position:absolute;animation:coinDrift linear infinite;will-change:transform;filter:drop-shadow(0 0 8px rgba(255,200,0,.6))}
+@keyframes coinDrift{
+  0%{transform:translateY(105vh) translateX(0) rotate(0deg) scale(.7)}
+  25%{transform:translateY(75vh) translateX(15px) rotate(90deg) scale(.9)}
+  50%{transform:translateY(45vh) translateX(-10px) rotate(180deg) scale(1)}
+  75%{transform:translateY(20vh) translateX(20px) rotate(270deg) scale(.85)}
+  100%{transform:translateY(-10vh) translateX(0) rotate(360deg) scale(.7)}
+}
+
+.fingot{position:absolute;animation:ingotSway ease-in-out infinite;will-change:transform;filter:drop-shadow(0 0 10px rgba(255,180,0,.5))}
+@keyframes ingotSway{
+  0%,100%{transform:translateY(0) rotate(-8deg) scale(.9)}
+  33%{transform:translateY(-18px) rotate(6deg) scale(1)}
+  66%{transform:translateY(-10px) rotate(-4deg) scale(1.05)}
+}
+
+/* ===== LAYER 5: LIGHT SPOTS ===== */
+.light-layer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none;overflow:hidden}
+.lspot{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,220,0,.5) 0%,rgba(255,180,0,.2) 40%,transparent 70%);animation:spotGlow ease-in-out infinite alternate;will-change:transform,opacity}
+@keyframes spotGlow{0%{opacity:.2;transform:scale(.7)}100%{opacity:.7;transform:scale(1.4)}}
+
+/* ===== LAYER 6: DECORATIVE ELEMENTS ===== */
+.deco-layer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:6;pointer-events:none}
+
+/* Lanterns */
+.lantern{position:absolute;font-size:clamp(20px,5vw,30px);animation:lanternSwing 4s ease-in-out infinite;filter:drop-shadow(0 4px 12px rgba(255,50,0,.4))}
+@keyframes lanternSwing{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.lantern::before{content:'';position:absolute;top:-12px;left:50%;width:1px;height:12px;background:rgba(255,200,0,.4);transform:translateX(-50%)}
+
+/* Corner coin strings */
+.coin-string{position:absolute;display:flex;flex-direction:column;gap:4px;font-size:16px;opacity:.5;animation:stringSway 6s ease-in-out infinite}
+@keyframes stringSway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+
+/* ===== LAYER 7: AMBIENT STICKER TEXT ===== */
+.sticker-layer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:7;pointer-events:none}
+
+/* Main hero text */
+.hero-sticker{position:absolute;top:10%;left:50%;transform:translateX(-50%);animation:heroEntry 1s cubic-bezier(.34,1.56,.64,1) both, heroBreathe 3.5s ease-in-out infinite 1s;white-space:nowrap}
+.hero-sticker .sticker-inner{background:linear-gradient(135deg,#DC2626 0%,#B91C1C 50%,#991B1B 100%);color:#FFD700;font-size:clamp(32px,9vw,56px);font-weight:900;padding:8px 24px;border-radius:12px;border:3px solid #FFD700;letter-spacing:6px;text-shadow:0 2px 4px rgba(0,0,0,.5),0 0 20px rgba(255,200,0,.5);box-shadow:0 0 25px rgba(255,200,0,.4),0 8px 25px rgba(0,0,0,.5),inset 0 2px 0 rgba(255,255,255,.15),inset 0 -2px 0 rgba(0,0,0,.2);position:relative;overflow:hidden;display:inline-block}
+.hero-sticker .sticker-inner::after{content:'';position:absolute;top:-50%;left:-60%;width:40%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform:rotate(25deg);animation:shineSticker 4s ease-in-out infinite 2s}
+@keyframes shineSticker{0%{left:-60%}30%{left:120%}100%{left:120%}}
+@keyframes heroEntry{0%{transform:translateX(-50%) translateY(80px) scale(.5);opacity:0}100%{transform:translateX(-50%) translateY(0) scale(1);opacity:1}}
+@keyframes heroBreathe{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.02)}}
+
+/* Sub stickers */
+.sub-sticker{position:absolute;padding:6px 14px;border-radius:8px;font-weight:900;letter-spacing:2px;white-space:nowrap;border:2px solid;box-shadow:0 4px 15px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.15)}
+
+.ss-1{bottom:30%;left:4%;background:linear-gradient(135deg,#DC2626,#B91C1C);color:#FFD700;border-color:#FFD700;font-size:clamp(13px,3.8vw,20px);text-shadow:0 1px 3px rgba(0,0,0,.5),0 0 8px rgba(255,200,0,.4);animation:ssEntry .8s cubic-bezier(.34,1.56,.64,1) .3s both, ssSway1 4.5s ease-in-out infinite 1.1s}
+.ss-2{bottom:22%;right:4%;background:linear-gradient(135deg,#FFD700,#F59E0B);color:#991B1B;border-color:#B91C1C;font-size:clamp(13px,3.8vw,20px);text-shadow:0 1px 2px rgba(0,0,0,.3);animation:ssEntry .8s cubic-bezier(.34,1.56,.64,1) .5s both, ssSway2 5s ease-in-out infinite 1.3s}
+.ss-3{top:26%;right:5%;background:linear-gradient(135deg,#DC2626,#991B1B);color:#FFD700;border-color:#FFD700;font-size:clamp(11px,3.2vw,16px);text-shadow:0 1px 3px rgba(0,0,0,.5),0 0 8px rgba(255,200,0,.3);animation:ssEntry .8s cubic-bezier(.34,1.56,.64,1) .7s both, ssSway1 5.5s ease-in-out infinite 1.5s}
+.ss-4{top:35%;left:4%;background:linear-gradient(135deg,#FF6B00,#E85D00);color:#FFF;border-color:#FFD700;font-size:clamp(11px,3vw,15px);text-shadow:0 1px 3px rgba(0,0,0,.5);animation:ssEntry .8s cubic-bezier(.34,1.56,.64,1) .9s both, ssSway2 4s ease-in-out infinite 1.7s;opacity:.85}
+
+@keyframes ssEntry{0%{transform:translateY(40px) scale(.6);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes ssSway1{0%,100%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(2deg) translateY(-5px)}}
+@keyframes ssSway2{0%,100%{transform:rotate(1.5deg) translateY(0)}50%{transform:rotate(-1.5deg) translateY(-6px)}}
+
+/* ===== MONEY TREE (Collect Button) ===== */
+.money-tree{position:fixed;top:env(safe-area-inset-top,10px);right:10px;z-index:20;width:52px;height:52px;border-radius:50%;border:2px solid #FFD700;background:radial-gradient(circle at 40% 40%,rgba(34,120,0,.8),rgba(20,80,0,.9));backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;transition:all .3s;box-shadow:0 0 15px rgba(0,180,0,.3),0 0 30px rgba(255,200,0,.2)}
+.money-tree:active{transform:scale(.9)}
+.money-tree.collected{background:radial-gradient(circle at 40% 40%,rgba(255,200,0,.9),rgba(200,150,0,.9));border-color:#FFF;box-shadow:0 0 20px rgba(255,200,0,.6)}
+.money-tree.shake{animation:treeShake .5s ease-in-out}
+@keyframes treeShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-15deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(5deg)}}
+.tree-badge{position:absolute;bottom:-4px;right:-4px;font-size:10px;background:#22C55E;color:#fff;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+.money-tree.collected .tree-badge{opacity:1}
+
+/* ===== SOUND TOGGLE ===== */
+.sound-btn{position:fixed;top:env(safe-area-inset-top,10px);left:10px;z-index:20;width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(255,215,0,.4);background:rgba(100,20,0,.5);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:all .3s}
+.sound-btn.muted{opacity:.35}
+
+/* ===== BOTTOM PRAYER BAR ===== */
+.prayer-bar{position:fixed;bottom:0;left:0;width:100%;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:center;pointer-events:auto;background:linear-gradient(0deg,rgba(80,10,0,.6) 0%,transparent 100%)}
+.prayer-trigger{background:linear-gradient(135deg,#DC2626,#B91C1C);color:#FFD700;border:2.5px solid #FFD700;border-radius:30px;padding:14px 44px;font-size:clamp(18px,5vw,24px);font-weight:900;letter-spacing:4px;cursor:pointer;box-shadow:0 0 20px rgba(255,200,0,.5),0 4px 15px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.15);text-shadow:0 2px 4px rgba(0,0,0,.5),0 0 10px rgba(255,200,0,.3);transition:all .2s;animation:triggerGlow 2.5s ease-in-out infinite;position:relative;overflow:hidden}
+.prayer-trigger::after{content:'';position:absolute;top:-50%;left:-50%;width:30%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transform:rotate(25deg);animation:triggerShine 3s ease-in-out infinite 1s}
+@keyframes triggerGlow{0%,100%{transform:scale(1);box-shadow:0 0 20px rgba(255,200,0,.5),0 4px 15px rgba(0,0,0,.4)}50%{transform:scale(1.03);box-shadow:0 0 35px rgba(255,200,0,.7),0 4px 15px rgba(0,0,0,.4)}}
+@keyframes triggerShine{0%{left:-50%}40%{left:130%}100%{left:130%}}
+.prayer-trigger:active{transform:scale(.93)!important}
+
+/* ===== PRAYER PANEL ===== */
+.prayer-panel{position:fixed;bottom:0;left:0;width:100%;z-index:25;transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);padding:20px 14px calc(20px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;background:linear-gradient(180deg,rgba(120,0,0,.94) 0%,rgba(80,0,0,.97) 100%);backdrop-filter:blur(20px);border-top:2px solid #FFD700;box-shadow:0 -5px 30px rgba(255,200,0,.2)}
+.prayer-panel.open{transform:translateY(0)}
+.panel-header{text-align:center;margin-bottom:14px}
+.panel-title{font-size:clamp(18px,5vw,22px);color:#FFD700;font-weight:900;text-shadow:0 0 10px rgba(255,200,0,.5);letter-spacing:3px}
+.panel-sub{font-size:12px;color:rgba(255,215,0,.5);margin-top:4px}
+.blessing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.blessing-btn{background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,215,0,.08));border:1.5px solid rgba(255,215,0,.4);border-radius:12px;padding:14px 8px;text-align:center;color:#FFD700;font-size:clamp(15px,4.2vw,18px);font-weight:700;cursor:pointer;transition:all .15s;text-shadow:0 0 6px rgba(255,200,0,.3);position:relative;overflow:hidden}
+.blessing-btn:active{background:rgba(255,215,0,.35);transform:scale(.92);border-color:#FFD700}
+.blessing-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);opacity:0;transition:opacity .2s}
+.blessing-btn:active::after{opacity:1}
+.panel-close{display:block;margin:0 auto;background:none;border:1px solid rgba(255,215,0,.3);border-radius:20px;color:rgba(255,215,0,.6);padding:8px 28px;font-size:13px;cursor:pointer;transition:all .2s}
+.panel-close:active{background:rgba(255,215,0,.1)}
+
+/* ===== FORTUNE CARD ===== */
+.fortune-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.65);opacity:0;pointer-events:none;transition:opacity .4s}
+.fortune-overlay.show{opacity:1;pointer-events:auto}
+.fortune-card{width:min(300px,85vw);padding:28px 22px 22px;border-radius:14px;background:linear-gradient(160deg,#DC2626 0%,#B91C1C 40%,#991B1B 100%);border:3px solid #FFD700;box-shadow:0 0 30px rgba(255,200,0,.5),0 8px 30px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15);text-align:center;transform:translateY(-100vh) rotate(-15deg);transition:transform 1.4s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden}
+.fortune-overlay.show .fortune-card{transform:translateY(0) rotate(0deg)}
+/* Shine sweep */
+.fortune-card::before{content:'';position:absolute;top:-80%;left:-80%;width:60%;height:260%;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.08) 48%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.08) 52%,transparent 70%);transform:rotate(35deg);animation:fortuneShine 4s ease-in-out infinite 2s}
+@keyframes fortuneShine{0%{transform:translateX(-100%) rotate(35deg)}40%{transform:translateX(250%) rotate(35deg)}100%{transform:translateX(250%) rotate(35deg)}}
+/* Inner decorative border */
+.fortune-card::after{content:'';position:absolute;inset:6px;border:1px solid rgba(255,215,0,.2);border-radius:10px;pointer-events:none}
+.fortune-seal{font-size:36px;margin-bottom:6px;filter:drop-shadow(0 2px 8px rgba(255,200,0,.4))}
+.fortune-label{font-size:11px;color:rgba(255,215,0,.5);letter-spacing:4px;margin-bottom:10px}
+.fortune-text{font-size:clamp(20px,5.5vw,26px);color:#FFD700;font-weight:900;line-height:1.5;text-shadow:0 2px 4px rgba(0,0,0,.5),0 0 15px rgba(255,200,0,.4);letter-spacing:3px}
+.fortune-footer{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;font-size:11px;color:rgba(255,215,0,.45);letter-spacing:2px}
+.fortune-close{margin-top:16px;background:linear-gradient(135deg,#FFD700,#F59E0B);color:#991B1B;border:none;border-radius:20px;padding:10px 32px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 2px 10px rgba(255,200,0,.3);transition:all .2s;letter-spacing:2px}
+.fortune-close:active{transform:scale(.93)}
+
+/* ===== DOUBLE-TAP EFFECTS ===== */
+.tap-heart{position:fixed;z-index:10;pointer-events:none;animation:heartPop 1.2s ease-out forwards;will-change:transform,opacity}
+@keyframes heartPop{0%{transform:scale(0) rotate(-20deg);opacity:1}25%{transform:scale(1.4) rotate(5deg);opacity:1}100%{transform:scale(.5) translateY(-160px) rotate(-5deg);opacity:0}}
+
+.tap-text{position:fixed;z-index:10;pointer-events:none;font-size:clamp(22px,6vw,32px);font-weight:900;color:#FFD700;text-shadow:0 0 12px rgba(255,200,0,.8),0 0 25px rgba(255,150,0,.4),0 3px 6px rgba(180,80,0,.5);animation:textCombo .9s ease-out forwards;will-change:transform,opacity}
+@keyframes textCombo{0%{transform:scale(0) rotate(-25deg) translateY(0);opacity:0}15%{transform:scale(1.5) rotate(8deg) translateY(-10px);opacity:1}35%{transform:scale(1) rotate(-5deg) translateY(-30px);opacity:1}100%{transform:scale(.4) rotate(10deg) translateY(-140px);opacity:0}}
+
+.tap-ripple{position:fixed;z-index:8;pointer-events:none;border-radius:50%;border:2px solid rgba(255,215,0,.5);animation:rippleExpand .7s ease-out forwards;transform:translate(-50%,-50%)}
+@keyframes rippleExpand{0%{width:0;height:0;opacity:.8}100%{width:140px;height:140px;opacity:0}}
+
+/* ===== FLOATING BLESSING (after prayer select) ===== */
+.float-blessing{position:fixed;z-index:12;pointer-events:none;font-size:clamp(24px,6vw,34px);font-weight:900;color:#FFD700;text-shadow:0 0 15px rgba(255,200,0,.8),0 0 30px rgba(255,150,0,.4),0 4px 8px rgba(180,80,0,.6);animation:blessingFloat 2.8s ease-out forwards;will-change:transform,opacity;letter-spacing:3px}
+@keyframes blessingFloat{0%{transform:translateY(0) scale(0) rotate(-10deg);opacity:0}12%{transform:translateY(-15px) scale(1.3) rotate(3deg);opacity:1}25%{transform:translateY(-35px) scale(1) rotate(-2deg);opacity:1}100%{transform:translateY(-220px) scale(.6) rotate(5deg);opacity:0}}
+
+/* ===== MONEY TREE COIN RAIN ===== */
+.tree-coin{position:fixed;z-index:11;pointer-events:none;font-size:20px;animation:treeCoinFall 1.5s ease-in forwards;will-change:transform,opacity}
+@keyframes treeCoinFall{0%{transform:translateY(0) rotate(0) scale(1);opacity:1}100%{transform:translateY(200px) rotate(360deg) scale(.5);opacity:0}}
+
+/* ===== FIRST TOUCH OVERLAY ===== */
+.first-touch{position:fixed;top:0;left:0;width:100%;height:100%;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(80,20,0,.9),rgba(20,5,0,.95));backdrop-filter:blur(8px);cursor:pointer;transition:opacity .8s}
+.first-touch.hide{opacity:0;pointer-events:none}
+.ft-glow{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,0,.3) 0%,transparent 70%);display:flex;align-items:center;justify-content:center;animation:ftPulse 2.5s ease-in-out infinite;margin-bottom:24px}
+@keyframes ftPulse{0%,100%{transform:scale(1);box-shadow:0 0 40px rgba(255,200,0,.2)}50%{transform:scale(1.1);box-shadow:0 0 60px rgba(255,200,0,.4)}}
+.ft-icon{font-size:60px;animation:ftFish 3s ease-in-out infinite}
+@keyframes ftFish{0%,100%{transform:translateX(0) scaleX(1)}25%{transform:translateX(10px) scaleX(1)}50%{transform:translateX(0) scaleX(-1)}75%{transform:translateX(-10px) scaleX(-1)}}
+.ft-title{font-size:clamp(24px,7vw,36px);color:#FFD700;font-weight:900;text-shadow:0 0 20px rgba(255,200,0,.5),0 4px 8px rgba(180,80,0,.4);letter-spacing:4px;margin-bottom:8px}
+.ft-sub{font-size:14px;color:rgba(255,215,0,.5);letter-spacing:3px}
+.ft-hint{font-size:13px;color:rgba(255,215,0,.35);margin-top:30px;animation:ftHintPulse 2s ease-in-out infinite}
+@keyframes ftHintPulse{0%,100%{opacity:.3}50%{opacity:.7}}
+
+/* ===== SCROLLING BANNER ===== */
+.scroll-banner{position:fixed;z-index:6;pointer-events:none;overflow:hidden;width:100%;height:28px;opacity:.4}
+.scroll-banner-top{top:55px}
+.scroll-banner-bottom{bottom:70px}
+.scroll-track{display:flex;white-space:nowrap;animation:scrollText 30s linear infinite;font-size:12px;color:rgba(255,215,0,.6);letter-spacing:2px;line-height:28px}
+@keyframes scrollText{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+</style>
+</head>
+<body>
+
+<!-- LAYER 0: AMBIENT BG -->
+<div class="ambient-bg"></div>
+
+<!-- LAYER 1: VIDEO -->
+<video id="videoBg" autoplay muted loop playsinline><source src="assets/koi_bg.mp4" type="video/mp4"></video>
+
+<!-- LAYER 2: GOLD WASH -->
+<div class="gold-wash"></div>
+
+<!-- LAYER 3: PARTICLE CANVAS -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- LAYER 4: FLOATING COINS -->
+<div class="float-layer" id="floatLayer"></div>
+
+<!-- LAYER 5: LIGHT SPOTS -->
+<div class="light-layer" id="lightLayer"></div>
+
+<!-- LAYER 6: DECORATIVE -->
+<div class="deco-layer" id="decoLayer">
+  <!-- Lanterns -->
+  <div class="lantern" style="top:2%;left:12%">🏮</div>
+  <div class="lantern" style="top:3%;right:15%;animation-delay:-1.5s">🏮</div>
+  <!-- Corner coin strings -->
+  <div class="coin-string" style="top:65px;left:4px">
+    <span>🪙</span><span>🪙</span><span>🪙</span><span>🪙</span>
+  </div>
+  <div class="coin-string" style="bottom:75px;right:6px;animation-delay:-2s">
+    <span>🪙</span><span>🪙</span><span>🪙</span>
+  </div>
+</div>
+
+<!-- LAYER 7: STICKER TEXT -->
+<div class="sticker-layer">
+  <div class="hero-sticker"><span class="sticker-inner">流水生财</span></div>
+  <div class="sub-sticker ss-1">见者有份，接财！</div>
+  <div class="sub-sticker ss-2">今日宜：暴富</div>
+  <div class="sub-sticker ss-3">听劝！行运信号</div>
+  <div class="sub-sticker ss-4">🐟 双击接好运</div>
+</div>
+
+<!-- SCROLLING BANNERS -->
+<div class="scroll-banner scroll-banner-top">
+  <div class="scroll-track" id="scrollTop"></div>
+</div>
+<div class="scroll-banner scroll-banner-bottom">
+  <div class="scroll-track" id="scrollBottom"></div>
+</div>
+
+<!-- MONEY TREE (collect) -->
+<div class="money-tree" id="moneyTree" onclick="toggleCollect()">
+  🌳
+  <span class="tree-badge">✓</span>
+</div>
+
+<!-- SOUND TOGGLE -->
+<div class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊</div>
+
+<!-- PRAYER BAR -->
+<div class="prayer-bar">
+  <div class="prayer-trigger" id="prayerTrigger" onclick="openPrayer()">🙏 接财祈福</div>
+</div>
+
+<!-- PRAYER PANEL -->
+<div class="prayer-panel" id="prayerPanel">
+  <div class="panel-header">
+    <div class="panel-title">🏮 选一句祈福词 🏮</div>
+    <div class="panel-sub">财神爷在听</div>
+  </div>
+  <div class="blessing-grid" id="blessingGrid"></div>
+  <button class="panel-close" onclick="closePrayer()">收起</button>
+</div>
+
+<!-- FORTUNE CARD -->
+<div class="fortune-overlay" id="fortuneOverlay" onclick="closeFortune(event)">
+  <div class="fortune-card" id="fortuneCard">
+    <div class="fortune-seal">🐟</div>
+    <div class="fortune-label">—— 财神指引 ——</div>
+    <div class="fortune-text" id="fortuneText"></div>
+    <div class="fortune-footer">
+      <span>🪙</span><span>锦鲤祈福池</span><span>🪙</span>
+    </div>
+    <button class="fortune-close" onclick="closeFortune(event,true)">🙏 接住了！</button>
+  </div>
+</div>
+
+<!-- FIRST TOUCH -->
+<div class="first-touch" id="firstTouch">
+  <div class="ft-glow"><div class="ft-icon">🐟</div></div>
+  <div class="ft-title">锦鲤祈福池</div>
+  <div class="ft-sub">流水生财 · 接财纳福</div>
+  <div class="ft-hint">— 点触开启好运 —</div>
+</div>
+
+<script>
+// ===== CONFIG =====
+const FORTUNES=[
+  '财运亨通，日进斗金','接财！大财小财滚滚来','金银满堂，富贵吉祥',
+  '今日偏财运爆棚','财神爷在向你招手','钱从四面八方来',
+  '钱包鼓鼓，好运连连','发财！暴富就在此刻','金元宝向你飞来',
+  '今年注定发财年','财如春水滚滚来','一路发发发',
+  '横财就手，正财稳固','聚宝盆里满是金','招财进宝，万事亨通',
+  '你天生就是发财命','钱途无量，未来可期','黄金万两，好运连连',
+  '锦鲤附体，财运大旺','今年暴富指日可待'
+];
+const BLESSINGS=['接财','财入我家','好运','旺自己','金银满堂','日进斗金','暴富','发大财','偏财旺'];
+const TAP_WORDS=['发！','旺！','财！','💰','🔥','发发发！','💎','✨'];
+const SCROLL_TEXTS=[
+  '💰 财运亨通','🪙 日进斗金','🏮 招财进宝','✨ 金银满堂',
+  '🐟 锦鲤附体','💎 黄金万两','🧧 恭喜发财','🪙 一路发发发',
+  '💰 财运亨通','🪙 日进斗金','🏮 招财进宝','✨ 金银满堂',
+  '🐟 锦鲤附体','💎 黄金万两','🧧 恭喜发财','🪙 一路发发发'
+];
+
+// ===== STATE =====
+let audioCtx=null,waterGain=null,isSoundOn=false,isCollected=false,isStarted=false;
+let lastTap=0,longPressTimer=null;
+const dpr=Math.min(window.devicePixelRatio||1,2);
+
+// ===== INIT FLOATING ELEMENTS =====
+function initFloats(){
+  const layer=document.getElementById('floatLayer');
+  const coinEmoji=['🪙','💰','🪙','✨','🪙','🪙'];
+  const ingotEmoji=['🥇','💎','🥇'];
+  // Falling coins
+  for(let i=0;i<15;i++){
+    const el=document.createElement('div');
+    el.className='fcoin';
+    el.textContent=coinEmoji[i%coinEmoji.length];
+    el.style.left=(Math.random()*92)+'%';
+    el.style.fontSize=(16+Math.random()*14)+'px';
+    el.style.animationDuration=(7+Math.random()*14)+'s';
+    el.style.animationDelay=(-Math.random()*18)+'s';
+    el.style.opacity=(.4+Math.random()*.4);
+    layer.appendChild(el);
+  }
+  // Swaying ingots
+  for(let i=0;i<8;i++){
+    const el=document.createElement('div');
+    el.className='fingot';
+    el.textContent=ingotEmoji[i%ingotEmoji.length];
+    el.style.left=(5+Math.random()*85)+'%';
+    el.style.top=(25+Math.random()*55)+'%';
+    el.style.fontSize=(14+Math.random()*10)+'px';
+    el.style.animationDuration=(3.5+Math.random()*4)+'s';
+    el.style.animationDelay=(-Math.random()*5)+'s';
+    layer.appendChild(el);
+  }
+}
+
+// ===== INIT LIGHT SPOTS =====
+function initLights(){
+  const c=document.getElementById('lightLayer');
+  for(let i=0;i<18;i++){
+    const s=document.createElement('div');
+    s.className='lspot';
+    const sz=15+Math.random()*50;
+    s.style.width=sz+'px';s.style.height=sz+'px';
+    s.style.left=Math.random()*100+'%';
+    s.style.top=Math.random()*100+'%';
+    s.style.animationDuration=(2.5+Math.random()*4)+'s';
+    s.style.animationDelay=(-Math.random()*5)+'s';
+    s.style.animationDirection=Math.random()>.5?'alternate':'alternate-reverse';
+    c.appendChild(s);
+  }
+}
+
+// ===== SCROLLING BANNERS =====
+function initBanners(){
+  const text=SCROLL_TEXTS.join('  ·  ')+'  ·  ';
+  document.getElementById('scrollTop').textContent=text+text;
+  document.getElementById('scrollBottom').textContent=text+text;
+}
+
+// ===== PARTICLE SYSTEM =====
+const canvas=document.getElementById('particleCanvas');
+const ctx=canvas.getContext('2d');
+let particles=[],ambientP=[];
+
+function resizeCanvas(){
+  canvas.width=window.innerWidth*dpr;
+  canvas.height=window.innerHeight*dpr;
+  canvas.style.width=window.innerWidth+'px';
+  canvas.style.height=window.innerHeight+'px';
+}
+
+class P{
+  constructor(x,y,type){
+    this.x=x;this.y=y;this.type=type;
+    if(type==='burst'){
+      this.vx=(Math.random()-.5)*5;this.vy=-(2+Math.random()*5);
+      this.life=1;this.decay=.012+Math.random()*.018;
+      this.size=2.5+Math.random()*4;
+      this.hue=Math.random()>.3?45:30;
+      this.sat=100;this.lit=50+Math.random()*20;
+    }else if(type==='goldrain'){
+      this.vx=(Math.random()-.5)*.3;this.vy=.5+Math.random()*1.5;
+      this.life=1;this.decay=.004+Math.random()*.004;
+      this.size=1+Math.random()*2.5;
+      this.hue=40+Math.random()*15;this.sat=100;this.lit=55+Math.random()*15;
+    }else{
+      this.vx=(Math.random()-.5)*.4;this.vy=-(0.2+Math.random()*.4);
+      this.life=1;this.decay=.003+Math.random()*.003;
+      this.size=1.2+Math.random()*2;
+      this.hue=42+Math.random()*10;this.sat=100;this.lit=50+Math.random()*15;
+    }
+  }
+  update(){
+    this.x+=this.vx;this.y+=this.vy;this.life-=this.decay;
+    if(this.type==='burst')this.vy+=.06;
+    if(this.type==='goldrain'){this.vx+=(Math.random()-.5)*.05;if(this.y>window.innerHeight+10){this.y=-10;this.life=.8}}
+  }
+  draw(c){
+    const a=this.life*.7;
+    c.globalAlpha=a;
+    c.fillStyle=`hsla(${this.hue},${this.sat}%,${this.lit}%,${a})`;
+    c.beginPath();c.arc(this.x,this.y,this.size,0,Math.PI*2);c.fill();
+    // glow
+    c.globalAlpha=a*.25;
+    c.fillStyle=`hsla(${this.hue},${this.sat}%,${this.lit}%,${a*.25})`;
+    c.beginPath();c.arc(this.x,this.y,this.size*2.8,0,Math.PI*2);c.fill();
+  }
+}
+
+function initAmbient(){
+  const w=window.innerWidth,h=window.innerHeight;
+  for(let i=0;i<40;i++) ambientP.push(new P(Math.random()*w,Math.random()*h,'ambient'));
+  for(let i=0;i<20;i++) ambientP.push(new P(Math.random()*w,Math.random()*h,'goldrain'));
+}
+
+function burst(x,y,n){for(let i=0;i<n;i++)particles.push(new P(x,y,'burst'))}
+
+function animate(){
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+  const w=window.innerWidth,h=window.innerHeight;
+  // ambient & goldrain
+  ambientP.forEach(p=>{
+    p.update();p.draw(ctx);
+    if(p.life<=0&&p.type!=='goldrain'){p.x=Math.random()*w;p.y=h+10;p.life=1}
+  });
+  // burst
+  particles=particles.filter(p=>{p.update();p.draw(ctx);return p.life>0});
+  ctx.globalAlpha=1;
+  requestAnimationFrame(animate);
+}
+
+// ===== WEB AUDIO =====
+function initAudio(){
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  const len=audioCtx.sampleRate*4;
+  const buf=audioCtx.createBuffer(2,len,audioCtx.sampleRate);
+  for(let ch=0;ch<2;ch++){
+    const d=buf.getChannelData(ch);let lo=0;
+    for(let i=0;i<len;i++){
+      const w=Math.random()*2-1;
+      lo=(lo+.02*w)/1.02;
+      d[i]=lo*3.5+Math.sin(i*.0008+Math.random()*.3)*.015;
+    }
+  }
+  const src=audioCtx.createBufferSource();src.buffer=buf;src.loop=true;
+  const lp=audioCtx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=900;lp.Q.value=.8;
+  const bp=audioCtx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=450;bp.Q.value=.5;
+  const lfo=audioCtx.createOscillator();const lg=audioCtx.createGain();
+  lfo.frequency.value=.25;lg.gain.value=120;lfo.connect(lg);lg.connect(lp.frequency);lfo.start();
+  waterGain=audioCtx.createGain();waterGain.gain.value=0;
+  src.connect(lp);lp.connect(bp);bp.connect(waterGain);waterGain.connect(audioCtx.destination);src.start();
+}
+
+function startWater(){
+  if(!audioCtx)initAudio();
+  if(audioCtx.state==='suspended')audioCtx.resume();
+  isSoundOn=true;
+  waterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+  waterGain.gain.setTargetAtTime(.22,audioCtx.currentTime,.6);
+  document.getElementById('soundBtn').classList.remove('muted');
+  document.getElementById('soundBtn').textContent='🔊';
+}
+function stopWater(){
+  isSoundOn=false;
+  waterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+  waterGain.gain.setTargetAtTime(0,audioCtx.currentTime,.3);
+  document.getElementById('soundBtn').classList.add('muted');
+  document.getElementById('soundBtn').textContent='🔇';
+}
+function toggleSound(){if(!isStarted)return;isSoundOn?stopWater():startWater()}
+
+// ===== DING =====
+function playDing(){
+  if(!audioCtx)return;
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(1300,audioCtx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(900,audioCtx.currentTime+.12);
+  g.gain.setValueAtTime(.12,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.25);
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.25);
+  // second harmonic
+  const o2=audioCtx.createOscillator(),g2=audioCtx.createGain();
+  o2.type='sine';o2.frequency.setValueAtTime(2000,audioCtx.currentTime+.05);
+  o2.frequency.exponentialRampToValueAtTime(1500,audioCtx.currentTime+.15);
+  g2.gain.setValueAtTime(.06,audioCtx.currentTime+.05);
+  g2.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.2);
+  o2.connect(g2);g2.connect(audioCtx.destination);o2.start();o2.stop(audioCtx.currentTime+.2);
+}
+
+// ===== FIRST TOUCH =====
+document.getElementById('firstTouch').addEventListener('click',function(){
+  if(isStarted)return;
+  isStarted=true;
+  this.classList.add('hide');
+  setTimeout(()=>this.style.display='none',800);
+  startWater();
+  initAmbient();
+});
+
+// ===== DOUBLE TAP =====
+function doDoubleTap(x,y){
+  // Heart
+  const h=document.createElement('div');h.className='tap-heart';
+  h.textContent='❤️';h.style.left=(x-22)+'px';h.style.top=(y-22)+'px';
+  h.style.fontSize=(38+Math.random()*18)+'px';
+  document.body.appendChild(h);setTimeout(()=>h.remove(),1200);
+  // Second heart offset
+  setTimeout(()=>{
+    const h2=document.createElement('div');h2.className='tap-heart';
+    h2.textContent='💛';h2.style.left=(x-15+Math.random()*30)+'px';h2.style.top=(y-30)+'px';
+    h2.style.fontSize=(30+Math.random()*14)+'px';
+    document.body.appendChild(h2);setTimeout(()=>h2.remove(),1200);
+  },80);
+  // Combo text particles
+  const words=TAP_WORDS.sort(()=>Math.random()-.5).slice(0,3);
+  words.forEach((w,i)=>{
+    const el=document.createElement('div');el.className='tap-text';
+    el.textContent=w;
+    el.style.left=(x-18+(Math.random()-.5)*50)+'px';
+    el.style.top=(y-25-i*22)+'px';
+    el.style.animationDelay=(i*.08)+'s';
+    document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
+  });
+  // Canvas burst
+  burst(x,y,22);
+  playDing();
+  if(navigator.vibrate)navigator.vibrate(30);
+  // Ripple
+  const r=document.createElement('div');r.className='tap-ripple';
+  r.style.left=x+'px';r.style.top=y+'px';
+  document.body.appendChild(r);setTimeout(()=>r.remove(),700);
+}
+
+// ===== COLLECT (Money Tree) =====
+function toggleCollect(){
+  const tree=document.getElementById('moneyTree');
+  isCollected=!isCollected;
+  if(isCollected){
+    tree.classList.add('collected','shake');
+    tree.textContent='';tree.innerHTML='🌳<span class="tree-badge">✓</span>';
+    setTimeout(()=>tree.classList.remove('shake'),500);
+    // Coin rain from tree
+    const rect=tree.getBoundingClientRect();
+    for(let i=0;i<8;i++){
+      setTimeout(()=>{
+        const c=document.createElement('div');c.className='tree-coin';
+        c.textContent=['🪙','💰','✨'][i%3];
+        c.style.left=(rect.left+Math.random()*30-10)+'px';
+        c.style.top=(rect.top+10)+'px';
+        c.style.fontSize=(16+Math.random()*10)+'px';
+        document.body.appendChild(c);setTimeout(()=>c.remove(),1500);
+      },i*80);
+    }
+    burst(rect.left+26,rect.top+26,18);
+    playDing();
+    if(navigator.vibrate)navigator.vibrate([40,30,40]);
+  }else{
+    tree.classList.remove('collected');
+    tree.innerHTML='🌳<span class="tree-badge">✓</span>';
+  }
+}
+
+// ===== PRAYER =====
+function initBlessingGrid(){
+  const g=document.getElementById('blessingGrid');
+  BLESSINGS.forEach(b=>{
+    const btn=document.createElement('div');btn.className='blessing-btn';
+    btn.textContent=b;btn.onclick=()=>selectBlessing(b);
+    g.appendChild(btn);
+  });
+}
+function openPrayer(){document.getElementById('prayerPanel').classList.add('open');if(navigator.vibrate)navigator.vibrate(25)}
+function closePrayer(){document.getElementById('prayerPanel').classList.remove('open')}
+
+function selectBlessing(text){
+  closePrayer();
+  const cx=window.innerWidth/2,cy=window.innerHeight*.45;
+  // Floating blessing
+  const el=document.createElement('div');el.className='float-blessing';
+  el.textContent=text;
+  el.style.left=(cx-text.length*13)+'px';el.style.top=cy+'px';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),2800);
+  burst(cx,cy,28);playDing();
+  if(navigator.vibrate)navigator.vibrate(35);
+  // Show fortune after float
+  setTimeout(()=>showFortune(),1400);
+}
+
+function showFortune(){
+  const o=document.getElementById('fortuneOverlay');
+  document.getElementById('fortuneText').textContent=FORTUNES[Math.floor(Math.random()*FORTUNES.length)];
+  o.classList.add('show');
+  if(navigator.vibrate)navigator.vibrate([40,20,40]);
+}
+function closeFortune(e,force){
+  if(force||e.target===document.getElementById('fortuneOverlay')){
+    document.getElementById('fortuneOverlay').classList.remove('show');
+    burst(window.innerWidth/2,window.innerHeight/2,25);
+    playDing();
+  }
+}
+
+// ===== TOUCH EVENTS =====
+document.addEventListener('touchstart',function(e){
+  if(!isStarted)return;
+  const t=e.touches[0],x=t.clientX,y=t.clientY,now=Date.now();
+  longPressTimer=setTimeout(()=>{longPressTimer=null;openPrayer()},550);
+  if(now-lastTap<350){clearTimeout(longPressTimer);doDoubleTap(x,y);lastTap=0}
+  else lastTap=now;
+},{passive:true});
+document.addEventListener('touchend',()=>clearTimeout(longPressTimer));
+document.addEventListener('touchmove',()=>clearTimeout(longPressTimer),{passive:true});
+// Desktop
+document.addEventListener('dblclick',function(e){if(isStarted)doDoubleTap(e.clientX,e.clientY)});
+
+// ===== INIT =====
+function init(){
+  resizeCanvas();
+  window.addEventListener('resize',resizeCanvas);
+  initFloats();initLights();initBanners();initBlessingGrid();
+  animate();
+  document.getElementById('videoBg').play().catch(()=>{});
+}
+init();
+</script>
+</body>
+</html>

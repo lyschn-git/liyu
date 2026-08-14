@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鉴 · AI协作思行录 · 鲤与剑</title>
+    <meta name="description" content="个体与AI携手，看见对方就是照见自己。不定期记录协作中的调研与思考。">
+    <meta name="robots" content="noindex">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-gold: #C8A45C;
+            --color-gold-dark: #A88B45;
+            --color-ink: #1A3028;
+            --color-ink-light: #2A4038;
+            --color-paper: #F5F0E8;
+            --color-paper-dark: #E8E0D4;
+            --color-vermilion: #BE2D23;
+            --font-serif: 'Noto Serif SC', 'STSong', serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-serif);
+            background: var(--color-paper);
+            color: var(--color-ink);
+            line-height: 1.8;
+            min-height: 100vh;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(200, 164, 92, 0.2);
+        }
+
+        .top-nav a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .top-nav a:hover { opacity: 1; }
+
+        /* 头部 */
+        .header {
+            padding: 3rem 0 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--color-ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            color: var(--color-ink-light);
+            opacity: 0.7;
+        }
+
+        /* 文章列表 */
+        .article-list {
+            padding: 1rem 0 4rem;
+        }
+
+        .article-entry {
+            padding: 2rem 0;
+            border-bottom: 1px solid rgba(200, 164, 92, 0.15);
+        }
+
+        .article-entry:last-child {
+            border-bottom: none;
+        }
+
+        .article-entry a {
+            text-decoration: none;
+            color: var(--color-ink);
+            display: block;
+        }
+
+        .article-entry a:hover .article-title {
+            color: var(--color-gold-dark);
+        }
+
+        .article-date {
+            font-size: 0.8rem;
+            color: var(--color-gold);
+            opacity: 0.7;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.05em;
+        }
+
+        .article-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--color-ink);
+            margin-bottom: 0.5rem;
+            transition: color 0.2s;
+            line-height: 1.5;
+        }
+
+        .article-desc {
+            font-size: 0.9rem;
+            color: var(--color-ink-light);
+            opacity: 0.8;
+            line-height: 1.7;
+            margin-bottom: 0.8rem;
+        }
+
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .article-tag {
+            font-size: 0.75rem;
+            color: var(--color-gold-dark);
+            border: 1px solid rgba(200, 164, 92, 0.4);
+            padding: 0.15rem 0.6rem;
+            border-radius: 2rem;
+            opacity: 0.8;
+        }
+
+        /* 底部装饰 */
+        .koi-small {
+            position: relative;
+            overflow: hidden;
+            margin-top: 3rem;
+        }
+
+        .koi-small img {
+            width: 100%;
+            display: block;
+            opacity: 0.9;
+        }
+
+        .koi-small::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--color-paper), transparent);
+            z-index: 1;
+        }
+
+        /* 底部 */
+        .footer {
+            text-align: center;
+            padding: 1.5rem 0 2rem;
+            border-top: 1px solid rgba(200, 164, 92, 0.15);
+            font-size: 0.8rem;
+            color: var(--color-ink);
+            opacity: 0.5;
+        }
+
+        .footer a {
+            color: var(--color-ink);
+            text-decoration: none;
+        }
+
+        .footer a:hover { color: var(--color-gold-dark); }
+
+        /* 淡入动画 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(12px);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .article-entry:nth-child(1) { animation-delay: 0.05s; }
+        .article-entry:nth-child(2) { animation-delay: 0.1s; }
+        .article-entry:nth-child(3) { animation-delay: 0.15s; }
+        .article-entry:nth-child(4) { animation-delay: 0.2s; }
+        .article-entry:nth-child(5) { animation-delay: 0.25s; }
+        .article-entry:nth-child(6) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="container">
+            <a href="/jian/">← 回到主页</a>
+        </div>
+    </div>
+
+    <!-- 头部 -->
+    <div class="header">
+        <div class="container">
+            <h1>鉴 · AI协作思行录</h1>
+            <p>个体与AI携手，看见对方就是照见自己。</p>
+        </div>
+    </div>
+
+    <!-- 文章列表（信息流） -->
+    <div class="article-list">
+        <div class="container">
+
+            <div class="article-entry fade-in">
+                <a href="/jian/jian-infographic-loop.html">
+                    <div class="article-date">2026-07-05</div>
+                    <div class="article-title">高速循环方法论</div>
+                    <div class="article-desc">从灵感到行动只需要五步：触动→连接→探问→行动→迭代。非技术出身也能用AI快速落地的行动框架——一页纸信息图。</div>
+                    <div class="article-tags">
+                        <span class="article-tag">信息图</span>
+                        <span class="article-tag">行动框架</span>
+                        <span class="article-tag">循环方法论</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="article-entry fade-in">
+                <a href="/jian/jian-research-008.html">
+                    <div class="article-date">2026-07-04</div>
+                    <div class="article-title">你用AI的方式，可能从一开始就错了</div>
+                    <div class="article-desc">聊天AI有记忆了，但它记住的是事实，不是系统。从记东西到学东西，从帮出主意到替你干活——AI个人操作系统不是概念，是已经跑起来的现实。</div>
+                    <div class="article-tags">
+                        <span class="article-tag">AI</span>
+                        <span class="article-tag">操作系统</span>
+                        <span class="article-tag">个人系统</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="article-entry fade-in">
+                <a href="/jian/jian-research-007.html">
+                    <div class="article-date">2026-07-03</div>
+                    <div class="article-title">三天三轮：AI时代的行动框架</div>
+                    <div class="article-desc">从一条新闻到一款产品，三天三轮循环。触动、连接、探问、行动、迭代——不是五步流程，是一个永不停歇的飞轮。</div>
+                    <div class="article-tags">
+                        <span class="article-tag">AI</span>
+                        <span class="article-tag">行动框架</span>
+                        <span class="article-tag">循环方法论</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="article-entry fade-in">
+                <a href="/jian/jian-speed-of-loop.html">
+                    <div class="article-date">2026-06-30</div>
+                    <div class="article-title">从一条资讯到一分钟动画短片：AI时代真正的优势，是循环的速度</div>
+                    <div class="article-desc">从一条头条资讯出发，搜索调研、AI协作、两小时完成1分钟动画短片。真正的优势不是知道更多，是把信息变成行动的速度更快。</div>
+                    <div class="article-tags">
+                        <span class="article-tag">AI思维</span>
+                        <span class="article-tag">学习力</span>
+                        <span class="article-tag">产品化</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="article-entry fade-in">
+                <a href="/jian/jian-inner-shine.html">
+                    <div class="article-date">2026-06-15</div>
+                    <div class="article-title">InnerShine 新生 · 一张通往未来的入场券</div>
+                    <div class="article-desc">什么是InnerShine新生？它为什么是通往未来的入口？人类是"1"，AI是后面的"0"——直觉是入口，AI是放大器，大量记录是你的武器。</div>
+                    <div class="article-tags">
+                        <span class="article-tag">AI协作</span>
+                        <span class="article-tag">直觉驱动</span>
+                        <span class="article-tag">InnerShine</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="article-entry fade-in">
+                <a href="/jian/inspiration-to-product.html">
+                    <div class="article-date">2026-06-14</div>
+                    <div class="article-title">直觉驱动从灵感到产品——"现在开球"小程序诞生记</div>
+                    <div class="article-desc">从直觉判断"这是个真实需求"，到三天完成小程序开发，完整记录直觉驱动的产品孵化过程。</div>
+                    <div class="article-tags">
+                        <span class="article-tag">直觉驱动</span>
+                        <span class="article-tag">产品</span>
+                        <span class="article-tag">小程序</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="article-entry fade-in">
+                <a href="/jian/jian-research-003.html">
+                    <div class="article-date">2026-06-08</div>
+                    <div class="article-title">你一直都有——Sense体验背后的故事</div>
+                    <div class="article-desc">一个下午的发现，变成了一个3分钟的交互体验。朋友测出了真问题，意外打开了一扇新门——API不只是技术概念，是能力概念。</div>
+                    <div class="article-tags">
+                        <span class="article-tag">Sense</span>
+                        <span class="article-tag">交互体验</span>
+                        <span class="article-tag">API</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="article-entry fade-in">
+                <a href="/jian/jian-research-002.html">
+                    <div class="article-date">2026-06-08</div>
+                    <div class="article-title">Sense体验手记：从一句话到一个产品</div>
+                    <div class="article-desc">从OpenAI Codex Sites发现，到InnerShine交互体验构想，到朋友测出真问题、三档叙事重构、DeepSeek API上线。完整手记。</div>
+                    <div class="article-tags">
+                        <span class="article-tag">产品迭代</span>
+                        <span class="article-tag">正向反馈</span>
+                        <span class="article-tag">真AI上线</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="article-entry fade-in">
+                <a href="/jian/jian-research-001.html">
+                    <div class="article-date">2026-06-06</div>
+                    <div class="article-title">人与AI的分工边界</div>
+                    <div class="article-desc">6天密集协作后，梳理人与AI各自擅长的领域、感知的本质差异、边界的移动趋势。发现判断力的起点——"感觉到有问题"——是人独有的。</div>
+                    <div class="article-tags">
+                        <span class="article-tag">能力分工</span>
+                        <span class="article-tag">感知差异</span>
+                        <span class="article-tag">趋势判断</span>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 底部装饰 -->
+    <div class="koi-small">
+        <img src="https://jian.yisan.me/jian/koi-gold-new.png" alt="金色锦鲤">
+    </div>
+
+    <!-- 底部 -->
+    <footer class="footer">
+        <div class="container">
+            <a href="/jian/">← 回到主页</a>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,443 @@
+{
+  "lastUpdated": "2026-08-12",
+  "lastUpdatedTime": "2026-08-12 23:01",
+  "products": [
+    {
+      "name": "锦鲤拾光",
+      "url": "https://yisan.me/koi-shiguang/",
+      "ver": "V48",
+      "lastUpdate": "2026-07-31",
+      "status": "online",
+      "note": "全量可用",
+      "icon": "🐟"
+    },
+    {
+      "name": "鲤·遇",
+      "url": "https://liyu.yisan.run/",
+      "ver": "V26",
+      "lastUpdate": "2026-07-20",
+      "status": "online",
+      "note": "解卦功能已修复",
+      "icon": "🎋"
+    },
+    {
+      "name": "趣学周易",
+      "url": "https://playinglab.yisan.me/zhouyi-game/",
+      "ver": "V13",
+      "lastUpdate": "2026-07-14",
+      "status": "online",
+      "note": "商业化方向待定",
+      "icon": "☰"
+    },
+    {
+      "name": "玩意儿Lab",
+      "url": "https://playinglab.yisan.me",
+      "ver": "—",
+      "lastUpdate": "2026-08-12",
+      "status": "online",
+      "note": "凤凰养成系短视频制作中",
+      "icon": "🔬"
+    },
+    {
+      "name": "姜维画中时空",
+      "url": "https://playinglab.yisan.me/jiangwei/",
+      "ver": "V1",
+      "lastUpdate": "2026-08-03",
+      "status": "online",
+      "note": "三层demo+画中漫步",
+      "icon": "🎨"
+    },
+    {
+      "name": "鲤与剑网站",
+      "url": "https://jian.yisan.me",
+      "ver": "—",
+      "lastUpdate": "2026-07-12",
+      "status": "online",
+      "note": "不定期发文章",
+      "icon": "⚔"
+    },
+    {
+      "name": "个人工作台",
+      "url": "https://playinglab.yisan.me/dashboard/",
+      "ver": "V1",
+      "lastUpdate": "2026-08-12",
+      "status": "online",
+      "note": "数据更新至8/12",
+      "icon": "📋"
+    },
+    {
+      "name": "客伴",
+      "url": "https://jian.yisan.me/keban/",
+      "ver": "V1",
+      "lastUpdate": "2026-07-29",
+      "status": "shelved",
+      "note": "项目搁置",
+      "icon": "📋"
+    },
+    {
+      "name": "锦鲤生命卡",
+      "url": "https://jian.yisan.me/koi-life-card/",
+      "ver": "V1",
+      "lastUpdate": "2026-06-24",
+      "status": "online",
+      "note": "生命数字密码",
+      "icon": "🔮"
+    },
+    {
+      "name": "凤凰养成系",
+      "url": "—",
+      "ver": "Stage 1-3",
+      "lastUpdate": "2026-08-12",
+      "status": "creating",
+      "note": "雏鸟✅幼凤✅少年凤✅成凤⏸️ | 掌心生火v8✅ 洗澡v2✅",
+      "icon": "🔥"
+    }
+  ],
+  "dailyPlan": [
+    {
+      "id": "p1",
+      "label": "微运动10分钟",
+      "tag": "must",
+      "detail": "核心力量训练"
+    },
+    {
+      "id": "p2",
+      "label": "周易学习卡",
+      "tag": "must",
+      "detail": "今日自动推送"
+    },
+    {
+      "id": "p3",
+      "label": "小红书内容发布",
+      "tag": "create",
+      "detail": "苏晚IP运营中"
+    },
+    {
+      "id": "p4",
+      "label": "工作台迭代优化",
+      "tag": "create",
+      "detail": "根据反馈调整"
+    }
+  ],
+  "tasks": {
+    "todo": [
+      {
+        "title": "锦鲤拾光菜单重构",
+        "detail": "待排期",
+        "priority": "normal"
+      },
+      {
+        "title": "流水生财V1/V2视频重做",
+        "detail": "用灵动版同方案（15s单条+真实流水声）重做V1溪流版和V2光柱版，720P，确保三条视频鱼和水声一致。明后天做",
+        "priority": "high"
+      }
+    ],
+    "inProgress": [
+      {
+        "title": "凤凰养成系短视频",
+        "detail": "掌心生火v8定版✅ 洗澡v2定版✅ 待新场景",
+        "priority": "high"
+      },
+      {
+        "title": "苏晚IP冷启动",
+        "detail": "种子内容发布中",
+        "priority": "high"
+      },
+      {
+        "title": "《新生》书稿审阅",
+        "detail": "义山审阅中，约3.7万字",
+        "priority": "high"
+      }
+    ],
+    "agentTasks": [
+      {
+        "title": "tools记忆精简",
+        "detail": "tools key超限(5652/5120)，需瘦身",
+        "priority": "high"
+      },
+      {
+        "title": "掌心生火v9拼接",
+        "detail": "shot2视频已更新，v9待拼接",
+        "priority": "normal"
+      },
+      {
+        "title": "GitHub Token续期",
+        "detail": "约2026-08-30到期",
+        "priority": "low"
+      }
+    ],
+    "waiting": [
+      {
+        "title": "趣学周易商业化方向",
+        "detail": "先做分享卡片还是付费解锁？",
+        "priority": "high",
+        "expand": "背景：趣学周易VER=13已交付，3用户全好评，6个月课程母本完成。\n\n选项A：先做分享卡片\n学完一卦可生成卡片分享到朋友圈/小红书，带来自然流量。开发量小，1-2天。\n\n选项B：先做付费解锁\n前3卦免费，后续付费解锁。变现直接，但需要支付接入，开发量大。\n\n一三建议：先A后B。先传播获取用户，有了流量再变现。"
+      },
+      {
+        "title": "一三知识分身",
+        "detail": "方向已确认，沉一沉再开工",
+        "priority": "normal",
+        "expand": "背景：一三知识分身=可对话网页产品，复用鲤·遇的对话架构。用户可以和「一三」聊天，获取AI/创业/正念方面的建议。\n\n方向已确认（2026-07-27），义山要求沉一沉。\n\n需要拍板：什么时候启动？预计开发周期1-2周。"
+      },
+      {
+        "title": "中年失业互助平台",
+        "detail": "义山构想中，方向待定",
+        "priority": "normal",
+        "expand": "背景：义山受两篇新闻启发（Remotive远程招聘平台+39岁精英被裁摆摊千万），提出用AI编程做中年失业人群互助平台。\n\n一三建议走Remotive路径：内容→社群→交易，而非先建平台。义山已有优势：一三剑宗受众、iRenew品牌、自身故事、AI编程能力。\n\n状态：义山说'再想想'，处于思考阶段。"
+      },
+      {
+        "title": "表情包",
+        "detail": "用锦鲤家族5角色试水一套？",
+        "priority": "low",
+        "expand": "背景：锦鲤家族已有5个角色（墨墨、浮樱、星辰、焰焰、拾光），有完整角色参考图。\n\n方案：选1-2个角色做一套微信表情包（16-24张），在微信表情开放平台上线。\n\n需要拍板：是否做？先做哪个角色？"
+      }
+    ]
+  },
+  "automatedTasks": [
+    {
+      "name": "周易学习卡",
+      "schedule": "每日 08:30",
+      "lastRun": "2026-08-12",
+      "status": "ok",
+      "detail": "每日自动生成周易学习卡",
+      "icon": "📖"
+    },
+    {
+      "name": "网站监控（早）",
+      "schedule": "每日 09:00",
+      "lastRun": "2026-08-12",
+      "status": "ok",
+      "detail": "检查所有线上产品可访问性",
+      "icon": "🔍"
+    },
+    {
+      "name": "网站监控（晚）",
+      "schedule": "每日 21:00",
+      "lastRun": "2026-08-11",
+      "status": "ok",
+      "detail": "检查所有线上产品可访问性",
+      "icon": "🔍"
+    },
+    {
+      "name": "需求扫描",
+      "schedule": "每周一 10:00",
+      "lastRun": "2026-08-11",
+      "status": "ok",
+      "detail": "扫描中国平台热门抱怨需求",
+      "icon": "📊"
+    },
+    {
+      "name": "情绪扫描",
+      "schedule": "每周一 11:00",
+      "lastRun": "2026-08-11",
+      "status": "ok",
+      "detail": "扫描用户情绪与反馈趋势",
+      "icon": "💭"
+    },
+    {
+      "name": "收入扫描",
+      "schedule": "每周日 10:00",
+      "lastRun": "2026-08-11",
+      "status": "ok",
+      "detail": "扫描赚钱案例和副业机会",
+      "icon": "💰"
+    },
+    {
+      "name": "每周备份",
+      "schedule": "每周日",
+      "lastRun": "2026-08-11",
+      "status": "ok",
+      "detail": "全量备份工作区文件",
+      "icon": "💾"
+    },
+    {
+      "name": "苏晚种子提醒",
+      "schedule": "按排期触发",
+      "lastRun": "2026-08-12",
+      "status": "ok",
+      "detail": "苏晚IP内容定时发布",
+      "icon": "🎸"
+    }
+  ],
+  "content": [
+    {
+      "channel": "小红书（苏晚）",
+      "lastPublish": "8/4 煎蛋翻车",
+      "nextPlan": "待定",
+      "followers": 0,
+      "status": "drafting"
+    },
+    {
+      "channel": "小红书（锦鲤号）",
+      "lastPublish": "流水生财系列",
+      "nextPlan": "持续测试文案方向",
+      "followers": 0,
+      "status": "active",
+      "note": "86赞，方向验证成功"
+    },
+    {
+      "channel": "鲤与剑文章",
+      "lastPublish": "2026-07-12",
+      "nextPlan": "待新文章选题",
+      "status": "idle"
+    },
+    {
+      "channel": "InnerShine第七期",
+      "lastPublish": "8/9 AI是搭档你是主人",
+      "nextPlan": "待复盘",
+      "status": "done"
+    }
+  ],
+  "quickLinks": [
+    {
+      "name": "锦鲤拾光",
+      "url": "https://yisan.me/koi-shiguang/"
+    },
+    {
+      "name": "锦鲤生命卡",
+      "url": "https://jian.yisan.me/koi-life-card/"
+    },
+    {
+      "name": "鲤·遇",
+      "url": "https://liyu.yisan.run/"
+    },
+    {
+      "name": "趣学周易",
+      "url": "https://playinglab.yisan.me/zhouyi-game/"
+    },
+    {
+      "name": "姜维画中时空",
+      "url": "https://playinglab.yisan.me/jiangwei/"
+    },
+    {
+      "name": "玩意儿Lab",
+      "url": "https://playinglab.yisan.me"
+    },
+    {
+      "name": "鲤与剑网站",
+      "url": "https://jian.yisan.me"
+    },
+    {
+      "name": "GitHub仓库",
+      "url": "https://github.com/lyschn-git/liyu"
+    },
+    {
+      "name": "扣子工作台",
+      "url": "https://www.coze.cn"
+    }
+  ],
+  "dailyHabits": [
+    {
+      "name": "微运动",
+      "target": "每日",
+      "note": "核心力量是基础"
+    },
+    {
+      "name": "周易学习卡",
+      "target": "每日",
+      "note": "自动推送"
+    },
+    {
+      "name": "第一性原理阅读",
+      "target": "每周",
+      "note": "拆解→验证→跨域→映射→存入"
+    }
+  ],
+  "inspirations": [
+    {
+      "title": "凤凰养成系 · AI短视频方法论",
+      "date": "2026-08-12",
+      "status": "done",
+      "tag": "方法论沉淀",
+      "trigger": "掌心生火+洗澡两个场景完整跑通",
+      "desc": "Seedance API直调优于扣子视频（更便宜/模型更新/可控/自带音效）。关键经验：环境锚定图先行、参考图污染防护、逐张生成逐张验证、全局问题管理。单条短视频成本约2-3元。后续可复用于山海经系列所有生物养成短视频。"
+    },
+    {
+      "title": "信息不对称 × 资源结构升级",
+      "date": "2026-08-05",
+      "status": "thinking",
+      "tag": "战略思考",
+      "trigger": "创业机会文章两句话启发",
+      "desc": "①「大量重要信息存在，但真正需要它的人并不知道」——这就是AI侦察兵存在的理由。AI工具每天都有新的，但中年人不知道、不会用、不敢试。做的事本质=把'存在但没人知道'变成'有人用过了还告诉你值不值得用'。②「真正厉害的是资源结构升级」——不需要造工具/造平台，做的是AI工具×中年人需求×实操验证，资源还是那些资源，但经过筛选和翻译，效率完全不同。这正是Mr锦鲤价值网络的底层逻辑——成为不可替代的连接者。"
+    },
+    {
+      "title": "许愿模式 · 锦鲤/周易",
+      "date": "2026-08-05",
+      "status": "concept",
+      "tag": "变现模式",
+      "trigger": "Stella App月入$34万（许愿显化App）",
+      "desc": "Stella验证了「情感需求+AI个性化+可分享视觉产出+订阅制」公式。锦鲤拾光可加许愿池：用户写愿望→锦鲤接住→每日回来看到进展→AI生成愿望愿景卡可分享。趣学周易可加许愿层：许愿→抽卦→AI解读实现路径而非预言结果。定价参考$99-129/年。核心：卖的不是预言，是情绪确定性。"
+    },
+    {
+      "title": "氛围解谜产品",
+      "date": "2026-08-04",
+      "status": "paused",
+      "tag": "产品灵感",
+      "trigger": "东野圭吾去世",
+      "desc": "精品氛围解谜产品（场景探索+线索发现+轻推理，非硬核本格）。周更/双周更。AI遍读推理经典建诡计方法论→生成谜题草案→AI自评筛选→人工终审。核心竞争力是氛围和交互体验，非诡计设计。等手上活松了再启动。"
+    },
+    {
+      "title": "数字花园",
+      "date": "2026-08-03",
+      "status": "concept",
+      "tag": "方向思考",
+      "trigger": "看到数字花园概念文章",
+      "desc": "个人网站从传统博客升级为知识网络——碎片想法、项目手记、读书笔记用双向链接串联，像花园一样慢慢生长。Quartz基于Markdown，部署简单，与现有FTP配合。与义山思考型创作者气质很搭。"
+    }
+  ],
+  "archives": [
+    {
+      "title": "赚钱突破计划·讨论纪要",
+      "date": "2026-08-04",
+      "cat": "plan",
+      "tag": "IP定位·飞轮·Mr锦鲤",
+      "icon": "💰",
+      "desc": "从'痛点不够痛'的困惑到Mr锦鲤·价值网络的终局。包含五个认知突破、InnerShine深度拆解、变现飞轮、三条内容线、30天行动计划。",
+      "url": "https://playinglab.yisan.me/docs/money_breakthrough_20260804.html"
+    },
+    {
+      "title": "学习上瘾与AI时代",
+      "date": "2026-08-05",
+      "cat": "note",
+      "tag": "学习机制·徐新三问·AI实践",
+      "icon": "📚",
+      "desc": "从'学习为什么不如打游戏上瘾'切入，拆解游戏四要素（回音/存档/难度/保底），连接徐新三问（向创始人/赢家/消费者学习），落点到AI时代的一人企业实践路径。",
+      "url": "https://playinglab.yisan.me/docs/learning_addiction_20260805.html"
+    },
+    {
+      "title": "InnerShine第七期·AI是搭档你是主人",
+      "date": "2026-08-09",
+      "cat": "event",
+      "tag": "InnerShine·分享",
+      "icon": "🎤",
+      "desc": "与Sasha共创，义山主讲。主题：AI放大判断不替代判断。包含锦鲤视频复盘、三个陷阱、实操环节。",
+      "url": "—"
+    }
+  ],
+  "memos": [
+    {
+      "id": "m1",
+      "title": "锦鲤许愿池 · 财运向文案（6条）",
+      "date": "2026-08-05",
+      "tag": "文案储备",
+      "content": "① 流水生财型\n视频字：流水生财 · 锦鲤过门\n文案：水为财，鱼为运。刷到这条鱼，财门已开。留个\"接财\"，让好运流进来 🐟\n\n② 转运节点型\n视频字：你要转运了\n文案：三月一小转，半年一大转。刷到这条视频的人，你的转折点到了。评论区留\"转运\"，接住这波 🐟\n\n③ 贵人型\n视频字：贵人已在路上\n文案：锦鲤不渡无缘人。你能看到这条视频，说明该出现的人快到了。留个愿，等好消息 🐟\n\n④ 留财型\n视频字：财不走空门\n文案：钱来了要接住。刷到锦鲤别划走，留句\"接财入库\"，这个月试试看 🐟\n\n⑤ 破局型\n视频字：该翻身了\n文案：熬过这段，后面全是上坡路。锦鲤游过来，就是告诉你——时候到了。留个\"翻身\"，接住 🐟\n\n⑥ 简单粗暴型\n视频字：看到即赚到\n文案：锦鲤送财，见者有份。点赞接财，评论许愿，转发分运。别犹豫，鱼来了就得接 🐟\n\n【优化备忘】\n• 每条视频结尾加\"评论区许愿\"引导，提升评论率\n• 视频时长压到10-12秒，提升完播率\n• ⑥最直白适合测最广人群；③④偏中年；⑤戳低谷人群\n• 先拿两条试数据，哪条跑得好就加量\n• 首条数据（8/5）：播放134/收藏25/转发13/点赞15/新增关注4，收藏率18.7%转发率9.7%，方向验证"
+    },
+    {
+      "id": "m2",
+      "title": "InnerShine·新生 第七期分享",
+      "date": "2026-08-09",
+      "tag": "已完成",
+      "content": "时间：周日晚（8月9日）\n主题：「AI是搭档，你是主人」\n与Sasha共创，义山主讲\n\n【已完成】8月9日周日晚顺利举办"
+    }
+  ],
+  "memoirs": [
+    {
+      "name": "义门陈 · 家史记忆传承",
+      "url": "https://playinglab.yisan.me/chen-history.html",
+      "status": "done",
+      "date": "2026-08-08",
+      "note": "陈汉松上校九代家史H5网页",
+      "icon": "📖"
+    }
+  ]
+}

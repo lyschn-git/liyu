@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>义山工作台</title>
+<meta property="og:title" content="义山创作工作台">
+<meta property="og:description" content="义山的指挥台——产品、任务、内容、定时任务一目了然">
+<meta property="og:image" content="https://playinglab.yisan.me/dashboard/share.png">
+<meta property="og:url" content="https://playinglab.yisan.me/dashboard/">
+<meta property="og:type" content="website">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="favicon.png">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F0E8;
+  --card:#FFFFFF;
+  --gold:#C9A961;
+  --gold-dark:#A88B4A;
+  --gold-light:#F0E6D0;
+  --gold-bg:#FAF5EA;
+  --text:#2A2520;
+  --text-mid:#6B645C;
+  --text-light:#A09890;
+  --border:#E8E0D5;
+  --green:#6B8E5A;
+  --green-bg:#EDF3E8;
+  --green-light:#F5F9F0;
+  --orange:#C9884A;
+  --orange-bg:#FAF0E5;
+  --red:#B85C5C;
+  --red-bg:#F8ECEC;
+  --shadow:0 1px 8px rgba(180,160,130,0.06);
+  --shadow-lg:0 4px 20px rgba(180,160,130,0.1);
+  --radius:14px;
+  --radius-sm:10px;
+}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+a{color:inherit;text-decoration:none}
+.hidden{display:none!important}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* ===== Top Bar ===== */
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:52px;
+  background:rgba(245,240,232,0.88);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;z-index:100;
+}
+.menu-btn{width:32px;height:32px;display:flex;flex-direction:column;justify-content:center;gap:5px;border-radius:8px;transition:background .2s}
+.menu-btn:active{background:rgba(0,0,0,0.05)}
+.menu-btn span{display:block;width:18px;height:2px;background:var(--text);border-radius:1px;margin:0 auto}
+.topbar-title{flex:1;text-align:center;font-size:16px;font-weight:600;color:var(--text)}
+.topbar-date{font-size:12px;color:var(--text-light);white-space:nowrap}
+
+/* ===== Sidebar ===== */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+.sidebar-overlay.open{opacity:1;pointer-events:auto}
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:240px;background:#fff;z-index:201;
+  transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;box-shadow:2px 0 24px rgba(0,0,0,0.06);
+}
+.sidebar.open{transform:translateX(0)}
+.sidebar-header{padding:28px 20px 16px}
+.sidebar-header h2{font-size:20px;font-weight:700;color:var(--text);margin-bottom:2px}
+.sidebar-header p{font-size:12px;color:var(--gold-dark);letter-spacing:1px}
+.sidebar-header::after{content:'';display:block;width:28px;height:3px;background:var(--gold);border-radius:2px;margin-top:10px}
+.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{
+  display:flex;align-items:center;padding:12px 20px;font-size:14px;color:var(--text-mid);
+  transition:all .2s;position:relative;
+}
+.nav-item:active{background:var(--bg)}
+.nav-item.active{color:var(--gold-dark);font-weight:600;background:var(--gold-bg)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--gold);border-radius:0 2px 2px 0}
+.nav-icon{width:18px;height:18px;margin-right:10px;flex-shrink:0;opacity:0.6}
+.nav-item.active .nav-icon{opacity:1}
+.sidebar-footer{padding:12px 20px;border-top:1px solid var(--border);font-size:10px;color:var(--text-light);line-height:1.5}
+
+/* ===== Main ===== */
+.main{padding-top:52px;min-height:100vh}
+.page{padding:16px 14px 60px;max-width:600px;margin:0 auto;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== Section ===== */
+.section{margin-bottom:20px}
+.section-title{font-size:13px;font-weight:600;color:var(--text-mid);margin-bottom:10px;padding-left:4px;display:flex;align-items:center;gap:6px}
+.section-title .dot{width:5px;height:5px;background:var(--gold);border-radius:50%}
+.section-title .count{font-size:11px;color:var(--text-light);font-weight:400}
+
+/* ===== Stats ===== */
+.stats-row{display:flex;gap:10px;margin-bottom:20px}
+.stat-card{
+  flex:1;background:var(--card);border-radius:var(--radius);padding:14px 10px;
+  box-shadow:var(--shadow);text-align:center;position:relative;overflow:hidden;
+}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);opacity:0.3}
+.stat-num{font-size:26px;font-weight:700;color:var(--gold-dark);line-height:1.1}
+.stat-label{font-size:11px;color:var(--text-light);margin-top:3px}
+
+/* ===== Card ===== */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
+
+/* ===== Daily Plan ===== */
+.plan-header{padding:16px 16px 8px}
+.plan-header h3{font-size:14px;font-weight:600;color:var(--text)}
+.plan-header p{font-size:12px;color:var(--text-light);margin-top:2px}
+.plan-progress{padding:0 16px 12px;display:flex;align-items:center;gap:8px}
+.progress-bar{flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-dark));border-radius:3px;transition:width .4s ease}
+.progress-text{font-size:12px;color:var(--gold-dark);font-weight:600;min-width:32px;text-align:right}
+
+/* ===== Task Item (checkable) ===== */
+.task-row{
+  display:flex;align-items:flex-start;padding:12px 16px;
+  border-top:1px solid var(--border);gap:10px;transition:background .15s;
+}
+.task-row:active{background:var(--bg)}
+.task-check{
+  width:22px;height:22px;border:2px solid var(--border);border-radius:6px;
+  flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;cursor:pointer;
+}
+.task-check.done{background:var(--green);border-color:var(--green)}
+.task-check.done::after{content:'✓';color:#fff;font-size:13px;font-weight:700}
+.task-body{flex:1;min-width:0}
+.task-label{font-size:14px;font-weight:500;color:var(--text);transition:all .2s}
+.task-label.done{text-decoration:line-through;color:var(--text-light)}
+.task-sub{font-size:12px;color:var(--text-light);margin-top:1px}
+.task-tag{display:inline-block;font-size:10px;padding:1px 7px;border-radius:8px;margin-top:4px}
+.task-tag.must{background:var(--green-bg);color:var(--green)}
+.task-tag.create{background:var(--gold-bg);color:var(--gold-dark)}
+
+/* ===== Product Card ===== */
+.product-card{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;
+  transition:transform .15s;
+}
+.product-card:active{transform:scale(0.98)}
+.product-icon{
+  width:40px;height:40px;border-radius:10px;background:var(--gold-bg);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:18px;
+}
+.product-info{flex:1;min-width:0}
+.product-name{font-size:14px;font-weight:600;color:var(--text)}
+.product-meta{font-size:11px;color:var(--text-light);margin-top:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.product-ver{color:var(--gold-dark);font-weight:600}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;white-space:nowrap}
+.badge-online{background:var(--green-bg);color:var(--green)}
+.badge-shelved{background:var(--orange-bg);color:var(--orange)}
+.badge-ok{background:var(--green-bg);color:var(--green)}
+.badge-error{background:var(--red-bg);color:var(--red)}
+.badge-drafting{background:var(--orange-bg);color:var(--orange)}
+.badge-idle{background:var(--bg);color:var(--text-light)}
+.product-arrow{color:var(--text-light);font-size:16px;flex-shrink:0}
+
+/* ===== Task Board ===== */
+.task-board-item{
+  background:var(--card);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;
+  box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:10px;
+}
+.priority-dot{width:7px;height:7px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.priority-dot.high{background:var(--red)}
+.priority-dot.normal{background:#5A7A8E}
+.priority-dot.low{background:var(--text-light)}
+.task-board-content{flex:1}
+.task-board-title{font-size:14px;font-weight:500;color:var(--text)}
+.task-board-detail{font-size:12px;color:var(--text-light);margin-top:1px}
+
+/* ===== Auto Task ===== */
+.auto-row{display:flex;align-items:center;padding:12px 16px;border-top:1px solid var(--border);gap:10px}
+.auto-row:first-child{border-top:none}
+.auto-icon{width:32px;height:32px;border-radius:8px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.auto-info{flex:1}
+.auto-name{font-size:14px;font-weight:500;color:var(--text)}
+.auto-meta{font-size:11px;color:var(--text-light);margin-top:1px}
+
+/* ===== Content ===== */
+.content-row{display:flex;align-items:center;padding:14px 16px;border-top:1px solid var(--border);gap:10px}
+.content-row:first-child{border-top:none}
+.content-info{flex:1}
+.content-channel{font-size:14px;font-weight:600;color:var(--text)}
+.content-meta{font-size:11px;color:var(--text-light);margin-top:2px}
+
+/* ===== Links ===== */
+.link-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.link-card{
+  background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:space-between;transition:transform .15s;
+}
+.link-card:active{transform:scale(0.97)}
+.link-name{font-size:13px;font-weight:500;color:var(--text)}
+.link-arrow{color:var(--text-light);font-size:14px}
+
+/* ===== Habit ===== */
+.habit-row{display:flex;align-items:center;padding:12px 16px;border-top:1px solid var(--border);gap:10px}
+.habit-row:first-child{border-top:none}
+.habit-name{flex:1;font-size:14px;font-weight:500;color:var(--text)}
+.habit-target{font-size:11px;color:var(--gold-dark);background:var(--gold-bg);padding:2px 8px;border-radius:8px}
+
+/* ===== Empty State ===== */
+.empty{text-align:center;padding:20px;color:var(--text-light);font-size:13px}
+
+/* ===== Update Time ===== */
+.update-time{text-align:center;font-size:10px;color:var(--text-light);padding:16px 0 10px}
+
+@media(min-width:768px){.stats-row{flex-direction:row}.link-grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
+  <div class="topbar-title" id="pageTitle">今日概览</div>
+  <div class="topbar-date" id="topDate"></div>
+</div>
+
+<div class="sidebar-overlay" id="overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2>义山</h2>
+    <p>创作工作台</p>
+  </div>
+  <nav class="sidebar-nav" id="nav">
+    <div class="nav-item active" data-page="overview">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>今日概览
+    </div>
+    <div class="nav-item" data-page="products">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>产品总览
+    </div>
+    <div class="nav-item" data-page="tasks">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>任务看板
+    </div>
+    <div class="nav-item" data-page="auto">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>定时任务
+    </div>
+    <div class="nav-item" data-page="content">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>内容线
+    </div>
+    <div class="nav-item" data-page="links">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>快捷入口
+    </div>
+    <div class="nav-item" data-page="archive">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><rect x="10" y="12" width="4" height="2"/></svg>档案室
+    </div>
+    <div class="nav-item" data-page="memo">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>备忘录
+    </div>
+    <div class="nav-item" data-page="memoir">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>回忆录
+    </div>
+    <div class="nav-item" data-page="inspiration">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="10" y1="23" x2="14" y2="23"/></svg>灵感库
+    </div>
+  </nav>
+  <div class="sidebar-footer">一三剑宗 · 义山创作工作台<br>更新：<span id="footerDate">—</span></div>
+</aside>
+
+<div class="main">
+  <!-- Overview -->
+  <div class="page" id="page-overview">
+    <div class="stats-row" id="statsRow"></div>
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>每日计划 <span class="count" id="planCount"></span></div>
+      <div class="card" id="dailyPlan"></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>待办任务</div>
+      <div id="overviewTasks"></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--text-light)"></span>一三在做什么</div>
+      <div id="overviewAgentTasks"></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>产品状态</div>
+      <div id="overviewProducts"></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>等你拍板</div>
+      <div class="card" id="overviewWaiting"></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>定时任务</div>
+      <div class="card" id="overviewAuto"></div>
+    </div>
+    <div class="update-time" id="updateTime"></div>
+  </div>
+
+  <!-- Products -->
+  <!-- Products -->
+  <div class="page hidden" id="page-products"><div id="productsList"></div></div>
+
+  <!-- Tasks -->
+  <div class="page hidden" id="page-tasks">
+    <div class="section"><div class="section-title"><span class="dot"></span>进行中</div><div id="tasksProgress"></div></div>
+    <div class="section"><div class="section-title"><span class="dot"></span>待做</div><div id="tasksTodo"></div></div>
+    <div class="section"><div class="section-title"><span class="dot"></span>等你拍板</div><div id="tasksWaiting"></div></div>
+  </div>
+
+  <!-- Auto -->
+  <div class="page hidden" id="page-auto"><div class="card" id="autoList"></div></div>
+
+  <!-- Content -->
+  <div class="page hidden" id="page-content"><div class="card" id="contentList"></div></div>
+
+  <!-- Links -->
+  <div class="page hidden" id="page-links"><div class="link-grid" id="linksList"></div></div>
+
+  <!-- Inspiration -->
+  <div class="page hidden" id="page-archive"><div id="archiveList"></div></div>
+  <div class="page hidden" id="page-memoir"><div id="memoirList"></div></div>
+  <div class="page hidden" id="page-inspiration"><div id="inspirationList"></div></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

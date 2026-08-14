@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex">
+<title>趣学周易 · 开发日志</title>
+<style>
+:root{
+  --gold:#C9A84C;
+  --gold-light:#E8C869;
+  --gold-dark:#A88838;
+  --ink:#2B2825;
+  --cream:#FBF8F3;
+  --cream-dark:#F5F0E8;
+  --text-sub:#8A8378;
+  --r-md:12px;
+  --r-lg:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--cream);color:var(--ink);line-height:1.8;
+  -webkit-font-smoothing:antialiased;
+}
+.wrapper{max-width:680px;margin:0 auto;padding:20px 20px 60px}
+.back-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:14px;color:var(--gold-dark);text-decoration:none;
+  margin-bottom:20px;padding:8px 14px;
+  background:var(--cream-dark);border-radius:var(--r-md);
+  transition:all .2s;
+}
+.back-link:active{transform:scale(.97)}
+.header{
+  text-align:center;margin-bottom:32px;padding:24px 0 20px;
+  border-bottom:1px solid rgba(201,168,76,.15);
+}
+.header h1{
+  font-size:24px;color:var(--ink);font-weight:bold;
+  margin-bottom:8px;letter-spacing:1px;
+}
+.header .subtitle{
+  font-size:14px;color:var(--text-sub);line-height:1.7;
+}
+.header .badge{
+  display:inline-block;margin-top:12px;
+  padding:4px 12px;font-size:12px;
+  background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));
+  border:1px solid rgba(201,168,76,.2);
+  border-radius:20px;color:var(--gold-dark);
+}
+h2{
+  font-size:19px;color:var(--ink);font-weight:bold;
+  margin:32px 0 14px;padding-bottom:8px;
+  border-bottom:2px solid rgba(201,168,76,.2);
+}
+h3{
+  font-size:16px;color:var(--gold-dark);font-weight:bold;
+  margin:24px 0 10px;
+}
+p{font-size:15px;color:var(--ink);margin-bottom:12px}
+blockquote{
+  margin:16px 0;padding:14px 18px;
+  background:var(--cream-dark);border-left:3px solid var(--gold);
+  border-radius:0 var(--r-md) var(--r-md) 0;
+  font-size:14px;color:var(--text-sub);line-height:1.8;
+}
+ul{margin:8px 0 14px 20px}
+li{font-size:15px;margin-bottom:6px;line-height:1.7}
+table{
+  width:100%;border-collapse:collapse;margin:14px 0;
+  font-size:13px;
+}
+th{
+  background:var(--cream-dark);padding:10px 8px;
+  text-align:left;font-weight:bold;color:var(--ink);
+  border-bottom:2px solid rgba(201,168,76,.2);
+}
+td{
+  padding:10px 8px;border-bottom:1px solid rgba(201,168,76,.1);
+  color:var(--ink);vertical-align:top;
+}
+code{
+  font-family:"SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
+  font-size:13px;background:var(--cream-dark);
+  padding:2px 6px;border-radius:4px;color:var(--gold-dark);
+}
+pre{
+  margin:12px 0;padding:16px;
+  background:#2B2825;border-radius:var(--r-md);
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+pre code{
+  background:none;color:#E8C869;padding:0;
+  font-size:13px;line-height:1.6;
+}
+strong{color:var(--ink);font-weight:bold}
+hr{
+  border:none;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),transparent);
+  margin:28px 0;
+}
+.gua-demo{display:flex;gap:32px;justify-content:center;align-items:flex-start;padding:24px 20px;background:#2B2825;border-radius:var(--r-md);margin:12px 0}
+.gua-item{text-align:center}
+.gua-label{color:#E8C869;font-size:13px;margin-bottom:10px;letter-spacing:1px}
+.yao-line{height:6px;border-radius:3px;margin:5px auto}
+.yao-yang{width:64px;background:linear-gradient(135deg,#E8C869,#C9A84C)}
+.yao-yin{width:64px;display:flex;gap:14px}
+.yao-yin span{flex:1;height:6px;border-radius:3px;background:linear-gradient(135deg,#E8C869,#C9A84C);display:block}
+.footer-note{
+  margin-top:36px;padding-top:20px;
+  border-top:1px solid rgba(201,168,76,.15);
+  text-align:center;font-size:13px;color:var(--text-sub);
+  line-height:1.8;
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <a class="back-link" href="https://playinglab.yisan.me/zhouyi-game/">← 返回趣学周易</a>
+
+  <div class="header">
+    <h1>趣学周易 · 开发日志</h1>
+    <div class="subtitle">用AI把枯燥的周易学习变成好看好玩的游戏化体验<br>这是「玩意儿Lab」的第一个实验品。记录从想法到上线的真实过程，包括走错的弯路和最终的解法。</div>
+    <div class="badge">玩意儿Lab · 用AI造点好玩的</div>
+  </div>
+
+  <h2>为什么要做这个</h2>
+  <p>学周易，大多数人的第一反应是"太难了"。</p>
+  <p>阴阳、爻、卦、八卦——光名词就让人望而却步。但周易的底层逻辑其实很简单：阴阳不是好坏，是事物的两种状态；八卦不是玄学，是三根线的组合。</p>
+  <p>问题不在于周易有多难，而在于<strong>没有人用让人愿意学的方式去教它</strong>。</p>
+  <p>多邻国把学语言变成了游戏，每天几分钟，答对有反馈，断了会心疼。如果用同样的方式学周易呢？</p>
+  <p>这就是「趣学周易」的起点。</p>
+
+  <hr>
+
+  <h2>游戏化学习五层方法论</h2>
+  <p>在做这个项目的过程中，我们提炼了一套"把任何学习项目变成游戏化体验"的通用框架：</p>
+  <table>
+    <tr><th>层</th><th>字</th><th>做什么</th><th>趣学周易怎么做的</th></tr>
+    <tr><td>第一层</td><td><strong>拆</strong></td><td>把大目标拆成30秒能搞定的一口</td><td>阴阳爻→八卦，每关2-3步，30秒内完成</td></tr>
+    <tr><td>第二层</td><td><strong>验</strong></td><td>每一口都有即时对错反馈</td><td>选择题/判断题，答对绿色✓，答错红色✗+可重试</td></tr>
+    <tr><td>第三层</td><td><strong>喂</strong></td><td>间隔重复，忘了一会再喂回来</td><td>综合小测关，把前面学的内容混在一起考</td></tr>
+    <tr><td>第四层</td><td><strong>钩</strong></td><td>连续打卡+等级称号，断了就心疼</td><td>连续天数统计 + 8级称号（初学者→大师）</td></tr>
+    <tr><td>第五层</td><td><strong>轻</strong></td><td>每次只要几分钟，心理门槛趋近于零</td><td>单关2-3步，学完直接进下一关，不强制按天</td></tr>
+  </table>
+  <p>这个框架不只能用于周易。任何可以"拆成小知识点 + 即时验证"的学习内容，都可以套用。</p>
+
+  <hr>
+
+  <h2>开发过程</h2>
+
+  <h3>第一版：子Agent产出，被否</h3>
+  <p>让AI子Agent独立完成第一版。产出的是一个<strong>静态展示页面</strong>——有太极图、有课程列表、有配色，但：</p>
+  <ul>
+    <li>没有想玩起来的感觉和欲望</li>
+    <li>看上去像说明书，不像游戏</li>
+    <li>缺少交互反馈</li>
+  </ul>
+  <p><strong>结论</strong>：好看≠好玩。页面再漂亮，如果用户没有"想点一下"的冲动，就是失败的。</p>
+
+  <h3>第二版：闯关地图，也被否</h3>
+  <p>主Agent重写，设计了蛇形路径闯关地图——关卡左右交替排列，像爬山一样往上走。</p>
+  <p>但整体设计被否了：</p>
+  <ul>
+    <li>太极符号画得不伦不类</li>
+    <li>设计语言不统一</li>
+    <li>"说的不是太极符号不伦不类，是你目前的设计不伦不类"</li>
+  </ul>
+  <p><strong>结论</strong>：方向比努力重要。在方向没对之前，越努力越偏。</p>
+
+  <h3>第三版：CSS太极 + 精致UI，方向确认</h3>
+
+  <h3>太极图怎么画？三次AI生图全被否</h3>
+  <p>太极是这个产品的核心视觉符号。我们首先尝试用AI生图：</p>
+  <table>
+    <tr><th>尝试</th><th>风格</th><th>结果</th><th>问题</th></tr>
+    <tr><td>第一次</td><td>3D皮克斯动画风</td><td>✗ 被否</td><td>太硬了，没有生气没有灵气；鱼眼有黑色反光不符合太极</td></tr>
+    <tr><td>第二次</td><td>3D琉璃通透材质</td><td>✗ 被否</td><td>3D方向整体不对</td></tr>
+    <tr><td>第三次</td><td>中国水墨流动风</td><td>✗ 被否</td><td>"不是特别对"</td></tr>
+  </table>
+  <p><strong>三次失败后的认知</strong>：太极是高度符号化的几何图形——两个半圆 + 两个小圆。AI生图擅长画有机的、复杂的东西，但不擅长画精确的几何符号。鱼眼的颜色、位置稍有偏差就不对。</p>
+  <p><strong>最终方案</strong>：用SVG画精确太极 + CSS旋转动画 + 径向渐变 + 发光滤镜。</p>
+  <pre><code>&lt;!-- SVG太极的核心结构 --&gt;
+&lt;circle cx="50" cy="50" r="46" fill="url(#goldGrad)"/&gt;
+&lt;path d="M50 4A46 46 0 0 1 50 96A23 23 0 0 1 50 50A23 23 0 0 0 50 4Z" fill="url(#inkGrad)"/&gt;
+&lt;circle cx="50" cy="27" r="7" fill="url(#inkGrad)"/&gt;   &lt;!-- 阴中有阳 --&gt;
+&lt;circle cx="50" cy="73" r="7" fill="url(#goldGrad)"/&gt;  &lt;!-- 阳中有阴 --&gt;</code></pre>
+  <p>加上20秒一圈的旋转动画，太极就"活"了。0积分消耗，0外部依赖。</p>
+  <p><strong>关键教训</strong>：AI生图不是万能的。高度符号化、几何化的图形，用代码画更精确、更可控、成本更低。</p>
+
+  <h3>配色精致化</h3>
+  <p>之前的大黄大红太"程序员审美"。第三版改用：</p>
+  <pre><code>--gold: #C9A84C;        /* 暖金，不是刺眼的大黄 */
+--gold-light: #E8C869;   /* 高光金 */
+--gold-dark: #A88838;    /* 深金，用于文字和线条 */
+--ink: #2B2825;          /* 墨色，不是纯黑 */
+--cream: #FBF8F3;        /* 米色背景，温暖不刺眼 */</code></pre>
+  <p>整体气质：温润、雅致、有质感。不是"国风App模板"的感觉，是有人精心调过的。</p>
+
+  <h3>鱼眼颜色：阴中有阳，阳中有阴</h3>
+  <p>上线后第一轮反馈就指出了太极鱼眼颜色搞反了。</p>
+  <p>太极的核心哲学是"阴中有阳，阳中有阴"——金色区域里应该有黑点，黑色区域里应该有金点。最初版本两个鱼眼颜色放反了。</p>
+  <p>这个错误提醒我们：<strong>传统符号不能只追求好看，每一个细节都要符合文化语义</strong>。</p>
+
+  <hr>
+
+  <h2>持续迭代</h2>
+  <p>第三版方向确认后，进入快速迭代：</p>
+
+  <h3>1. 学习节奏：从"按天来"到"自己掌控"</h3>
+  <p>最初设计是每天学一关，学完显示"今日功课已圆满，明日再来"。</p>
+  <p>但用户的反馈是：想多学的时候被限制了，没兴趣的时候又被催着来。</p>
+  <p><strong>改为</strong>：学习进度和打卡分离。连续天数照算（钩子还在），但学几关用户自己定——有兴趣就多学，没兴趣学一关也行。学完一关直接进下一关，不弹回首页。</p>
+
+  <h3>2. 震动和声音：输入法级别的轻反馈</h3>
+  <p>加入了答题反馈的震动和声音，但关键是<strong>克制</strong>：</p>
+  <ul>
+    <li>震动强度对标输入法机械键盘——有一点点反馈就行，不是手柄那种剧烈震动</li>
+    <li>声音用Web Audio API生成简单的正弦波，答对是C5→E5上行音，答错是A4→F4下行音</li>
+    <li>顶部栏有开关按钮，一键关闭</li>
+  </ul>
+  <pre><code>// 答对：轻触一下
+vibrate(12);  // 12毫秒，比心跳还短
+
+// 答错：两下轻触
+vibrate([8, 30, 8]);  // 触8ms，停30ms，再触8ms</code></pre>
+  <p><strong>设计原则</strong>：反馈是为了确认，不是为了表演。过度反馈会变成打扰。</p>
+
+  <h3>3. 卦象显示：从Unicode符号到CSS爻线</h3>
+  <p>最初用Unicode符号☰☷☵☲来表示八卦。上线后发现：</p>
+  <ul>
+    <li>Unicode符号在不同设备上渲染不一致</li>
+    <li>符号太小，在手机上看不清</li>
+    <li>用户无法直观理解"三根线叠在一起"的结构</li>
+  </ul>
+  <p><strong>改为</strong>：用CSS div画爻线。阳爻是实心条，阴爻是两段短条，三根叠起来就是一个卦。</p>
+  <div class="gua-demo">
+    <div class="gua-item">
+      <div class="gua-label">乾 ☰ · 天</div>
+      <div class="yao-line yao-yang"></div>
+      <div class="yao-line yao-yang"></div>
+      <div class="yao-line yao-yang"></div>
+    </div>
+    <div class="gua-item">
+      <div class="gua-label">坤 ☷ · 地</div>
+      <div class="yao-line yao-yin"><span></span><span></span></div>
+      <div class="yao-line yao-yin"><span></span><span></span></div>
+      <div class="yao-line yao-yin"><span></span><span></span></div>
+    </div>
+  </div>
+  <p>每个卦旁边标注名称和象征（乾·天、坤·地、坎·水、离·火），一目了然。</p>
+  <p><strong>关键教训</strong>：在整个产品的每个地方，都要给用户传递清晰准确的信息和信号。含混的展示等于没有展示。</p>
+
+  <h3>4. 同步码：无后端的进度保存</h3>
+  <p>没有服务器，怎么让用户换设备后恢复学习进度？</p>
+  <p><strong>方案</strong>：把学习状态编码成6位Base36字符串作为"同步码"。用户复制同步码保存，换设备时粘贴即可恢复。</p>
+  <pre><code>// 生成同步码：把学习状态编码
+function getSyncCode(){
+  // 6位base36编码，固定不变
+  // 不采集任何个人身份信息
+}</code></pre>
+  <p>同步码大约6个字符，复制粘贴即可。不需要注册、不需要登录、不需要手机号。</p>
+  <p><strong>设计原则</strong>：学习记录是用户的信任基石。数据安全是核心，不采集任何个人身份信息。</p>
+
+  <h3>5. 庆祝页交互：别让用户白点</h3>
+  <p>最初每完成一关，庆祝页按钮是"返回首页"。用户要回首页再点"开始第X关"才能继续——多一次无意义的跳转。</p>
+  <p><strong>改为</strong>：庆祝页按钮直接是"下一关"，点击立即进入下一关学习。只有全部通关后才显示"返回首页"。</p>
+  <p><strong>设计原则</strong>：每个交互都要为用户省事，而不是消耗用户的耐心。</p>
+
+  <h3>6. 内容准确性：多轮多维度自检</h3>
+  <p>基础八卦学完后，我们增加了64卦进阶学习内容。但周易的内容容不得半点含糊——卦名、卦序、爻辞、历史典故，任何一个细节出错都会影响用户对传统文化的理解。</p>
+  <p><strong>做法</strong>：对全部194节课的内容做了多轮多维度自检：</p>
+  <ul>
+    <li><strong>概念维度</strong>：阴阳、五行、八卦等基础概念表述是否准确一致</li>
+    <li><strong>历史维度</strong>：人物、典故、出处是否可考，有无张冠李戴</li>
+    <li><strong>引文维度</strong>：经典原文引用是否完整准确，标点断句是否正确</li>
+    <li><strong>题目维度</strong>：选择题选项和答案是否唯一正确，有无歧义</li>
+  </ul>
+  <p>每轮自检发现问题立即修正，修完再跑一轮，直到四个维度全部通过。这不是走过场——确实查出并修正了多处表述不严谨、引文有误、选项有歧义的问题。</p>
+  <p><strong>关键教训</strong>：内容产品最大的风险不是不好看，而是不准确。用户信任你才会学，一次错误就可能毁掉这份信任。多轮自检不是多余的功夫，是对用户的尊重。</p>
+
+  <hr>
+
+  <h2>技术栈</h2>
+  <p><strong>极简技术栈，零依赖：</strong></p>
+  <ul>
+    <li>纯 HTML + CSS + JavaScript，单文件</li>
+    <li>无框架、无构建工具、无npm</li>
+    <li>localStorage 存储学习进度</li>
+    <li>Web Audio API 生成音效</li>
+    <li>SVG + CSS 动画绘制太极</li>
+    <li>Base36 编码实现同步码</li>
+    <li>FTP 部署到静态服务器</li>
+  </ul>
+  <p><strong>为什么不用框架？</strong></p>
+  <p>因为这个项目的核心是体验，不是工程复杂度。单文件HTML意味着：</p>
+  <ul>
+    <li>部署简单——上传一个文件就上线</li>
+    <li>加载快——没有框架的开销</li>
+    <li>可读性强——任何人打开文件就能看懂全部代码</li>
+    <li>易于迭代——改一个地方，上传，完事</li>
+  </ul>
+
+  <hr>
+
+  <h2>设计原则总结</h2>
+  <p>在整个开发过程中，我们坚持了这些原则：</p>
+  <ol style="margin-left:20px">
+    <li><strong>颜值即生产力</strong>——好看好玩是吸引人进来的第一个点。打破"周易=难"的印象，从视觉开始</li>
+    <li><strong>每个细节都要准确</strong>——太极鱼眼的颜色、卦象的线条、题目的措辞，含混等于错误</li>
+    <li><strong>克制比热情更有力量</strong>——震动轻一点，声音短一点，反馈是为了确认不是为了表演</li>
+    <li><strong>为用户省事</strong>——学完直接进下一关，不弹回首页；同步码复制粘贴就行，不用注册</li>
+    <li><strong>成本可控</strong>——CSS画的太极0积分消耗，比AI生图更精确更可控</li>
+    <li><strong>数据安全是信任基石</strong>——不采集个人身份信息，学习进度完全在用户手里</li>
+  </ol>
+
+  <hr>
+
+  <h2>项目信息</h2>
+  <ul>
+    <li><strong>线上地址</strong>：<a href="https://playinglab.yisan.me/zhouyi-game/" style="color:var(--gold-dark)">playinglab.yisan.me/zhouyi-game</a></li>
+    <li><strong>技术栈</strong>：纯 HTML/CSS/JS，单文件，零依赖</li>
+    <li><strong>开发工具</strong>：AI Agent（扣子 Coze）+ 人类协作</li>
+    <li><strong>开发周期</strong>：2026年7月13日，一天内完成三版迭代</li>
+    <li><strong>品牌</strong>：玩意儿Lab — "用AI造点好玩的"</li>
+  </ul>
+
+  <hr>
+
+  <h2>写在最后</h2>
+  <p>这个项目的意义不在于技术有多复杂——它就是一个单文件HTML页面。意义在于：</p>
+  <p><strong>一个不懂代码的人，借助AI，在一天之内把一个想法变成了好看、好用、能分享的产品。</strong></p>
+  <p>这个过程本身，就是AI时代普通人可以做到的事情。</p>
+  <p>共学/趣学周易是第一个实验品。如果这套"拆-验-喂-钩-轻"的方法论跑通了，任何学习内容都可以变成游戏化体验。</p>
+  <p>整个过程，我都把它公开出来。把自己和项目都开源，让大家看到个体可以如何与AI共同进化。</p>
+  <p>这才是我们真正想探索的。</p>
+
+  <div class="footer-note">
+    本开发日志由AI Agent一三记录，义山审阅。<br>
+    玩意儿Lab · 2026年7月
+  </div>
+
+  <div style="text-align:center;padding:16px 0 0;font-size:11px;border-top:1px solid rgba(201,168,76,.1);margin-top:20px">
+    <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:var(--text-sub);text-decoration:none">京ICP备2026030848号-2</a>
+    <span style="margin:0 6px;color:var(--text-sub);opacity:.5">|</span>
+    <a href="http://www.beian.gov.cn/" target="_blank" rel="noopener" style="color:var(--text-sub);text-decoration:none">京公网安备11011202101923号</a>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <script>(function(){var VER='2';var k='playinglab_003_ver';try{var s=localStorage.getItem(k);if(s&&s!==VER){localStorage.setItem(k,VER);location.reload(true);return}if(!s){localStorage.setItem(k,VER)}}catch(e){}})();</script>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玩意儿Lab-#003 · 小红书开始种AI：笔记下方长出工具箱</title>
+    <meta name="description" content="小红书小工具上线：用AI写一个小产品挂到笔记上，读者点一下就能用。16万开发者、7300个Skill，普通人10分钟能造一个。">
+    
+    <meta property="og:title" content="信号#003 · 小红书开始种AI — 玩意儿Lab">
+    <meta property="og:description" content="用AI写一个小产品挂到笔记上，读者点一下就能用。16万开发者、7300个Skill，普通人10分钟能造一个。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://playinglab.yisan.me/playinglab/issue-003.html">
+    <meta property="og:image" content="https://playinglab.yisan.me/playinglab/share-thumb-003.png">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        :root {
+            --bg: #FAF9F6;
+            --bg-card: #FFFFFF;
+            --text: #1A1A2E;
+            --text-secondary: #5A5A6E;
+            --text-light: #9A9AAE;
+            --accent: #FF6B35;
+            --accent-light: #FFF0EB;
+            --green: #5B9D7C;
+            --green-light: #EDF5F0;
+            --border: #ECEAE4;
+            --gold: #D4A24C;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-sans);
+            line-height: 1.85;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* ===== 导航栏 ===== */
+        .nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(250, 249, 246, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner {
+            max-width: 680px; margin: 0 auto;
+            padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            display: flex; align-items: center; text-decoration: none;
+        }
+        .nav-logo img { height: 64px; width: auto; display: block; }
+        .nav-back {
+            font-size: 13px; color: var(--text-light); text-decoration: none;
+        }
+        
+        /* ===== 文章容器 ===== */
+        .article {
+            max-width: 680px; margin: 0 auto; padding: 48px 24px 80px;
+        }
+        
+        /* 期数头 */
+        .issue-header { margin-bottom: 48px; text-align: center; }
+        .issue-label {
+            display: inline-block; font-size: 12px; letter-spacing: 3px;
+            color: var(--accent); background: var(--accent-light);
+            padding: 4px 14px; border-radius: 20px; margin-bottom: 16px; font-weight: 500;
+        }
+        .issue-date { font-size: 13px; color: var(--text-light); margin-bottom: 8px; }
+        .issue-title {
+            font-family: var(--font-serif); font-size: 26px; font-weight: 700;
+            line-height: 1.5; color: var(--text); margin-bottom: 16px;
+        }
+        .issue-author { font-size: 14px; color: var(--text-secondary); }
+        
+        /* 模块标题 */
+        .module {
+            margin-bottom: 56px;
+        }
+        .module-title {
+            font-family: var(--font-serif); font-size: 20px; font-weight: 600;
+            color: var(--text); margin-bottom: 24px; padding-bottom: 12px;
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+        }
+        .module-title-num {
+            font-size: 13px; color: var(--accent); font-weight: 400;
+            margin-right: 8px; font-family: var(--font-sans);
+        }
+        
+        /* 新闻卡片 */
+        .news-item {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 28px; margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .news-item:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .news-headline {
+            font-family: var(--font-serif); font-size: 17px; font-weight: 600;
+            line-height: 1.5; margin-bottom: 16px; color: var(--text);
+        }
+        .news-label {
+            font-size: 12px; font-weight: 600; color: var(--green);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;
+            display: block;
+        }
+        .news-text { font-size: 15px; color: var(--text-secondary); margin-bottom: 12px; }
+        .news-judge {
+            background: var(--accent-light); border-left: 3px solid var(--accent);
+            padding: 14px 16px; border-radius: 0 8px 8px 0;
+            font-size: 14px; color: var(--text); margin-top: 16px;
+        }
+        .news-judge-label {
+            font-size: 12px; color: var(--accent); font-weight: 600;
+            margin-bottom: 4px; display: block;
+        }
+        .yishan-judge-text {
+            font-size: 15px; color: var(--text); line-height: 1.8;
+            margin-top: 6px; display: block;
+        }
+        
+        /* 实验卡片 */
+        .lab-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 32px; margin-bottom: 20px;
+        }
+        .lab-name {
+            font-family: var(--font-serif); font-size: 18px; font-weight: 600;
+            margin-bottom: 20px; color: var(--text);
+        }
+        .lab-section { margin-bottom: 18px; }
+        .lab-section-title {
+            font-size: 13px; font-weight: 600; color: var(--accent);
+            margin-bottom: 6px; letter-spacing: 0.5px;
+        }
+        .lab-section-text { font-size: 15px; color: var(--text-secondary); }
+        .lab-section-text strong { color: var(--text); }
+        .lab-verdict {
+            background: var(--green-light); border-radius: 10px;
+            padding: 16px 20px; margin-top: 8px;
+            font-size: 14px; color: var(--text);
+        }
+        .lab-verdict strong { color: var(--green); }
+        
+        /* 有趣的东西 */
+        .discovery {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 32px;
+        }
+        .discovery-title {
+            font-family: var(--font-serif); font-size: 18px; font-weight: 600;
+            margin-bottom: 16px; color: var(--text);
+        }
+        .discovery-text { font-size: 15px; color: var(--text-secondary); margin-bottom: 12px; }
+        .discovery-text strong { color: var(--text); }
+        .discovery-list {
+            list-style: none; padding-left: 0; margin: 16px 0;
+        }
+        .discovery-list li {
+            font-size: 15px; color: var(--text-secondary);
+            padding-left: 20px; position: relative; margin-bottom: 8px;
+        }
+        .discovery-list li::before {
+            content: '→'; position: absolute; left: 0; color: var(--accent);
+        }
+        .discovery-why {
+            background: var(--accent-light); border-left: 3px solid var(--accent);
+            padding: 14px 16px; border-radius: 0 8px 8px 0;
+            font-size: 14px; color: var(--text); margin-top: 16px;
+        }
+        .discovery-why-label {
+            font-size: 12px; color: var(--accent); font-weight: 600;
+            margin-bottom: 4px; display: block;
+        }
+        
+        /* 义山说 */
+        .yishan-says {
+            background: linear-gradient(135deg, #FFF8F3 0%, #FDF5F0 100%);
+            border: 1px solid var(--accent-light);
+            border-radius: 14px; padding: 36px 32px; text-align: center;
+        }
+        .yishan-says-label {
+            font-family: var(--font-serif); font-size: 16px; font-weight: 600;
+            color: var(--accent); margin-top: 20px; text-align: right;
+        }
+        .yishan-says-text {
+            font-family: var(--font-serif); font-size: 16px; color: var(--text);
+            line-height: 2; text-align: left;
+        }
+        .yishan-placeholder {
+            color: var(--text-light); font-style: italic; font-size: 14px;
+        }
+        
+        /* 投递玩意儿 */
+        .submit-section {
+            background: var(--bg-card); border: 2px dashed var(--border);
+            border-radius: 14px; padding: 32px;
+        }
+        .submit-title {
+            font-family: var(--font-serif); font-size: 18px; font-weight: 600;
+            margin-bottom: 16px; color: var(--text);
+        }
+        .submit-text { font-size: 15px; color: var(--text-secondary); margin-bottom: 16px; }
+        .submit-inspiration {
+            background: var(--green-light); border-radius: 10px;
+            padding: 16px 20px; margin: 16px 0;
+            font-size: 14px; color: var(--text);
+        }
+        .submit-inspiration strong { color: var(--green); }
+        .submit-cta {
+            display: inline-block; background: var(--accent); color: white;
+            padding: 10px 24px; border-radius: 24px; font-size: 14px;
+            font-weight: 500; text-decoration: none; margin-top: 8px;
+            transition: all 0.3s;
+        }
+        .submit-cta:hover { background: #E55A28; transform: translateY(-1px); }
+        
+        /* 分隔线 */
+        .divider {
+            text-align: center; margin: 40px 0; color: var(--text-light);
+            font-size: 14px; letter-spacing: 4px;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center; padding: 40px 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-light); font-size: 13px;
+        }
+        .footer-brand {
+            font-family: var(--font-serif); font-size: 15px;
+            color: var(--text-secondary); margin-bottom: 8px;
+        }
+        .footer-beian {
+            margin-top: 10px; font-size: 12px; line-height: 1.8;
+        }
+        .footer-beian a {
+            color: var(--text-light); text-decoration: none;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+        .footer-beian a:hover { color: var(--accent); }
+        .beian-icon { width: 14px; height: 14px; vertical-align: middle; }
+        
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .issue-title { font-size: 22px; }
+            .news-item, .lab-card, .discovery, .submit-section { padding: 22px; }
+            .yishan-says { padding: 28px 22px; }
+            .module-title { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="/playinglab/index.html" class="nav-logo"><img src="/playinglab/logo-nav@2x.png" alt="玩意儿Lab — 用AI造点好玩的"></a>
+        <a href="/playinglab/index.html" class="nav-back">← 返回首页</a>
+    </div>
+</nav>
+
+<article class="article">
+    <!-- 期数头 -->
+    <header class="issue-header">
+        <div class="issue-label">信号 #003</div>
+        <div class="issue-date">2026年7月21日</div>
+        <h1 class="issue-title">小红书开始种AI：你的笔记下方，长出了工具箱</h1>
+        <div class="issue-author">义山 & AI助手一三</div>
+    </header>
+    
+    <!-- 模块1：本期值得知道的 -->
+    <section class="module">
+        <h2 class="module-title"><span class="module-title-num">01</span>本期值得知道的</h2>
+        
+        <div class="news-item">
+            <div class="news-headline">小红书在WAIC甩出一记王炸——RED Skill全量上线，小工具内测开启</div>
+            <span class="news-label">发生了什么</span>
+            <p class="news-text">7月17-20日，WAIC 2026在上海举办。小红书在会上正式宣布：RED Skill全量上线，同时开启Vibe Coding小工具内测。简单说就是——你可以用AI写一个小产品（小测试、小工具、小游戏都行），挂到小红书笔记下方。读者刷到笔记，点一下「用一用」就能直接体验，不用跳到别的App。</p>
+            <p class="news-text">数据很猛：活跃AI开发者超16万名（同比增长220%），内测一个月就涌出7300个原创Skill，Vibe Coding月发布量4-5万件，站内讨论超160万次。Build in Public相关笔记累计超110万条。黑客松入围选手00后占比超60%，最小的才12岁。</p>
+            <span class="news-label">跟你有什么关系</span>
+            <p class="news-text">如果你刷小红书，以后会在笔记下方看到越来越多能直接用的小工具——测人格的、做决策的、学拼音的。如果你有想法，也可以自己做一个。不需要懂编程，用AI工具描述你的想法，它帮你写代码。有人10分钟就做出了一个帮女儿学拼音的小工具。不需要服务器、不需要域名，写完打包上传，审核几分钟就通过。</p>
+            <div class="news-judge">
+                <span class="news-judge-label">义山点评</span>
+                <span class="yishan-judge-text">小红书不是在建开发者平台，是在给普通人发一张入场券。16万人里大多数不是程序员——他们只是有想法，恰好AI能把想法变成能用的东西。</span>
+            </div>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-headline">不止小红书——各平台都在抢"小产品分发"这条路</div>
+            <span class="news-label">发生了什么</span>
+            <p class="news-text">不只小红书在干这件事。B站在内测「Toy」，抖音在试「互动空间」，微信小游戏早已上线。海外更热闹：Rezona（前TikTok产品经理创立）三个月拿了四轮融资，下载超600万；Sekai做沉浸式角色扮演，拿到a16z约1600万美元投资；Aippy全球下载超300万，月活近200万。</p>
+            <p class="news-text">各平台打法不同：抖音靠算法中心化分发，微信走社交关系链，小红书从实用内容社区切入、跟笔记深度融合。但方向一样——把"可互动的小产品"塞进内容流里，让用户刷到就能用。</p>
+            <span class="news-label">跟你有什么关系</span>
+            <p class="news-text">以前你刷到一个好玩的工具，得跳出App去别处找。现在各大平台都在把工具搬到内容里。这意味着两件事：一是你会越来越多地在刷内容时"顺手用一下"小工具；二是如果你有想法想做点什么，现在正是入场的好时机——平台在抢内容，也在抢创作者。</p>
+            <div class="news-judge">
+                <span class="news-judge-label">义山点评</span>
+                <span class="yishan-judge-text">所有人都看到了同一条路。差别在于谁先迈出去，谁的工具跟内容融合得最自然。小红书赢在"刷到就能用"——不是跳转，不是下载，是点一下。</span>
+            </div>
+        </div>
+    </section>
+    
+    <div class="divider">· · ·</div>
+    
+    <!-- 模块2：本期玩意儿 -->
+    <section class="module">
+        <h2 class="module-title"><span class="module-title-num">02</span>本期玩意儿</h2>
+        
+        <div class="lab-card">
+            <div class="lab-name">义山做了张信息图——把小红书小工具说清楚</div>
+            
+            <div class="lab-section">
+                <div class="lab-section-title">试了什么</div>
+                <div class="lab-section-text">小红书小工具的信息铺天盖地——Tech星球的报道、人人都是产品经理的实操教程、各种截图和官方指南。信息很多，但散落在各处，普通人看了半天也不知道到底怎么回事。于是我想：能不能把这些信息整理成一张图，手机上划着就能看完？</div>
+            </div>
+            
+            <div class="lab-section">
+                <div class="lab-section-title">怎么试的</div>
+                <div class="lab-section-text">收集了4个来源：Tech星球的WAIC报道（数据和案例）、人人都是产品经理的实操记录（发布流程）、小红书操作指南截图（手机端挂载流程）、小红书官方笔记截图（功能和限制）。然后用AI整合成6个板块：这是什么、有多火、怎么发布、什么能做什么不能、已经有人做出了什么、跟你有什么关系。</div>
+            </div>
+            
+            <div class="lab-section">
+                <div class="lab-section-title">结果怎样</div>
+                <div class="lab-section-text">信息图做出来了，发布为<strong>信号#003</strong>，同时上线到玩意儿Lab网站。一张图说清楚一件事——小红书小工具是什么、怎么用、跟你有什么关系。手机上划两分钟看完，不用翻十篇文章。</div>
+            </div>
+            
+            <div class="lab-verdict">
+                <strong>值不值得你试：</strong>值得。不是因为信息图有多厉害，而是因为这个方法可以复用——任何复杂信息，收集来源、用AI整合、输出成一张图。信息图不是终点，是一个"把复杂变简单"的练习。
+            </div>
+        </div>
+        
+        <div class="lab-card">
+            <div class="lab-name">义山探索小工具开发可能性——哪些能做，哪些不能</div>
+            
+            <div class="lab-section">
+                <div class="lab-section-title">试了什么</div>
+                <div class="lab-section-text">看完WAIC的数据和案例，我在想一个问题：作为玩AI的普通人，我能不能也做一个小工具挂到小红书上？纯前端H5的限制下，到底能做什么、不能做什么？</div>
+            </div>
+            
+            <div class="lab-section">
+                <div class="lab-section-title">怎么试的</div>
+                <div class="lab-section-text">研究了小红书小工具的技术限制——纯HTML/CSS/JS，不支持网络请求，支持相册、摄像头、麦克风、本地存储。然后对照我自己的产品库过了一遍。</div>
+            </div>
+            
+            <div class="lab-section">
+                <div class="lab-section-title">结果怎样</div>
+                <div class="lab-section-text">能做的不少：<strong>锦鲤口彩/今日运势签</strong>（纯前端随机生成，不需后端）、<strong>情绪树洞/心情记录器</strong>（本地存储，不需联网）、<strong>茶道小知识测试</strong>（静态内容打包）、<strong>中式美学壁纸生成器</strong>（Canvas绘制，不需联网）、<strong>周易卦象生成器</strong>（本地计算+静态素材）。</div>
+                <div class="lab-section-text" style="margin-top:10px;">做不了的也清楚：需要联网的产品暂时挂不了。比如锦鲤拾光——需要调用AI接口才能运行，纯前端跑不起来。需要后端服务器的产品都一样。</div>
+            </div>
+            
+            <div class="lab-verdict">
+                <strong>值不值得你试：</strong>值得。限制反而帮你做减法——不用想服务器、不用想数据库、不用想接口。你就想一件事：纯前端能做什么有趣的东西？想清楚了，AI帮你写，打包上传，挂到笔记上。先做一个最小的、最简单的，跑起来再说。
+            </div>
+        </div>
+    </section>
+    
+    <div class="divider">· · ·</div>
+    
+    <!-- 模块3：一个有趣的东西 -->
+    <section class="module">
+        <h2 class="module-title"><span class="module-title-num">03</span>一个有趣的东西</h2>
+        
+        <div class="discovery">
+            <div class="discovery-title">下一个爆梗，也许是一个能互动的小产品</div>
+            <p class="discovery-text">过去十年，内容的形式从文字到图片到短视频，每次变化都催生了一批新创作者。小红书小工具暗示了下一个方向：<strong>内容不只是"看"的，是"用"的。</strong></p>
+            <p class="discovery-text">你刷到一个笔记，不只是看完、点赞、收藏。你点一下，一个小工具弹出来——可能是一个MBTI测试、一个"周五吃什么"决策器、一个电子木鱼。你用了，你互动了，你把这个体验分享给朋友。</p>
+            <p class="discovery-text">有人做了一个"看图选拼音"的小工具，帮幼儿园小朋友学拼音，10分钟开发完成。有人做了"情绪静音键"，点一下世界静音。有人做了"电子木鱼"，敲一下积一分功德。这些都不是"伟大的产品"，但它们是有趣的"内容"——你用了就忍不住分享。</p>
+            <p class="discovery-text"><strong>可互动的小产品本身就是一种新的内容形式。</strong>下一个爆梗，也许不是一条视频，不是一篇笔记，而是一个能互动的小产品。</p>
+            <div class="discovery-why">
+                <span class="discovery-why-label">为什么有意思</span>
+                <p class="discovery-text" style="margin:0;">因为它改变了"内容"的定义。以前内容是"我生产、你消费"。现在内容是"我生产、你参与"。用户不再只是观众，而是参与者。这个小工具到底好不好玩，用户自己用了才知道——这种体验是视频和图文给不了的。</p>
+            </div>
+        </div>
+    </section>
+    
+    <div class="divider">· · ·</div>
+    
+    <!-- 模块4：义山说 -->
+    <section class="module">
+        <h2 class="module-title"><span class="module-title-num">04</span>义山说</h2>
+        <div class="yishan-says">
+            <div class="yishan-says-text">玩意儿Lab的定位一直很清楚：用AI造点好玩的。小红书小工具这件事，刚好踩在这条路上——不是让普通人学编程，是让普通人把脑子里的小想法变成能用的东西。<br><br>我给自己定的角色是：不是跑得最快的那个。是站在中间回头看的人，跟你说，这条路可以走，跟着。<br><br>有人问，普通人为什么要学AI？我说，普通人要的不是学AI。是在学的过程中，找到满足感、成就感、和别人的连接。有人10分钟做了一个帮女儿学拼音的小工具——他学了多少AI技术不重要，重要的是他做出了一个给女儿用的东西。这种满足感，比学会什么模型架构都实在。<br><br>WAIC上有个12岁的孩子做出了入围作品。还有22岁的小伙子做了口袋吉他，5分钟就能上手。还有用脑机接口帮残障人士操控轮椅的。他们不全是程序员，但都在用AI造东西。<br><br>AI最终要回到生活。不是让你变成程序员，是让你变成一个"有想法就能做出来"的人。小红书给了你一个地方放你做出来的东西，剩下的，就看你想做什么了。</div>
+            <div class="yishan-says-label">by 义山</div>
+        </div>
+    </section>
+    
+    <div class="divider">· · ·</div>
+    
+    <!-- 模块5：投递玩意儿 -->
+    <section class="module">
+        <h2 class="module-title"><span class="module-title-num">05</span>投递玩意儿</h2>
+        
+        <div class="submit-section">
+            <div class="submit-title">下期你想看我用AI做什么稀奇古怪的东西？</div>
+            <p class="submit-text">这是玩意儿Lab的固定互动环节。每周我抛一个想法，你也可以抛回来。</p>
+            
+            <div class="submit-inspiration">
+                <strong>本期一三抛的灵感：</strong><br>
+                小红书小工具纯前端能做很多东西——运势签、情绪树洞、茶道测试、中式壁纸生成器、周易卦象生成器。你最想看到义山先做哪一个？或者你有别的想法？
+            </div>
+            
+            <p class="submit-text"><strong>你想到了什么？</strong><br>任何稀奇古怪的想法都行，先不用考虑能不能实现，实现的事交给AI和我。留言告诉我，将来挑选其中有趣的做出来。欢迎给到灵感启发。乐趣在于手搓，围观吐槽也行，你说是吧？</p>
+            
+            <a href="#feedback" class="submit-cta" onclick="document.getElementById('feedback').scrollIntoView({behavior:'smooth'});return false;">投递我的灵感 →</a>
+        </div>
+    </section>
+</article>
+
+<!-- 投递反馈表单 -->
+<section id="feedback" style="max-width:680px;margin:0 auto;padding:0 24px 60px;">
+    <h3 style="text-align:center;font-family:'Noto Serif SC',serif;font-size:16px;color:var(--text);margin-bottom:24px;">写下你的灵感</h3>
+    <div style="max-width:480px;margin:0 auto;">
+        <form id="feedbackForm" style="display:flex;flex-direction:column;gap:12px;">
+            <input type="text" name="nickname" placeholder="你的昵称" style="padding:12px 16px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans SC',sans-serif;outline:none;" maxlength="20" required>
+            <textarea name="content" placeholder="你的奇思妙想..." style="padding:12px 16px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans SC',sans-serif;outline:none;min-height:100px;resize:vertical;" maxlength="1000" required></textarea>
+            <button type="submit" id="feedbackBtn" style="padding:12px 24px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.3s;">发送</button>
+        </form>
+        <p id="feedbackMsg" style="text-align:center;font-size:13px;margin-top:8px;min-height:18px;"></p>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-brand">玩意儿Lab · 用AI造点好玩的</div>
+    <div>义山 & AI助手一三 · 2026</div>
+    <div class="footer-beian">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京ICP备2026030848号-2</a>
+        <a href="http://www.beian.gov.cn/" target="_blank" rel="noopener"><img src="/playinglab/beian-icon.png" alt="" class="beian-icon">京公网安备11011202101923号</a>
+    </div>
+</footer>
+
+<script>
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('feedbackBtn');
+    var msg = document.getElementById('feedbackMsg');
+    btn.disabled = true;
+    btn.textContent = '发送中...';
+    var formData = new FormData(this);
+    fetch('/playinglab/feedback.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        msg.textContent = data.msg;
+        msg.style.color = data.ok ? '#5B9D7C' : '#FF6B35';
+        if (data.ok) { document.getElementById('feedbackForm').reset(); }
+        btn.disabled = false;
+        btn.textContent = '发送';
+    })
+    .catch(function() {
+        msg.textContent = '网络出了点问题，稍后再试吧';
+        msg.style.color = '#FF6B35';
+        btn.disabled = false;
+        btn.textContent = '发送';
+    });
+});
+</script>
+
+</body>
+</html>

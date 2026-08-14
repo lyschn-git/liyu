@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <script>(function(){var VER='2';var k='playinglab_ver';try{var s=localStorage.getItem(k);if(s&&s!==VER){localStorage.setItem(k,VER);location.reload(true);return}if(!s){localStorage.setItem(k,VER)}}catch(e){}})();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玩意儿Lab — 用AI造点好玩的</title>
+    <meta name="description" content="义山的AI生活信号。给普通人搭一座桥，刚刚好跟得上AI时代的节奏。">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="玩意儿Lab — 用AI造点好玩的">
+    <meta property="og:description" content="义山的AI生活信号。给普通人搭一座桥，刚刚好跟得上AI时代的节奏，走过去，看清前方。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://playinglab.yisan.me/">
+    <meta property="og:image" content="https://playinglab.yisan.me/playinglab/og-share.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/playinglab/logo-color.png">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        :root {
+            --bg: #FAF9F6;
+            --bg-card: #FFFFFF;
+            --text: #1A1A2E;
+            --text-secondary: #5A5A6E;
+            --text-light: #9A9AAE;
+            --accent: #FF6B35;
+            --accent-light: #FFF0EB;
+            --green: #5B9D7C;
+            --green-light: #EDF5F0;
+            --border: #ECEAE4;
+            --gold: #D4A24C;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-sans);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* ===== 导航栏 ===== */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(250, 249, 246, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-inner {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .nav-logo img {
+            height: 64px;
+            width: auto;
+            display: block;
+        }
+        
+        .nav-slogan {
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+        
+        /* ===== Hero区域 ===== */
+        .hero {
+            text-align: center;
+            padding: 80px 24px 60px;
+        }
+        
+        .hero-label {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: var(--accent);
+            background: var(--accent-light);
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+        
+        .hero-logo {
+            max-width: 360px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto 24px;
+            display: block;
+        }
+        
+        .hero-slogan {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        
+        .hero-desc {
+            font-size: 14px;
+            color: var(--text-light);
+            max-width: 420px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        /* ===== 期数列表 ===== */
+        .issues {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+        
+        .section-label {
+            font-family: var(--font-serif);
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .issue-card {
+            display: block;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .issue-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+            border-color: var(--accent);
+        }
+        
+        .issue-number {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .issue-title {
+            font-family: var(--font-serif);
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .issue-meta {
+            font-size: 13px;
+            color: var(--text-light);
+            display: flex;
+            gap: 16px;
+        }
+        
+        .issue-tag {
+            display: inline-block;
+            font-size: 12px;
+            color: var(--green);
+            background: var(--green-light);
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin-right: 6px;
+        }
+        
+        .issue-arrow {
+            position: absolute;
+            right: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        
+        .issue-card:hover .issue-arrow {
+            color: var(--accent);
+            transform: translateY(-50%) translateX(4px);
+        }
+        
+        /* ===== Footer ===== */
+        .footer {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 13px;
+        }
+        
+        .footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        
+        .footer-brand {
+            font-family: var(--font-serif);
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        /* ===== 响应式 ===== */
+        @media (max-width: 600px) {
+            .hero-logo { max-width: 260px; }
+            .hero-slogan { font-size: 16px; }
+            .issue-card { padding: 24px; }
+            .issue-title { font-size: 19px; }
+            .issue-arrow { display: none; }
+            .nav-slogan { display: none; }
+            .qrcode-img { width: 96px; height: 96px; }
+            .feedback-grid { gap: 20px; }
+            .feedback-title { font-size: 15px; margin-bottom: 24px; }
+        }
+        
+        /* ===== 反馈板块 ===== */
+        .feedback-section {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+        
+        .feedback-divider {
+            width: 48px;
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 0 auto 32px;
+        }
+        
+        .feedback-title {
+            font-family: var(--font-serif);
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        
+        .feedback-grid {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        
+        .feedback-wechat {
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .qrcode-img {
+            width: 140px;
+            height: 140px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .wechat-tip {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .feedback-form-wrap {
+            flex: 1;
+            max-width: 360px;
+        }
+        
+        .feedback-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .feedback-input {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: var(--font-sans);
+            background: var(--bg-card);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .feedback-input:focus {
+            border-color: var(--accent);
+        }
+        
+        .feedback-textarea {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: var(--font-sans);
+            background: var(--bg-card);
+            color: var(--text);
+            outline: none;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.2s;
+        }
+        
+        .feedback-textarea:focus {
+            border-color: var(--accent);
+        }
+        
+        .feedback-btn {
+            padding: 12px 24px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            align-self: flex-start;
+        }
+        
+        .feedback-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .feedback-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .feedback-msg {
+            font-size: 13px;
+            margin-top: 8px;
+            min-height: 18px;
+        }
+        
+        /* ===== 备案信息 ===== */
+        .footer-beian {
+            margin-top: 12px;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+        .footer-beian a {
+            color: var(--text-light);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .footer-beian a:hover {
+            color: var(--accent);
+        }
+        .beian-icon {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="/playinglab/index.html" class="nav-logo"><img src="/playinglab/logo-nav@2x.png" alt="玩意儿Lab — 用AI造点好玩的"></a>
+        <span class="nav-slogan"></span>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-label">AI 生活信号</div>
+    <img src="/playinglab/logo-color@2x.png" alt="玩意儿Lab" class="hero-logo">
+    <p class="hero-slogan">用AI造点好玩的</p>
+    <p class="hero-desc">给普通人搭一座桥，刚刚好跟得上AI时代的节奏，走过去，看清前方。不是技术流极客路线，是这条路可以跟着走，一起去发现和探索，一起玩起来。</p>
+</section>
+
+<!-- 期数列表 -->
+<section class="issues">
+    <div class="section-label">往期信号</div>
+    
+    <a href="/playinglab/issue-003.html" class="issue-card">
+        <div class="issue-number">信号 #003 · 2026年7月</div>
+        <div class="issue-title">小红书开始种AI · 你的笔记下方长出了一个工具箱</div>
+        <div class="issue-meta">
+            <span class="issue-tag">小红书小工具</span>
+            <span class="issue-tag">WAIC 2026</span>
+            <span>7月21日</span>
+        </div>
+        <span class="issue-arrow">→</span>
+    </a>
+    
+    <a href="/playinglab/issue-002.html" class="issue-card">
+        <div class="issue-number">信号 #002 · 2026年7月</div>
+        <div class="issue-title">GPT-5.6发布、270亿参数塞进iPhone、WAIC下周开幕</div>
+        <div class="issue-meta">
+            <span class="issue-tag">周易共学开学</span>
+            <span class="issue-tag">Sasha的AI实验</span>
+            <span>7月12日</span>
+        </div>
+        <span class="issue-arrow">→</span>
+    </a>
+    
+    <a href="/playinglab/issue-001.html" class="issue-card">
+        <div class="issue-number">信号 #001 · 2026年7月</div>
+        <div class="issue-title">豆包千问关停智能体、Meta造了个AI玩具工厂、AI开始用代码"写"视频</div>
+        <div class="issue-meta">
+            <span class="issue-tag">创刊号</span>
+            <span>7月6日</span>
+        </div>
+        <span class="issue-arrow">→</span>
+    </a>
+    
+</section>
+
+<!-- Logo释义入口 -->
+<section style="max-width:680px;margin:0 auto;padding:0 24px 60px;">
+    <a href="/playinglab/logo-design.html" style="display:block;text-align:center;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;text-decoration:none;color:var(--accent);font-size:14px;font-weight:700;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--accent)'">
+        <img src="/playinglab/logo-wan@2x.png" style="height:20px;vertical-align:middle;margin-right:6px;" alt="玩"> Logo 设计释义 →
+    </a>
+</section>
+
+<!-- 反馈板块 -->
+<section class="feedback-section">
+    <div class="feedback-inner">
+        <div class="feedback-divider"></div>
+        <h3 class="feedback-title">若有反馈或奇思妙想，告诉玩主，一起造出来</h3>
+        
+        <div class="feedback-grid">
+            <!-- 微信二维码 -->
+            <div class="feedback-wechat">
+                <img src="/playinglab/wechat-qrcode.png" alt="义山微信二维码" class="qrcode-img" id="qrcode-img">
+                <p class="wechat-tip">长按识别 · 添加微信</p>
+            </div>
+            
+            <!-- 留言表单 -->
+            <div class="feedback-form-wrap">
+                <form class="feedback-form" id="feedbackForm">
+                    <input type="text" name="nickname" placeholder="你的昵称" class="feedback-input" maxlength="20" required>
+                    <textarea name="content" placeholder="想说点什么..." class="feedback-textarea" maxlength="1000" required></textarea>
+                    <button type="submit" class="feedback-btn" id="feedbackBtn">发送</button>
+                </form>
+                <p class="feedback-msg" id="feedbackMsg"></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-brand">玩意儿<span style="color:var(--accent);">Lab</span> · 用AI造点好玩的</div>
+    <div>义山 & AI助手一三 · 2026</div>
+    <div class="footer-beian">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京ICP备2026030848号-2</a>
+        <a href="http://www.beian.gov.cn/" target="_blank" rel="noopener"><img src="/playinglab/beian-icon.png" alt="" class="beian-icon">京公网安备11011202101923号</a>
+    </div>
+</footer>
+
+<script>
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('feedbackBtn');
+    var msg = document.getElementById('feedbackMsg');
+    btn.disabled = true;
+    btn.textContent = '发送中...';
+    
+    var formData = new FormData(this);
+    
+    fetch('/playinglab/feedback.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        msg.textContent = data.msg;
+        msg.style.color = data.ok ? 'var(--green)' : 'var(--accent)';
+        if (data.ok) {
+            document.getElementById('feedbackForm').reset();
+        }
+        btn.disabled = false;
+        btn.textContent = '发送';
+    })
+    .catch(function() {
+        msg.textContent = '网络出了点问题，直接扫码加微信吧';
+        msg.style.color = 'var(--accent)';
+        btn.disabled = false;
+        btn.textContent = '发送';
+    });
+});
+</script>
+
+</body>
+</html>

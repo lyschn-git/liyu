@@ -1,0 +1,3054 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+// 版本自动刷新：更新内容时递增 VER，用户打开旧版本自动刷新一次
+(function(){var VER='13';var k='quxue_ver';try{var s=localStorage.getItem(k);if(s&&s!==VER){localStorage.setItem(k,VER);location.reload(true);return}if(!s){localStorage.setItem(k,VER)}}catch(e){}})();
+</script>
+<meta name="description" content="趣学周易 - 游戏化周易入门，零基础也能轻松学阴阳">
+<meta property="og:title" content="趣学周易 | 轻松学周易">
+<meta property="og:description" content="用游戏的方式学周易，零基础也能懂阴阳五行！">
+<meta property="og:image" content="https://playinglab.yisan.me/zhouyi-game/share.jpg">
+<meta property="og:type" content="website">
+<title>趣学周易 | 轻松学周易</title>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*:focus{outline:none}
+
+:root{
+  --gold:#C9A84C;--gold-light:#E8C869;--gold-dark:#A88838;--gold-bg:#FDF8EC;
+  --ink:#2B2825;--ink-light:#4A4540;
+  --cream:#FBF8F3;--cream-dark:#F5EFE6;--white:#FFFFFF;
+  --green:#6BAA89;--green-light:#8FC4A6;--green-bg:#F0F8F4;
+  --red:#D67270;--red-bg:#FDF0F0;
+  --text-main:#3D3530;--text-sub:#8B7E6E;--text-light:#B0A595;
+  --shadow-sm:0 2px 8px rgba(61,53,48,0.06);
+  --shadow-md:0 4px 16px rgba(61,53,48,0.08);
+  --shadow-lg:0 8px 32px rgba(61,53,48,0.12);
+  --r-sm:10px;--r-md:16px;--r-lg:24px;
+}
+
+html,body{
+  font-family:'LXGW WenKai Screen','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  background:var(--cream);color:var(--text-main);
+  overflow-x:hidden;min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+
+body{
+  max-width:480px;margin:0 auto;min-height:100vh;position:relative;
+  display:flex;flex-direction:column;
+  background-image:radial-gradient(circle at 15% 10%,rgba(201,168,76,0.04) 0%,transparent 40%),
+                   radial-gradient(circle at 85% 90%,rgba(201,168,76,0.04) 0%,transparent 40%);
+}
+
+/* ===== 太极 ===== */
+.taiji{display:inline-block;animation:spin 20s linear infinite}
+.taiji.fast{animation:spin 3s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ===== 顶部栏 ===== */
+.top-bar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(251,248,243,0.92);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  padding:14px 20px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(201,168,76,0.08);
+}
+.top-bar .brand{display:flex;align-items:center;gap:10px}
+.top-bar .brand-text{font-size:19px;font-weight:bold;color:var(--ink);letter-spacing:1px}
+.top-bar .stats{display:flex;gap:14px;align-items:center}
+.stat-chip{
+  display:flex;align-items:center;gap:4px;
+  padding:4px 12px;border-radius:20px;
+  background:var(--white);box-shadow:var(--shadow-sm);
+  font-size:15px;font-weight:bold;
+}
+.stat-chip .stat-icon{font-size:14px}
+.stat-chip.streak .stat-icon{color:var(--gold)}
+.stat-chip.exp .stat-icon{color:var(--gold-dark)}
+
+/* 声音开关 */
+.sound-toggle{
+  width:32px;height:32px;border-radius:50%;border:none;
+  background:var(--white);box-shadow:var(--shadow-sm);
+  font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:transform 0.2s;padding:0;
+}
+.sound-toggle:active{transform:scale(0.88)}
+
+/* ===== 今日寄语 ===== */
+.daily-section{
+  padding:20px 28px 8px;text-align:center;
+}
+.daily-day{
+  font-size:13px;color:var(--gold-dark);
+  letter-spacing:2px;margin-bottom:4px;
+}
+.daily-text{
+  font-size:15px;color:var(--text-sub);line-height:1.6;
+}
+
+.detail-link{
+  margin:8px 28px 4px;padding:12px 18px;
+  background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.04));
+  border:1px solid rgba(201,168,76,0.2);border-radius:var(--r-md);
+  display:flex;align-items:center;justify-content:space-between;
+  text-decoration:none;cursor:pointer;transition:all 0.2s;
+}
+.detail-link:active{transform:scale(0.98)}
+.detail-link-text{font-size:14px;color:var(--gold-dark);font-weight:bold}
+.detail-link-sub{font-size:12px;color:var(--text-sub);margin-top:2px}
+.detail-link-arrow{font-size:16px;color:var(--gold-dark);opacity:0.6}
+.liyu-link{
+  margin:4px 28px 4px;padding:12px 18px;
+  background:linear-gradient(135deg,rgba(74,168,154,0.08),rgba(74,168,154,0.04));
+  border:1px solid rgba(74,168,154,0.2);border-radius:var(--r-md);
+  display:flex;align-items:center;justify-content:space-between;
+  text-decoration:none;cursor:pointer;transition:all 0.2s;
+}
+.liyu-link:active{transform:scale(0.98)}
+.liyu-link-text{font-size:14px;color:#4AA89A;font-weight:bold}
+.liyu-link-sub{font-size:12px;color:var(--text-sub);margin-top:2px}
+.liyu-link-arrow{font-size:16px;color:#4AA89A;opacity:0.6}
+.devlog-link{display:block;margin:0 28px 12px;padding:10px 14px;text-align:center;font-size:13px;color:var(--text-sub);text-decoration:none;border-top:1px solid rgba(201,168,76,.1);transition:color .2s}
+.devlog-link:active{color:var(--gold-dark)}
+.beian-footer{text-align:center;padding:8px 14px 80px;font-size:11px;background:var(--cream-dark)}
+.beian-footer a{color:var(--text-sub);text-decoration:none}
+.beian-footer a:active{color:var(--gold-dark)}
+.beian-sep{margin:0 6px;color:var(--text-sub);opacity:0.5}
+
+/* ===== 路径地图 ===== */
+.path-map{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:8px 0 4px;
+}
+/* 章节分组 */
+.section-group{width:100%;display:flex;flex-direction:column;align-items:center;}
+.section-header{
+  width:90%;max-width:320px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;margin:6px 0;
+  background:rgba(255,255,255,0.5);border-radius:12px;
+  cursor:pointer;user-select:none;
+  transition:background 0.2s ease;
+}
+.section-header:active{background:rgba(255,255,255,0.75)}
+.section-header.done{opacity:0.65}
+.section-header.locked{opacity:0.45}
+.section-title{font-size:14px;font-weight:bold;color:var(--ink);display:flex;align-items:center;gap:6px}
+.section-status{font-size:12px;color:var(--text-sub)}
+.section-nodes{width:100%;display:flex;flex-direction:column;align-items:center;
+  overflow:hidden;transition:max-height 0.35s ease,opacity 0.25s ease,margin 0.25s ease;
+  max-height:2000px;opacity:1;
+}
+.section-nodes.collapsed{max-height:0;opacity:0;margin:0}
+
+.node-wrapper{
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;
+}
+.node-wrapper[data-pos="left"]{align-self:flex-start;margin-left:18%}
+.node-wrapper[data-pos="right"]{align-self:flex-end;margin-right:18%}
+
+.node-circle{
+  width:54px;height:54px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:bold;position:relative;
+  transition:transform 0.2s ease;
+}
+.node-circle:active{transform:scale(0.92)}
+
+.node-circle.completed{
+  background:linear-gradient(135deg,var(--green-light),var(--green));
+  box-shadow:0 4px 14px rgba(107,170,137,0.35);
+  color:var(--white);
+  cursor:pointer;
+}
+.node-wrapper.reviewable{cursor:pointer}
+.node-wrapper.reviewable:active .node-circle{transform:scale(0.92)}
+.node-circle.current{
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  box-shadow:0 4px 18px rgba(201,168,76,0.45);
+  color:var(--ink);
+  animation:nodePulse 2s ease-in-out infinite;
+}
+.node-circle.locked{
+  background:linear-gradient(135deg,#E8E2D5,#D0CABE);
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  color:#B0A595;
+}
+@keyframes nodePulse{
+  0%,100%{transform:scale(1);box-shadow:0 4px 18px rgba(201,168,76,0.45)}
+  50%{transform:scale(1.1);box-shadow:0 6px 28px rgba(201,168,76,0.65)}
+}
+
+/* 当前关卡光环 */
+.node-circle.current::after{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:2px solid rgba(201,168,76,0.25);
+  animation:halo 2s ease-in-out infinite;
+}
+@keyframes halo{
+  0%,100%{transform:scale(1);opacity:0.6}
+  50%{transform:scale(1.2);opacity:0}
+}
+
+.node-label{
+  font-size:13px;color:var(--text-sub);margin-top:6px;
+  white-space:nowrap;
+}
+.node-label.active{color:var(--gold-dark);font-weight:bold}
+
+.connector{
+  align-self:center;width:2px;height:20px;
+  background-image:linear-gradient(to bottom,var(--gold-light) 50%,transparent 50%);
+  background-size:2px 6px;background-repeat:repeat-y;
+  opacity:0.3;
+}
+.connector.done{
+  background-image:linear-gradient(to bottom,var(--green) 50%,transparent 50%);
+  opacity:0.5;
+}
+
+/* ===== 开始按钮 ===== */
+.start-bar{padding:16px 28px 8px}
+.start-btn{
+  width:100%;padding:16px;border:none;border-radius:var(--r-md);
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  color:var(--white);font-size:18px;font-weight:bold;
+  font-family:inherit;letter-spacing:2px;
+  box-shadow:0 6px 20px rgba(201,168,76,0.35);
+  cursor:pointer;transition:all 0.2s;
+  animation:btnBreath 3s ease-in-out infinite;
+}
+.start-btn:active{transform:translateY(2px);box-shadow:0 3px 10px rgba(201,168,76,0.3)}
+.start-btn.locked{
+  background:linear-gradient(135deg,#E0DAD0,#C8C2B8);
+  box-shadow:var(--shadow-sm);color:#A0998E;animation:none;cursor:default;
+}
+@keyframes btnBreath{
+  0%,100%{box-shadow:0 6px 20px rgba(201,168,76,0.35)}
+  50%{box-shadow:0 8px 28px rgba(201,168,76,0.55)}
+}
+/* 浮动继续学习按钮 */
+.float-start-btn{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  padding:14px 44px;border:none;border-radius:28px;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  color:var(--white);font-size:17px;font-weight:bold;white-space:nowrap;
+  font-family:inherit;letter-spacing:2px;cursor:pointer;z-index:90;
+  box-shadow:0 6px 24px rgba(201,168,76,0.45);
+  animation:btnBreath 3s ease-in-out infinite;
+  transition:transform 0.15s;
+}
+.float-start-btn:active{transform:translateX(-50%) translateY(2px)}
+
+.first-hint{
+  text-align:center;font-size:14px;color:var(--text-light);
+  margin-top:6px;
+}
+.first-hint .arrow{display:block;font-size:20px;margin-top:4px;animation:bounce 1.5s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+/* ===== 称号栏 ===== */
+.rank-bar{padding:6px 20px 20px;text-align:center}
+.rank-text{font-size:13px;color:var(--text-sub)}
+.rank-text .rank-name{color:var(--gold-dark);font-weight:bold}
+.rank-progress{
+  width:120px;height:4px;background:var(--cream-dark);
+  border-radius:2px;margin:6px auto 0;overflow:hidden;
+}
+.rank-progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--gold-light),var(--gold));
+  border-radius:2px;transition:width 0.5s ease;
+}
+
+/* ===== 关卡学习页 ===== */
+.lesson-view{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:var(--cream);z-index:150;
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.lesson-view.active{opacity:1;pointer-events:auto}
+.lesson-view-inner{max-width:480px;margin:0 auto;width:100%;flex:1;display:flex;flex-direction:column;min-height:0}
+
+.lesson-topbar{
+  padding:14px 20px;display:flex;align-items:center;gap:12px;
+  background:rgba(251,248,243,0.92);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.lesson-close{
+  width:32px;height:32px;border-radius:50%;border:none;
+  background:var(--cream-dark);font-size:16px;color:var(--text-sub);
+  cursor:pointer;flex-shrink:0;
+}
+.lesson-progress{
+  flex:1;height:8px;background:var(--cream-dark);
+  border-radius:4px;overflow:hidden;
+}
+.lesson-progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--gold-light),var(--gold));
+  border-radius:4px;transition:width 0.4s ease;
+}
+.lesson-progress-text{font-size:13px;color:var(--text-light);flex-shrink:0}
+
+.lesson-content{flex:1;padding:24px 24px 0;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0}
+
+/* 教学卡片 */
+.teach-card{
+  background:var(--white);border-radius:var(--r-lg);
+  padding:40px 28px;box-shadow:var(--shadow-md);
+  text-align:center;
+}
+.teach-symbol{
+  font-size:80px;font-weight:bold;color:var(--gold-dark);
+  margin-bottom:20px;line-height:1;
+}
+.teach-text{
+  font-size:17px;line-height:1.9;color:var(--text-main);
+}
+.teach-text .highlight{color:var(--gold-dark);font-weight:bold}
+
+/* 题目 */
+.question-tag{
+  display:inline-block;padding:4px 14px;border-radius:20px;
+  background:var(--gold-bg);color:var(--gold-dark);
+  font-size:13px;font-weight:bold;margin-bottom:16px;
+}
+.question-text{
+  font-size:20px;font-weight:bold;color:var(--ink);
+  line-height:1.6;margin-bottom:24px;
+}
+.options{display:flex;flex-direction:column;gap:12px}
+.option-btn{
+  display:block;width:100%;padding:16px 24px;
+  border:2px solid #E8E2D5;border-radius:var(--r-md);
+  background:var(--white);font-size:18px;font-family:inherit;
+  color:var(--text-main);cursor:pointer;transition:all 0.2s;
+  text-align:center;
+}
+.option-btn:active{transform:scale(0.97)}
+.option-btn.selected{
+  border-color:var(--gold);background:var(--gold-bg);
+  box-shadow:0 2px 12px rgba(201,168,76,0.15);
+}
+.option-btn.correct{
+  border-color:var(--green);background:var(--green-bg);
+  color:var(--green);
+}
+.option-btn.wrong{
+  border-color:var(--red);background:var(--red-bg);
+  animation:shake 0.4s ease;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-8px)}
+  75%{transform:translateX(8px)}
+}
+
+.tf-options{display:flex;gap:12px}
+.tf-btn{
+  flex:1;padding:18px;border:2px solid #E8E2D5;border-radius:var(--r-md);
+  background:var(--white);font-size:18px;font-family:inherit;
+  color:var(--text-main);cursor:pointer;transition:all 0.2s;
+}
+.tf-btn:active{transform:scale(0.97)}
+.tf-btn.selected{border-color:var(--gold);background:var(--gold-bg)}
+.tf-btn.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.tf-btn.wrong{border-color:var(--red);background:var(--red-bg);animation:shake 0.4s ease}
+
+/* 底部操作栏 */
+.lesson-bottom{padding:16px 24px calc(24px + env(safe-area-inset-bottom))}
+.check-btn{
+  width:100%;padding:16px;border:none;border-radius:var(--r-md);
+  background:#E0DAD0;color:#A0998E;font-size:18px;font-weight:bold;
+  font-family:inherit;letter-spacing:2px;cursor:pointer;transition:all 0.2s;
+}
+.check-btn.ready{
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  color:var(--white);box-shadow:0 4px 16px rgba(201,168,76,0.35);
+}
+.check-btn:active{transform:translateY(2px)}
+
+.feedback-bar{
+  padding:0 24px 24px;display:none;
+}
+.feedback-bar.show{display:block;animation:slideUp 0.3s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.feedback-box{
+  border-radius:var(--r-md);padding:16px 20px;margin-bottom:12px;
+}
+.feedback-bar.correct .feedback-box{
+  background:var(--green-bg);border:1px solid rgba(107,170,137,0.2);
+}
+.feedback-bar.wrong .feedback-box{
+  background:var(--red-bg);border:1px solid rgba(214,114,112,0.2);
+}
+.feedback-title{font-size:17px;font-weight:bold;margin-bottom:4px}
+.feedback-bar.correct .feedback-title{color:var(--green)}
+.feedback-bar.wrong .feedback-title{color:var(--red)}
+.feedback-text{font-size:14px;color:var(--text-sub)}
+
+.feedback-next-btn{
+  width:100%;padding:16px;border:none;border-radius:var(--r-md);
+  background:var(--ink);color:var(--white);font-size:18px;font-weight:bold;
+  font-family:inherit;letter-spacing:2px;cursor:pointer;transition:all 0.2s;
+}
+.feedback-next-btn:active{transform:translateY(2px)}
+
+/* ===== 庆祝页 ===== */
+.celeb-view{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,var(--cream),var(--cream-dark));
+  z-index:200;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:40px;
+  opacity:0;pointer-events:none;transition:opacity 0.4s;
+}
+.celeb-view.active{opacity:1;pointer-events:auto}
+
+.celeb-taiji{margin-bottom:24px}
+.celeb-title{font-size:26px;font-weight:bold;color:var(--ink);margin-bottom:6px}
+.celeb-sub{font-size:15px;color:var(--text-sub);margin-bottom:28px}
+
+.celeb-stats{display:flex;gap:20px;margin-bottom:28px}
+.celeb-stat{
+  background:var(--white);border-radius:var(--r-md);
+  padding:16px 20px;text-align:center;box-shadow:var(--shadow-sm);
+  min-width:90px;
+}
+.celeb-stat-num{font-size:22px;font-weight:bold;color:var(--gold-dark)}
+.celeb-stat-label{font-size:12px;color:var(--text-sub);margin-top:4px}
+
+.celeb-encourage{
+  background:var(--white);border-radius:var(--r-lg);
+  padding:20px 24px;margin-bottom:28px;
+  box-shadow:var(--shadow-sm);text-align:center;
+  font-size:16px;line-height:1.7;color:var(--text-main);
+  max-width:320px;
+}
+
+.celeb-btn{
+  padding:16px 48px;border:none;border-radius:var(--r-md);
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  color:var(--white);font-size:18px;font-weight:bold;
+  font-family:inherit;letter-spacing:2px;
+  box-shadow:0 4px 16px rgba(201,168,76,0.35);
+  cursor:pointer;transition:all 0.2s;
+}
+.celeb-btn:active{transform:translateY(2px)}
+
+/* ===== 同步码 ===== */
+.sync-entry{text-align:center;padding:4px 20px 16px}
+.sync-entry-btn{font-size:13px;color:var(--text-light);background:none;border:none;font-family:inherit;cursor:pointer;text-decoration:underline;padding:4px}
+.sync-entry-btn:active{opacity:0.6}
+
+.sync-modal{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.4);z-index:300;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.sync-modal.active{opacity:1;pointer-events:auto}
+.sync-panel{
+  background:var(--cream);border-radius:24px 24px 0 0;
+  width:100%;max-width:480px;padding:28px 24px calc(32px + env(safe-area-inset-bottom));
+  transform:translateY(100%);transition:transform 0.3s;
+}
+.sync-modal.active .sync-panel{transform:translateY(0)}
+.sync-title{font-size:18px;font-weight:bold;color:var(--ink);margin-bottom:20px;text-align:center}
+.sync-label{font-size:13px;color:var(--text-sub);margin-bottom:8px;margin-top:16px}
+.sync-code-box{
+  background:var(--white);border:2px dashed var(--gold);
+  border-radius:16px;padding:20px 14px;font-size:32px;
+  font-weight:bold;letter-spacing:8px;
+  color:var(--gold-dark);text-align:center;cursor:pointer;
+  font-family:'Courier New',monospace;
+}
+.sync-code-box:active{background:var(--cream-dark)}
+.sync-code-hint{font-size:12px;color:var(--text-light);margin-top:6px;text-align:center}
+.sync-save-tip{
+  background:rgba(201,168,76,0.1);border-radius:10px;
+  padding:10px 14px;margin-top:12px;font-size:13px;
+  color:var(--gold-dark);line-height:1.5;text-align:center;
+}
+.sync-input{
+  width:100%;padding:12px 16px;border:1px solid var(--cream-dark);
+  border-radius:12px;font-size:14px;font-family:inherit;
+  color:var(--text-main);background:var(--white);margin-bottom:12px;
+}
+.sync-btn{
+  width:100%;padding:14px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  color:var(--white);font-size:16px;font-weight:bold;
+  font-family:inherit;cursor:pointer;
+}
+.sync-btn:active{transform:translateY(2px)}
+.sync-update-btn{
+  display:block;width:100%;padding:10px;margin-top:12px;
+  border:1px dashed var(--gold-light);border-radius:10px;
+  background:var(--cream);color:var(--gold);
+  font-size:13px;font-family:inherit;cursor:pointer;
+}
+.sync-update-btn:active{opacity:0.6}
+.sync-close{
+  width:100%;padding:12px;border:none;background:transparent;
+  color:var(--text-sub);font-size:15px;font-family:inherit;cursor:pointer;
+  margin-top:8px;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 太极SVG定义 ===== -->
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<radialGradient id="goldGrad" cx="35%" cy="30%">
+<stop offset="0%" stop-color="#F5DDA0"/>
+<stop offset="50%" stop-color="#D4B05E"/>
+<stop offset="100%" stop-color="#A88838"/>
+</radialGradient>
+<radialGradient id="inkGrad" cx="65%" cy="70%">
+<stop offset="0%" stop-color="#3D3833"/>
+<stop offset="100%" stop-color="#1A1815"/>
+</radialGradient>
+<filter id="taijiGlow" x="-30%" y="-30%" width="160%" height="160%">
+<feGaussianBlur stdDeviation="3" result="blur"/>
+<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+</defs>
+</svg>
+
+<!-- ===== 首页 ===== -->
+<div id="homeView" style="display:flex;flex-direction:column;min-height:100vh">
+  <div class="top-bar">
+    <div class="brand">
+      <svg class="taiji" viewBox="0 0 100 100" width="30" height="30" filter="url(#taijiGlow)">
+        <circle cx="50" cy="50" r="46" fill="url(#goldGrad)"/>
+        <path d="M50 4A46 46 0 0 1 50 96A23 23 0 0 1 50 50A23 23 0 0 0 50 4Z" fill="url(#inkGrad)"/>
+        <circle cx="50" cy="27" r="7" fill="url(#inkGrad)"/>
+        <circle cx="50" cy="73" r="7" fill="url(#goldGrad)"/>
+      </svg>
+      <span class="brand-text">趣学周易</span>
+    </div>
+    <div class="stats">
+      <div class="stat-chip streak"><span class="stat-icon">🔥</span><span id="streakNum">0</span></div>
+      <div class="stat-chip exp"><span class="stat-icon">⭐</span><span id="expNum">0</span></div>
+      <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊</button>
+    </div>
+  </div>
+
+  <div class="daily-section">
+    <div class="daily-day" id="dailyDay">第 1 天</div>
+    <div class="daily-text" id="dailyText">阴阳之道，始于足下</div>
+  </div>
+
+  <a class="detail-link" href="https://playinglab.yisan.me/zhouyi/" target="_blank" rel="noopener">
+    <div>
+      <div class="detail-link-text">📖 轻松学周易</div>
+      <div class="detail-link-sub">每日学习卡 · 卦象详解 · 六十四卦全览</div>
+    </div>
+    <span class="detail-link-arrow">→</span>
+  </a>
+
+  <a class="liyu-link" href="https://playinglab.yisan.me/liyu-gua/index-immersive.html">
+    <div>
+      <div class="liyu-link-text">鲤·遇｜好运卦签</div>
+      <div class="liyu-link-sub">触摸锦鲤 · 得今日卦象 · 深度解卦</div>
+    </div>
+    <span class="liyu-link-arrow">→</span>
+  </a>
+
+  <div class="path-map" id="pathMap"></div>
+
+  <div class="rank-bar">
+    <div class="rank-text">当前称号：<span class="rank-name" id="rankName">初学者</span></div>
+    <div class="rank-progress"><div class="rank-progress-fill" id="rankProgress" style="width:0%"></div></div>
+  </div>
+  <div class="sync-entry">
+    <button class="sync-entry-btn" onclick="openSyncModal()">📋 同步学习进度</button>
+  </div>
+
+  <a class="devlog-link" href="https://playinglab.yisan.me/zhouyi-game/dev-log.html" target="_blank" rel="noopener">
+    📝 开发日志 · 用AI把这个做出来的全过程
+  </a>
+
+  <!-- 免责声明 -->
+  <div style="padding:24px 20px 16px;text-align:center;background:var(--cream-dark);margin-top:auto;">
+    <div style="max-width:400px;margin:0 auto;">
+      <div style="font-size:13px;color:var(--text-sub);line-height:1.8;margin-bottom:12px;">
+        本课程内容基于《周易》经典原文及历代注疏编纂，参考傅佩荣、曾仕强等当代学者解读，仅供文化交流与学习参考。占筮部分为传统文化体验，不构成任何决策建议。如有内容问题，欢迎反馈指正。
+      </div>
+      <div style="font-size:12px;color:var(--text-light);line-height:1.6;">
+        反馈邮箱：<a href="mailto:yisan13@coze.email" style="color:var(--gold-dark);text-decoration:none;">yisan13@coze.email</a>
+        <span style="margin:0 8px;color:var(--text-light);">·</span>
+        <a href="https://playinglab.yisan.me/zhouyi/" style="color:var(--gold-dark);text-decoration:none;">轻松学周易</a>
+      </div>
+      <div style="font-size:11px;color:var(--text-light);margin-top:8px;">
+        © 2026 趣学周易 · 玩意儿Lab出品
+      </div>
+    </div>
+  </div>
+
+  <!-- 备案信息 -->
+  <div class="beian-footer">
+    <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京ICP备2026030848号-2</a>
+    <span class="beian-sep">|</span>
+    <a href="http://www.beian.gov.cn/" target="_blank" rel="noopener">京公网安备11011202101923号</a>
+  </div>
+
+  <!-- 浮动继续学习按钮 -->
+  <button class="float-start-btn" id="floatStartBtn" onclick="startCurrentLesson()">开始第 1 关</button>
+</div>
+
+<!-- ===== 关卡学习页 ===== -->
+<div class="lesson-view" id="lessonView">
+<div class="lesson-view-inner">
+  <div class="lesson-topbar">
+    <button class="lesson-close" onclick="exitLesson()">✕</button>
+    <div class="lesson-progress"><div class="lesson-progress-fill" id="progressFill" style="width:0%"></div></div>
+    <span class="lesson-progress-text" id="progressText">1/2</span>
+  </div>
+  <div class="lesson-content" id="lessonContent"></div>
+  <div class="lesson-bottom" id="lessonBottom">
+    <div id="checkBar"><button class="check-btn" id="checkBtn" onclick="checkAnswer()">检查</button></div>
+    <div class="feedback-bar" id="feedbackBar">
+      <div class="feedback-box">
+        <div class="feedback-title" id="feedbackTitle"></div>
+        <div class="feedback-text" id="feedbackText"></div>
+      </div>
+      <button class="feedback-next-btn" id="feedbackNextBtn" onclick="nextStep()">继续</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== 庆祝页 ===== -->
+<div class="celeb-view" id="celebView">
+  <div class="celeb-taiji">
+    <svg class="taiji fast" viewBox="0 0 100 100" width="90" height="90" filter="url(#taijiGlow)">
+      <circle cx="50" cy="50" r="46" fill="url(#goldGrad)"/>
+      <path d="M50 4A46 46 0 0 1 50 96A23 23 0 0 1 50 50A23 23 0 0 0 50 4Z" fill="url(#inkGrad)"/>
+      <circle cx="50" cy="27" r="7" fill="url(#inkGrad)"/>
+      <circle cx="50" cy="73" r="7" fill="url(#goldGrad)"/>
+    </svg>
+  </div>
+  <div class="celeb-title" id="celebTitle">关卡完成！</div>
+  <div class="celeb-sub" id="celebSub"></div>
+  <div class="celeb-stats">
+    <div class="celeb-stat"><div class="celeb-stat-num" id="celebExp">+10</div><div class="celeb-stat-label">经验值</div></div>
+    <div class="celeb-stat"><div class="celeb-stat-num" id="celebAcc">100%</div><div class="celeb-stat-label">正确率</div></div>
+    <div class="celeb-stat"><div class="celeb-stat-num" id="celebStreak">1</div><div class="celeb-stat-label">连续天数</div></div>
+  </div>
+  <div class="celeb-encourage" id="celebEncourage"></div>
+  <button class="celeb-btn" id="celebBtn" onclick="returnHome()">返回首页</button>
+</div>
+
+<!-- ===== 同步码弹窗 ===== -->
+<div class="sync-modal" id="syncModal">
+  <div class="sync-panel">
+    <div class="sync-title">学习进度同步</div>
+    <div class="sync-label">你的同步码（点击复制）</div>
+    <div class="sync-code-box" id="syncCodeDisplay" onclick="copySyncCode()">------</div>
+    <div class="sync-code-hint">点击上方编码可一键复制</div>
+    <div class="sync-save-tip">📷 建议截图保存此码<br>此码永久不变，换设备输入此码即可恢复进度</div>
+    <button class="sync-update-btn" onclick="updateSyncCode()">🔄 同步最新进度到云端</button>
+    <div class="sync-label">输入同步码恢复进度</div>
+    <input class="sync-input" id="syncCodeInput" placeholder="输入6位同步码" maxlength="6">
+    <button class="sync-btn" onclick="restoreFromCode()">恢复进度</button>
+    <button class="sync-close" onclick="closeSyncModal()">关闭</button>
+  </div>
+</div>
+
+<script>
+// ===== 数据 =====
+var LESSONS = [
+  {
+    id:0,title:'认识阳爻',icon:'—',
+    steps:[
+      {type:'teach',symbol:'—',text:'这是<b class="highlight">阳爻</b>。一条完整的长线，代表连续、刚健、明亮。就像正午的太阳，完整而有力。'},
+      {type:'choice',tag:'选择题',question:'下面哪个是阳爻？',options:['—','- -'],correct:0},
+    ]
+  },
+  {
+    id:1,title:'认识阴爻',icon:'- -',
+    steps:[
+      {type:'teach',symbol:'- -',text:'这是<b class="highlight">阴爻</b>。中间断开的两段线，代表断裂、柔顺、隐含。就像月亮有阴晴圆缺，有盈有缺。'},
+      {type:'choice',tag:'选择题',question:'下面哪个是阴爻？',options:['—','- -'],correct:1},
+    ]
+  },
+  {
+    id:2,title:'阴阳不是好坏',icon:'☯',
+    steps:[
+      {type:'teach',symbol:'昼 / 夜',text:'阴阳不是好与坏。<b class="highlight">白天和黑夜，没有好坏，只有流转。</b>阳是动，阴是静。阳是发散，阴是收敛。它们是事物的两种状态，不是道德评判。'},
+      {type:'truefalse',tag:'判断题',question:'"阳代表吉利，阴代表凶险"——这句话对吗？',correct:false},
+    ]
+  },
+  {
+    id:3,title:'综合小测',icon:'★',
+    steps:[
+      {type:'choice',tag:'第1题',question:'阳爻的符号是？',options:['—','- -'],correct:0},
+      {type:'choice',tag:'第2题',question:'阴爻的符号是？',options:['—','- -'],correct:1},
+      {type:'truefalse',tag:'第3题',question:'"阴阳是道德上的好坏评判"——对吗？',correct:false},
+    ]
+  },
+  {
+    id:4,title:'三爻成卦',icon:'卦',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,1,1],label:'乾',sub:'天'},{lines:[0,0,0],label:'坤',sub:'地'}],text:'把三根爻叠在一起，就组成一个<b class="highlight">卦</b>。三根阳爻叠起来是「乾」卦，代表天。三根阴爻叠起来是「坤」卦，代表地。'},
+      {type:'choice',tag:'选择题',question:'一个卦由几根爻组成？',options:['2根','3根','4根'],correct:1},
+    ]
+  },
+  {
+    id:5,title:'乾坤二卦',icon:'天地',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,1,1],label:'乾',sub:'天'},{lines:[0,0,0],label:'坤',sub:'地'}],text:'<b class="highlight">乾</b>卦，三根阳爻叠在一起，代表天、刚健、创造。<b class="highlight">坤</b>卦，三根阴爻叠在一起，代表地、柔顺、承载。天地是八卦的根基。'},
+      {type:'choice',tag:'选择题',question:'乾卦（三根阳爻）代表什么？',options:['水','天','风'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'坤卦由三根阴爻组成。',correct:true},
+    ]
+  },
+  {
+    id:6,title:'水与火',icon:'水火',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,1,0],label:'坎',sub:'水'},{lines:[1,0,1],label:'离',sub:'火'}],text:'<b class="highlight">坎</b>卦，上下阴爻中间阳爻，代表水。<b class="highlight">离</b>卦，上下阳爻中间阴爻，代表火。水火相对，却各自含着对方的力量——这就是阴阳互根。'},
+      {type:'choice',tag:'选择题',question:'离卦中间是阳爻还是阴爻？',options:['阳爻','阴爻'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'坎卦代表火。',correct:false},
+    ]
+  },
+  {
+    id:7,title:'八卦综合',icon:'★',
+    steps:[
+      {type:'choice',tag:'第1题',question:'三根阳爻组成的是？',options:['乾卦','坤卦'],correct:0},
+      {type:'choice',tag:'第2题',question:'坎卦代表什么？',options:['火','水','天'],correct:1},
+      {type:'truefalse',tag:'第3题',question:'离卦中间是阴爻。',correct:true},
+    ]
+  },
+  {
+    id:8,title:'雷与风',icon:'雷风',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,0,1],label:'震',sub:'雷'},{lines:[1,1,0],label:'巽',sub:'风'}],text:'<b class="highlight">震</b>卦，一阳在下方，两阴在上方，代表雷。雷从地下发动，是阳气初动。<b class="highlight">巽</b>卦，一阴在下方，两阳在上方，代表风。风无孔不入，柔而渗透。'},
+      {type:'choice',tag:'选择题',question:'震卦代表什么？',options:['风','雷','水'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'巽卦代表风。',correct:true},
+    ]
+  },
+  {
+    id:9,title:'山与泽',icon:'山泽',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,0,0],label:'艮',sub:'山'},{lines:[0,1,1],label:'兑',sub:'泽'}],text:'<b class="highlight">艮</b>卦，一阳在上方，两阴在下方，代表山。山巍然不动，是止的象征。<b class="highlight">兑</b>卦，一阴在上方，两阳在下方，代表泽。泽水润万物，是喜悦的象征。'},
+      {type:'choice',tag:'选择题',question:'艮卦代表什么？',options:['泽','山','风'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'兑卦代表泽。',correct:true},
+    ]
+  },
+  {
+    id:10,title:'八卦速记口诀',icon:'记',
+    steps:[
+      {type:'teach',trigrams:[
+        {lines:[1,1,1],label:'乾',sub:'三连'},
+        {lines:[0,0,0],label:'坤',sub:'六断'},
+        {lines:[0,0,1],label:'震',sub:'仰盂'},
+        {lines:[1,0,0],label:'艮',sub:'覆碗'},
+        {lines:[1,0,1],label:'离',sub:'中虚'},
+        {lines:[0,1,0],label:'坎',sub:'中满'},
+        {lines:[0,1,1],label:'兑',sub:'上缺'},
+        {lines:[1,1,0],label:'巽',sub:'下断'}
+      ],text:'八卦速记口诀：<b class="highlight">乾三连、坤六断、震仰盂、艮覆碗、离中虚、坎中满、兑上缺、巽下断</b>。想象画面——三连是三条实线，六断是六段短线，仰盂像开口向上的碗，覆碗是倒扣的碗，中虚是中间空了，中满是中间实了，上缺是上面缺了一口，下断是下面断开了。'},
+      {type:'choice',tag:'选择题',question:'「离中虚」说的是离卦什么特点？',options:['中间是阴爻（空）','中间是阳爻（实）','没有中间'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'「坎中满」是说坎卦中间是阳爻。',correct:true},
+    ]
+  },
+  {
+    id:11,title:'八卦全测验',icon:'★',
+    steps:[
+      {type:'choice',tag:'第1题',question:'震卦代表什么自然现象？',options:['雷','风','山'],correct:0},
+      {type:'choice',tag:'第2题',question:'「艮覆碗」形象地描述了艮卦什么特点？',options:['像倒扣的碗，阳爻在上','像开口的碗，阳爻在下','像翻倒的碗，全断'],correct:0},
+      {type:'choice',tag:'第3题',question:'兑卦代表什么？',options:['山','泽','天'],correct:1},
+      {type:'truefalse',tag:'第4题',question:'巽卦是「一阴在下，两阳在上」。',correct:true},
+    ]
+  },
+  {
+    id:12,title:'先天八卦图',icon:'图',
+    steps:[
+      {type:'teach',trigrams:[
+        {lines:[1,1,1],label:'乾',sub:'南'},
+        {lines:[0,0,0],label:'坤',sub:'北'},
+        {lines:[1,0,1],label:'离',sub:'东'},
+        {lines:[0,1,0],label:'坎',sub:'西'}
+      ],text:'先天八卦图据传为伏羲所创。<b class="highlight">乾南坤北，离东坎西</b>——天在上，地在下，日升于东，月落于西。每对相对的卦阴阳完全相反，这叫「对宫」：乾坤对、坎离对、震巽对、艮兑对。'},
+      {type:'choice',tag:'选择题',question:'先天八卦图中，乾卦在哪个方位？',options:['东','南','北'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'先天八卦中，乾和坤是对宫。',correct:true},
+    ]
+  },
+  {
+    id:13,title:'对宫与反卦',icon:'对',
+    steps:[
+      {type:'teach',trigrams:[
+        {lines:[1,1,1],label:'乾',sub:''},
+        {lines:[0,0,0],label:'坤',sub:''},
+        {lines:[0,0,1],label:'震',sub:''},
+        {lines:[1,1,0],label:'巽',sub:''}
+      ],text:'对宫的两个卦，每一爻都<b class="highlight">阴阳相反</b>。乾（全阳）对坤（全阴），震（阳在下）对巽（阴在下）。这不仅是位置上的对称，更是阴阳哲学的核心——任何事物都蕴含着它的对立面。理解了对宫，就理解了阴阳互根。'},
+      {type:'choice',tag:'选择题',question:'乾卦的对宫是？',options:['离卦','坤卦','震卦'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'对宫的两个卦，每一爻阴阳都相反。',correct:true},
+    ]
+  },
+  {
+    id:14,title:'阴阳消长',icon:'消',
+    steps:[
+      {type:'teach',symbol:'阳 ↗ 阴 ↘',text:'阴阳不是静止的，而是<b class="highlight">不断消长</b>的。冬至一阳生，阳气开始增长；夏至一阴生，阴气开始增长。就像四季轮转——冬天到了极点，春天就在孕育。这就是「物极必反」的由来：事物发展到极点，就会向相反方向转化。'},
+      {type:'choice',tag:'选择题',question:'「冬至一阳生」是什么意思？',options:['冬至阳气最盛','冬至后阳气开始增长','冬至阳气消失'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'「物极必反」源于阴阳消长的思想。',correct:true},
+    ]
+  },
+  {
+    id:15,title:'从八卦到六十四卦',icon:'64',
+    steps:[
+      {type:'teach',symbol:'8 × 8 = 64',text:'把两个三爻卦叠在一起，就组成一个<b class="highlight">六爻卦</b>。八卦两两组合，8×8=64，就是六十四卦。下面的卦叫「内卦」，上面的卦叫「外卦」。比如乾上乾下还是乾，坤上坎下就是「师」卦。六十四卦涵盖了天地万物各种状态的变化。'},
+      {type:'choice',tag:'选择题',question:'六十四卦是由什么组成的？',options:['两个三爻卦叠加','六个三爻卦叠加','一个六爻卦'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'六十四卦一共有64个。',correct:true},
+    ]
+  },
+  {
+    id:16,title:'泰与否',icon:'泰否',
+    steps:[
+      {type:'teach',trigrams:[
+        {lines:[0,0,0],label:'坤·上',sub:'地'},
+        {lines:[1,1,1],label:'乾·下',sub:'天'}
+      ],text:'<b class="highlight">泰卦</b>：坤（地）在上，乾（天）在下。天气上升，地气下降，天地交合，万物通泰——所以「泰」是吉卦。反过来，<b class="highlight">否卦</b>：乾在上坤在下，天气上升走了、地气下降走了，天地不交——所以「否」是凶卦。好的状态是「交」，不是「各走各的」。'},
+      {type:'choice',tag:'选择题',question:'泰卦的结构是？',options:['乾上坤下','坤上乾下','乾上乾下'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'否卦表示天地不交。',correct:true},
+    ]
+  },
+  {
+    id:17,title:'既济与未济',icon:'济',
+    steps:[
+      {type:'teach',symbol:'完成 ⟷ 未完成',text:'<b class="highlight">既济</b>：已经渡河，已经完成。但完成之后呢？周易把<b class="highlight">未济</b>放在最后——还没渡完。六十四卦以「未济」结尾，不是终点，是新的开始。周易的智慧：没有真正的结束，只有一轮又一轮的循环。人生也是如此，一个阶段的完成，是下一段旅程的起点。'},
+      {type:'choice',tag:'选择题',question:'六十四卦最后一个卦是？',options:['既济','未济','乾坤'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'「既济」的意思是已经完成。',correct:true},
+    ]
+  },
+  {
+    id:18,title:'两周总测验一',icon:'★',
+    steps:[
+      {type:'choice',tag:'第1题',question:'阳爻的符号是？',options:['一条实线 —','一条断线 - -'],correct:0},
+      {type:'choice',tag:'第2题',question:'八卦共有几个卦？',options:['6个','8个','64个'],correct:1},
+      {type:'choice',tag:'第3题',question:'「坤六断」描述的是？',options:['坤卦三条断线','坤卦三条实线','坤卦六段断线'],correct:2},
+      {type:'choice',tag:'第4题',question:'先天八卦中离卦在哪个方位？',options:['东','西','南'],correct:0},
+    ]
+  },
+  {
+    id:19,title:'两周总测验二',icon:'★',
+    steps:[
+      {type:'choice',tag:'第1题',question:'六十四卦由几个爻组成？',options:['3个','6个','8个'],correct:1},
+      {type:'choice',tag:'第2题',question:'泰卦为什么是吉？',options:['天地交合','天在上地在下','乾坤同位'],correct:0},
+      {type:'choice',tag:'第3题',question:'「冬至一阳生」体现什么原理？',options:['阴阳消长','八卦方位','卦序规律'],correct:0},
+      {type:'truefalse',tag:'第4题',question:'六十四卦以「未济」结尾，意味着一切结束了。',correct:false},
+    ]
+  },
+  {
+    id:20,title:'乾卦精读',icon:'乾',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,1,1],label:'乾·上',sub:'天'},{lines:[1,1,1],label:'乾·下',sub:'天'}],text:'<b class="highlight">乾卦</b>，六爻皆阳，是六十四卦中最刚健的一卦。卦辞"元亨利贞"四个字，被称为"乾之四德"：<b class="highlight">元</b>是创始，<b class="highlight">亨</b>是通达，<b class="highlight">利</b>是适宜，<b class="highlight">贞</b>是正固。《象传》说："天行健，君子以自强不息。"天道的运行刚健不止，君子观此象，当自我奋发，永不懈怠。'},
+      {type:'choice',tag:'选择题',question:'乾卦的卦辞"元亨利贞"中，"元"的意思是？',options:['通达','创始','正固','适宜'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'"天行健，君子以自强不息"出自乾卦的《象传》。',correct:true},
+      {type:'choice',tag:'选择题',question:'乾卦由几个阳爻组成？',options:['三个','四个','五个','六个'],correct:3}
+    ]
+  },
+  {
+    id:21,title:'坤卦精读',icon:'坤',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,0,0],label:'坤·上',sub:'地'},{lines:[0,0,0],label:'坤·下',sub:'地'}],text:'<b class="highlight">坤卦</b>，六爻皆阴，与乾卦相对。卦辞"元亨，利牝马之贞"，以母马喻柔顺之德——温顺却不失方向。《象传》说："地势坤，君子以厚德载物。"大地承载万物，不分贵贱，君子当以深厚的德行包容天下。乾主创造，坤主承载，乾坤合德，万物方生。'},
+      {type:'choice',tag:'选择题',question:'坤卦的卦辞以什么动物喻柔顺之德？',options:['牛','牝马','羊','虎'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'"地势坤，君子以厚德载物"说的是坤卦的精神。',correct:true},
+      {type:'choice',tag:'选择题',question:'乾与坤的关系是？',options:['对立不相干','乾主创造，坤主承载','坤主创造，乾主承载','两者完全相同'],correct:1}
+    ]
+  },
+  {
+    id:22,title:'泰卦与否卦',icon:'泰否',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,0,0],label:'坤·上',sub:'地'},{lines:[1,1,1],label:'乾·下',sub:'天'},{lines:[1,1,1],label:'乾·上',sub:'天'},{lines:[0,0,0],label:'坤·下',sub:'地'}],text:'左边是<b class="highlight">泰卦</b>：地在天上。天气上升，地气下降，二者交合，万物通泰。右边是<b class="highlight">否卦</b>：天在地上。天气上升而远去，地气下降而沉沦，天地不交，闭塞不通。看似天在上地在下是"正常"的，恰恰是否；看似颠倒的，反而是泰。周易的智慧：交流则通，隔绝则塞。'},
+      {type:'choice',tag:'选择题',question:'泰卦的结构是？',options:['天在上地在下','地在上天在下','天在上天在下','地在上地在下'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'否卦表示天地交合、万物通泰。',correct:false},
+      {type:'choice',tag:'选择题',question:'泰卦为什么是吉卦？',options:['因为天地交合','因为天在上','因为地在下','因为六爻皆阳'],correct:0}
+    ]
+  },
+  {
+    id:23,title:'屯卦与蒙卦',icon:'屯蒙',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,1,0],label:'坎·上',sub:'水'},{lines:[1,0,0],label:'震·下',sub:'雷'},{lines:[0,0,1],label:'艮·上',sub:'山'},{lines:[0,1,0],label:'坎·下',sub:'水'}],text:'<b class="highlight">屯卦</b>（水雷屯）：云雷交加，万物初生。卦辞"勿用有攸往，利建侯"——初创之时不宜冒进，当稳固根基。<b class="highlight">蒙卦</b>（山水蒙）：山下有水，泉水初出。卦辞"匪我求童蒙，童蒙求我"——不是老师追着学生教，而是学生诚心求教。屯讲创业之难，蒙讲启蒙之道，都是事物初起时的智慧。'},
+      {type:'choice',tag:'选择题',question:'屯卦的上卦和下卦分别是？',options:['坎和震','震和坎','乾和坤','艮和坎'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'蒙卦卦辞"匪我求童蒙，童蒙求我"强调求学应主动诚心。',correct:true},
+      {type:'choice',tag:'选择题',question:'屯卦和蒙卦共同的主题是？',options:['事物初起时的智慧','兴盛时期的策略','衰落阶段的应对','终结时刻的反思'],correct:0}
+    ]
+  },
+  {
+    id:24,title:'需卦与讼卦',icon:'需讼',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,1,0],label:'坎·上',sub:'水'},{lines:[1,1,1],label:'乾·下',sub:'天'},{lines:[1,1,1],label:'乾·上',sub:'天'},{lines:[0,1,0],label:'坎·下',sub:'水'}],text:'<b class="highlight">需卦</b>（水天需）：天上有云，雨还未下，需要等待。卦辞"有孚，光亨，贞吉"——心怀诚信，耐心等待，终会光明显达。<b class="highlight">讼卦</b>（天水讼）：天往上走，水往下流，方向相反，遂起争端。卦辞"中吉终凶"——争讼中途停下来还好，坚持到底则凶。需教人等待的智慧，讼告诫争端的危险。'},
+      {type:'choice',tag:'选择题',question:'需卦的象征是？',options:['天上有云，等待降雨','水在地上流','雷声大作','山高水长'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'讼卦卦辞"中吉终凶"意味着争讼适可而止为好。',correct:true},
+      {type:'choice',tag:'选择题',question:'讼卦中天与水的运动方向是？',options:['同向而行','相向而行','背向而行','静止不动'],correct:2}
+    ]
+  },
+  {
+    id:25,title:'师卦与比卦',icon:'师比',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,0,0],label:'坤·上',sub:'地'},{lines:[0,1,0],label:'坎·下',sub:'水'},{lines:[0,1,0],label:'坎·上',sub:'水'},{lines:[0,0,0],label:'坤·下',sub:'地'}],text:'<b class="highlight">师卦</b>（地水师）：地下有水，蓄聚成众。卦辞"贞，丈人吉无咎"——兴师动众须由德高望重之人统帅，方得吉祥。<b class="highlight">比卦</b>（水地比）：水在地上，流遍四方。卦辞"不宁方来，后夫凶"——亲附宜早不宜迟，观望犹豫者凶。师讲以武力聚众，比讲以德行聚人，一体两面。'},
+      {type:'choice',tag:'选择题',question:'师卦卦辞认为兴师动众需要什么样的人统帅？',options:['勇猛之人','德高望重之人','富足之人','年幼之人'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'比卦的卦辞"后夫凶"是说亲附宜早不宜迟。',correct:true},
+      {type:'choice',tag:'选择题',question:'师卦与比卦的关系是？',options:['师以武力聚众，比以德行聚人','两者完全相同','师是吉卦，比是凶卦','比讲战争，师讲和平'],correct:0}
+    ]
+  },
+  {
+    id:26,title:'小畜卦与履卦',icon:'小畜',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,1,1],label:'巽·上',sub:'风'},{lines:[1,1,1],label:'乾·下',sub:'天'},{lines:[1,1,1],label:'乾·上',sub:'天'},{lines:[1,1,0],label:'兑·下',sub:'泽'}],text:'<b class="highlight">小畜卦</b>（风天小畜）：风行天上，密云不雨。卦辞"密云不雨，自我西郊"——蓄积未到时机，尚需等待。<b class="highlight">履卦</b>（天泽履）：天上有泽，小心前行。卦辞"履虎尾，不咥人，亨"——踩到虎尾巴却不被咬，因为礼敬谨慎。小畜讲蓄积之道，履讲谨慎之礼，都是力量不足时的处世智慧。'},
+      {type:'choice',tag:'选择题',question:'小畜卦的卦辞"密云不雨"比喻什么？',options:['已经成功','蓄积未到时机','雨过天晴','无需努力'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'履卦卦辞"履虎尾，不咥人"强调礼敬谨慎则可化险为夷。',correct:true},
+      {type:'choice',tag:'选择题',question:'小畜卦和履卦的共同主题是？',options:['力量不足时的处世智慧','鼎盛时期的扩张','战争中的策略','退隐山林的心境'],correct:0}
+    ]
+  },
+  {
+    id:27,title:'同人卦与大有卦',icon:'同人',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,1,1],label:'乾·上',sub:'天'},{lines:[1,0,1],label:'离·下',sub:'火'},{lines:[1,0,1],label:'离·上',sub:'火'},{lines:[1,1,1],label:'乾·下',sub:'天'}],text:'<b class="highlight">同人卦</b>（天火同人）：天在上火往上，二者同向，象征与人和同。卦辞"同人于野，亨"——在广阔的野外与人和同，光明正大则亨通。<b class="highlight">大有卦</b>（火天大有）：火在天上，普照万物。卦辞仅"元亨"二字——大有所获，至为通达。同人是结交天下，大有是天下归心。先得人心，而后大有。'},
+      {type:'choice',tag:'选择题',question:'同人卦的卦辞"同人于野"中"野"的含义是？',options:['荒无人烟之地','广阔公开的场所','田野农庄','城市郊区'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'大有卦的卦辞只有"元亨"二字，表示大有所获至为通达。',correct:true},
+      {type:'choice',tag:'选择题',question:'同人卦与大有卦的关系是？',options:['先得人心，而后大有','先有财富，后得人心','两者互不相干','同人是凶卦'],correct:0}
+    ]
+  },
+  {
+    id:28,title:'谦卦与豫卦',icon:'谦豫',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,0,0],label:'坤·上',sub:'地'},{lines:[0,0,1],label:'艮·下',sub:'山'},{lines:[1,0,0],label:'震·上',sub:'雷'},{lines:[0,0,0],label:'坤·下',sub:'地'}],text:'<b class="highlight">谦卦</b>（地山谦）：高山隐于地下，有德而不自显。卦辞"亨，君子有终"——谦逊之人终有好结果，六十四卦中唯一六爻皆吉的卦。<b class="highlight">豫卦</b>（雷地豫）：雷出地上，振奋欢悦。卦辞"利建侯行师"——欢乐之时可以建功立业。谦是收敛之德，豫是发散之乐，一收一放，刚柔相济。'},
+      {type:'choice',tag:'选择题',question:'谦卦的意象是什么？',options:['高山隐于地下','水流入大海','雷声震动大地','太阳升上山头'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'谦卦是六十四卦中唯一六爻皆吉的卦。',correct:true},
+      {type:'choice',tag:'选择题',question:'谦卦与豫卦的关系是？',options:['谦是收敛之德，豫是发散之乐','两者都是凶卦','谦讲欢乐，豫讲谦逊','两者完全相反'],correct:0}
+    ]
+  },
+  {
+    id:29,title:'随卦与蛊卦',icon:'随蛊',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,1,0],label:'兑·上',sub:'泽'},{lines:[1,0,0],label:'震·下',sub:'雷'},{lines:[0,0,1],label:'艮·上',sub:'山'},{lines:[0,1,1],label:'巽·下',sub:'风'}],text:'<b class="highlight">随卦</b>（泽雷随）：雷入泽中，随时而息。卦辞"元亨利贞，无咎"——随顺时势，择善而从，则无灾祸。<b class="highlight">蛊卦</b>（山风蛊）：风落山下，久积成弊。卦辞"先甲三日，后甲三日"——整治积弊要把握时机，事前谋划、事后巩固。随是顺时而动，蛊是革故鼎新，一个向前看，一个向后治。'},
+      {type:'choice',tag:'选择题',question:'随卦的核心思想是？',options:['随顺时势，择善而从','固守不变','逆势而动','消极等待'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'蛊卦讲的是整治积弊、革新除旧。',correct:true},
+      {type:'choice',tag:'选择题',question:'蛊卦卦辞"先甲三日，后甲三日"强调什么？',options:['整治积弊要把握时机，事前谋划事后巩固','要穿戴铠甲','要祭祀三天','要远行千里'],correct:0}
+    ]
+  },
+  {
+    id:30,title:'临卦与观卦',icon:'临观',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,0,0],label:'坤·上',sub:'地'},{lines:[1,1,0],label:'兑·下',sub:'泽'},{lines:[0,1,1],label:'巽·上',sub:'风'},{lines:[0,0,0],label:'坤·下',sub:'地'}],text:'<b class="highlight">临卦</b>（地泽临）：地中有泽，泽润万物。卦辞"至于八月有凶"——盛极之时要防衰，居安思危。<b class="highlight">观卦</b>（风地观）：风行地上，遍及万物。卦辞"盥而不荐，有孚顒若"——祭祀前洗手时已心存敬畏，以庄重诚敬感化人心。临是居高临下地治理，观是以身作则地感化，一个主动，一个示范。'},
+      {type:'choice',tag:'选择题',question:'临卦卦辞"至于八月有凶"提醒我们什么？',options:['盛极之时要防衰，居安思危','八月不宜出行','八月有自然灾害','八月不宜祭祀'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'观卦强调以身作则、以诚敬感化人心。',correct:true},
+      {type:'choice',tag:'选择题',question:'临卦与观卦的区别是？',options:['临是主动治理，观是示范感化','临是观察，观是行动','两者完全相同','临是凶卦，观是吉卦'],correct:0}
+    ]
+  },
+  {
+    id:31,title:'噬嗑卦与贲卦',icon:'噬嗑',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,0,1],label:'离·上',sub:'火'},{lines:[1,0,0],label:'震·下',sub:'雷'},{lines:[0,0,1],label:'艮·上',sub:'山'},{lines:[1,0,1],label:'离·下',sub:'火'}],text:'<b class="highlight">噬嗑卦</b>（火雷噬嗑）：雷电交加，咬合障碍。卦辞"亨，利用狱"——明辨是非，果断去障，才能通达。<b class="highlight">贲卦</b>（山火贲）：山下有火，文采辉映。卦辞"小利有攸往"——文饰可以适度前行，但不可过度。噬嗑是"去障"——咬碎阻碍；贲是"修饰"——美化外表。一破一立，先除障再文饰。'},
+      {type:'choice',tag:'选择题',question:'噬嗑卦的"噬嗑"是什么意思？',options:['咬合障碍','装饰美化','等待时机','退避隐居'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'贲卦讲的是文饰之美，强调文饰不可过度。',correct:true},
+      {type:'choice',tag:'选择题',question:'噬嗑卦与贲卦的关系是？',options:['一破一立，先除障再文饰','两者都是讲装饰','噬嗑是吉卦，贲是凶卦','两者互不相干'],correct:0}
+    ]
+  },
+  {
+    id:32,title:'剥卦与复卦',icon:'剥复',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,0,1],label:'艮·上',sub:'山'},{lines:[0,0,0],label:'坤·下',sub:'地'},{lines:[0,0,0],label:'坤·上',sub:'地'},{lines:[1,0,0],label:'震·下',sub:'雷'}],text:'<b class="highlight">剥卦</b>（山地剥）：山附于地，根基剥落。卦辞"不利有攸往"——剥落之时不宜妄动，当顺时止息。<b class="highlight">复卦</b>（地雷复）：雷在地中，一阳来复。卦辞"七日来复"——剥到极点，阳气回复。剥是阴极之象，复是一阳初生。剥极必复，是周易最深刻的信念：黑暗到了尽头，就是光明开始的地方。'},
+      {type:'choice',tag:'选择题',question:'复卦"一阳来复"的含义是？',options:['剥到极点，阳气回复','阳气最盛','阴气开始增长','万物终结'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'"剥极必复"体现了周易物极必反的思想。',correct:true},
+      {type:'choice',tag:'选择题',question:'剥卦卦辞建议在剥落之时应该怎样？',options:['顺时止息，不宜妄动','积极进取','争讼到底','远行他乡'],correct:0}
+    ]
+  },
+  {
+    id:33,title:'无妄卦与大畜卦',icon:'无妄',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,1,1],label:'乾·上',sub:'天'},{lines:[1,0,0],label:'震·下',sub:'雷'},{lines:[0,0,1],label:'艮·上',sub:'山'},{lines:[1,1,1],label:'乾·下',sub:'天'}],text:'<b class="highlight">无妄卦</b>（天雷无妄）：天下雷行，万物循道。卦辞"其匪正有眚"——不守正道则生灾祸，顺乎天道则无妄灾。<b class="highlight">大畜卦</b>（山天大畜）：山中有天，蓄积刚健。卦辞"不家食吉，利涉大川"——蓄德深厚，可以走出家门干大事。无妄是守正不妄为，大畜是蓄德以远行，先不妄，后大畜。'},
+      {type:'choice',tag:'选择题',question:'无妄卦的核心思想是？',options:['守正不妄为','大胆冒险','消极避世','争讼不休'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'大畜卦卦辞"不家食吉"鼓励蓄德深厚后走出家门干大事。',correct:true},
+      {type:'choice',tag:'选择题',question:'无妄卦与大畜卦的关系是？',options:['先不妄为，后蓄德远行','两者互不相干','无妄是凶卦，大畜是吉卦','大畜在前，无妄在后'],correct:0}
+    ]
+  },
+  {
+    id:34,title:'颐卦与大过卦',icon:'颐',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,0,1],label:'艮·上',sub:'山'},{lines:[1,0,0],label:'震·下',sub:'雷'},{lines:[1,1,0],label:'兑·上',sub:'泽'},{lines:[0,1,1],label:'巽·下',sub:'风'}],text:'<b class="highlight">颐卦</b>（山雷颐）：山下有雷，万物萌生，养之育之。卦辞"观颐，自求口实"——观察养人之道，先求自养正道。颐是"养正"，慎言语、节饮食。<b class="highlight">大过卦</b>（泽风大过）：泽灭木上，大为过越。卦辞"栋桡"——房梁弯曲，非常之时须行非常之事。颐讲日常养生，大过讲非常之举，常态与异态，各有其道。'},
+      {type:'choice',tag:'选择题',question:'颐卦的核心思想是？',options:['养正——慎言语、节饮食','战争——兴师动众','争讼——据理力争','退隐——不问世事'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'大过卦卦辞"栋桡"比喻非常之时须行非常之事。',correct:true},
+      {type:'choice',tag:'选择题',question:'颐卦与大过卦的关系是？',options:['颐讲日常养生，大过讲非常之举','两者都是讲战争','颐是凶卦，大过是吉卦','两者完全相同'],correct:0}
+    ]
+  },
+  {
+    id:35,title:'坎卦与离卦',icon:'坎离',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,1,0],label:'坎·上',sub:'水'},{lines:[0,1,0],label:'坎·下',sub:'水'},{lines:[1,0,1],label:'离·上',sub:'火'},{lines:[1,0,1],label:'离·下',sub:'火'}],text:'<b class="highlight">坎卦</b>（重坎）：两坎相叠，重险叠至。卦辞"习坎，有孚，维心亨"——身处重险，唯有诚信系心，方能出险。<b class="highlight">离卦</b>（重离）：两离相叠，光明附丽。卦辞"畜牝牛，吉"——柔顺中正，光明方能久照。坎与离是上经最后两卦，一险一明，一暗一亮。坎教人在困境中守心，离教人在光明中柔正。上经至此，天道已备。'},
+      {type:'choice',tag:'选择题',question:'坎卦卦辞"习坎，有孚，维心亨"强调在重险中应该怎样？',options:['心怀诚信方能出险','勇猛冲破危险','放弃一切希望','等待他人救援'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'坎卦与离卦是上经的最后两卦。',correct:true},
+      {type:'choice',tag:'选择题',question:'离卦卦辞"畜牝牛，吉"强调什么品质？',options:['柔顺中正','刚猛有力','果断决绝','隐忍不发'],correct:0}
+    ]
+  },
+  {
+    id:36,title:'咸卦与恒卦',icon:'咸恒',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,1,0],label:'兑·上',sub:'泽'},{lines:[0,0,1],label:'艮·下',sub:'山'},{lines:[1,0,0],label:'震·上',sub:'雷'},{lines:[0,1,1],label:'巽·下',sub:'风'}],text:'<b class="highlight">咸卦</b>（泽山咸）：山上有泽，润泽相感。卦辞"取女吉"——男女相感，虚心相待则和合。咸即"感"，是下经第一卦，讲人与人之间的感应。<b class="highlight">恒卦</b>（雷风恒）：雷风相与，变动不居却恒久。卦辞"亨，无咎，利贞"——在变化中守正，方能恒久。咸是感之始，恒是久之道。先有真诚感应，后有恒久坚守。'},
+      {type:'choice',tag:'选择题',question:'咸卦是六十四卦下经的第几卦？',options:['第一卦','第二卦','第三卦','最后一卦'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'咸卦的"咸"即"感"，讲的是人与人之间的感应。',correct:true},
+      {type:'choice',tag:'选择题',question:'恒卦的核心思想是？',options:['在变化中守正，方能恒久','永远不变','放弃变化','只守不变'],correct:0}
+    ]
+  },
+  {
+    id:37,title:'遁卦与大壮卦',icon:'遁壮',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,1,1],label:'乾·上',sub:'天'},{lines:[0,0,1],label:'艮·下',sub:'山'},{lines:[1,0,0],label:'震·上',sub:'雷'},{lines:[1,1,1],label:'乾·下',sub:'天'}],text:'<b class="highlight">遁卦</b>（天山遁）：天在山上，渐行渐远。卦辞"亨，小利贞"——适时退避不是逃避，而是君子远小人、不与之争。<b class="highlight">大壮卦</b>（雷天大壮）：雷在天上，声威浩大。卦辞"利贞"——强盛之时更须守礼，壮而不暴方能持久。遁是退的智慧，大壮是进的法则。知退方知进，进退有度，才是大壮。'},
+      {type:'choice',tag:'选择题',question:'遁卦的核心思想是？',options:['适时退避，远小人不争','逃避一切责任','争强好胜','固守原地'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'大壮卦卦辞"利贞"强调强盛之时更须守礼。',correct:true},
+      {type:'choice',tag:'选择题',question:'遁卦与大壮卦的关系是？',options:['知退方知进，进退有度才是大壮','两者互不相干','遁是吉卦，大壮是凶卦','大壮讲退避，遁讲强盛'],correct:0}
+    ]
+  },
+  {
+    id:38,title:'晋卦与明夷卦',icon:'晋夷',
+    steps:[
+      {type:'teach',trigrams:[{lines:[1,0,1],label:'离·上',sub:'火'},{lines:[0,0,0],label:'坤·下',sub:'地'},{lines:[0,0,0],label:'坤·上',sub:'地'},{lines:[1,0,1],label:'离·下',sub:'火'}],text:'<b class="highlight">晋卦</b>（火地晋）：日出地上，光明升进。卦辞"康侯用锡马蕃庶，昼日三接"——晋升之道，柔进上行则光明。<b class="highlight">明夷卦</b>（地火明夷）：日入地下，光明受伤。卦辞"利艰贞"——光明被掩，当晦藏其明，守正待时。晋是光明上升，明夷是光明受伤。一明一暗，一进一隐，教人在顺境中知进，在逆境中知藏。'},
+      {type:'choice',tag:'选择题',question:'晋卦的意象是？',options:['日出地上，光明升进','日入地下，光明受伤','雷声大作','水流入海'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'明夷卦卦辞"利艰贞"强调光明被掩时应晦藏其明、守正待时。',correct:true},
+      {type:'choice',tag:'选择题',question:'晋卦与明夷卦的关系是？',options:['一明一暗，顺境知进逆境知藏','两者互不相干','晋是凶卦，明夷是吉卦','两者都讲退隐'],correct:0}
+    ]
+  },
+  {
+    id:39,title:'既济与未济',icon:'未济',
+    steps:[
+      {type:'teach',trigrams:[{lines:[0,1,0],label:'坎·上',sub:'水'},{lines:[1,0,1],label:'离·下',sub:'火'},{lines:[1,0,1],label:'离·上',sub:'火'},{lines:[0,1,0],label:'坎·下',sub:'水'}],text:'<b class="highlight">既济卦</b>（水火既济）：水在火上，水火相交，事已成就。卦辞"初吉终乱"——成功之后不可松懈，防患于未然方能守终。<b class="highlight">未济卦</b>（火水未济）：火在水上，水火不交，事未成就。卦辞"小狐汔济，濡其尾"——小狐狸快过河却湿了尾巴，审慎进取终可济。六十四卦以未济结尾——没有真正的终点，一切都是新的开始。'},
+      {type:'choice',tag:'选择题',question:'既济卦卦辞"初吉终乱"提醒我们什么？',options:['成功之后不可松懈，防患于未然','成功就是终点','成功意味着一切顺利','成功后可以放松'],correct:0},
+      {type:'truefalse',tag:'判断题',question:'六十四卦以未济卦结尾，意味着一切都没有真正的终点。',correct:true},
+      {type:'choice',tag:'选择题',question:'既济与未济的关系是？',options:['已成与未成，循环不息','既济是凶卦，未济是吉卦','两者完全相同','既济在前，未济在后，互不相干'],correct:0},
+      {type:'choice',tag:'第4题',question:'通读六十四卦后，以下哪个说法最符合周易的核心精神？',options:['一切都在变化中没有终点','命运注定不可改变','只有效仿天地才能生存','周易只讲占卜算命'],correct:0}
+    ]
+  },
+  {
+    id:40,title:'邵雍与先天学',icon:'邵',
+    steps:[
+      {type:'teach',symbol:'北宋·邵雍',text:'<b class="highlight">邵雍</b>（1011—1077），字尧夫，谥号<b class="highlight">康节</b>，北宋理学大家。与周敦颐、张载、程颢、程颐并称"北宋五子"。邵雍最大的贡献，是把伏羲八卦（先天八卦）的体系系统化，建立了<b class="highlight">先天学</b>。先天学认为：伏羲八卦是天地本来的秩序（体），文王八卦是人间应用的排列（用）。先有天地之理，再有人事之用。'},
+      {type:'choice',tag:'选择题',question:'邵雍是哪个朝代的易学大家？',options:['西汉','北宋','南宋','明朝'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'先天八卦又称伏羲八卦，后天八卦又称文王八卦。',correct:true},
+      {type:'teach',symbol:'体 与 用',text:'先天学与后天学的区别：<b class="highlight">先天</b>讲天地本然的秩序——乾坤定上下，离坎列左右，是宇宙的"骨架"。<b class="highlight">后天</b>讲四季流转、方位应用——震春离夏兑秋坎冬，是生活的"地图"。邵雍说：先天后天，一体一用，不可偏废。先天是理，后天是用；知先天才能明理，用后天才能应事。'},
+      {type:'choice',tag:'选择题',question:'先天学中"体"与"用"的关系是？',options:['先天为体，后天为用','后天为体，先天为用','两者没有关系','体用合一，不分先后'],correct:0}
+    ]
+  },
+  {
+    id:41,title:'先天六十四卦方圆图',icon:'方圆',
+    steps:[
+      {type:'teach',symbol:'天圆地方',text:'<b class="highlight">先天六十四卦方圆图</b>是邵雍先天学的核心图式。外层是<b class="highlight">圆图</b>，代表时间——天道的运行；内层是<b class="highlight">方图</b>，代表空间——地道的方位。天圆地方，六十四卦各安其位。圆图从乾卦开始，按先天卦序排列一周，象征宇宙的时间循环；方图以乾卦为起点向对角展开，象征万物的空间分布。'},
+      {type:'choice',tag:'选择题',question:'方圆图中，圆图代表什么？',options:['空间方位','时间运行','人物关系','五行生克'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'方圆图中方图代表空间，圆图代表时间。',correct:true},
+      {type:'teach',symbol:'乾一兑二',text:'先天卦序的排列口诀：<b class="highlight">乾一、兑二、离三、震四、巽五、坎六、艮七、坤八</b>。这个顺序不是随便排的——它是从太极生两仪、两仪生四象、四象生八卦的自然推演结果。邵雍认为这个顺序就是宇宙生成的本来面貌。方圆图中六十四卦的排列，正是把这八个卦两两叠加，按先天序铺开。'},
+      {type:'choice',tag:'选择题',question:'先天卦序中排第一的是？',options:['坤','乾','离','震'],correct:1}
+    ]
+  },
+  {
+    id:42,title:'梅花易数·起卦',icon:'起卦',
+    steps:[
+      {type:'teach',symbol:'梅花易数',text:'<b class="highlight">梅花易数</b>相传为邵雍所创，是一种简便灵活的占卜方法。传说邵雍曾在梅花树下看到麻雀争枝，据此起卦预言，故称"梅花易数"。它的特点是不需要蓍草、不需要铜钱，用<b class="highlight">任意数字、时间、方位</b>都能起卦。核心思想：万物皆有数，数中含卦象。'},
+      {type:'choice',tag:'选择题',question:'梅花易数相传为谁所创？',options:['周文王','邵雍','孔子','京房'],correct:1},
+      {type:'teach',symbol:'数字起卦法',text:'<b class="highlight">数字起卦</b>最常用：取两个数字，第一个数除以8取余数为上卦，第二个数除以8取余数为下卦（余0当8）。两数之和除以6取余数为动爻（余0当6）。例如数字3和5：3÷8余3→离为上卦，5÷8余5→巽为下卦，得<b class="highlight">火风鼎卦</b>。再算动爻(3+5)÷6余2→二爻动。万物皆数，数起则卦成。'},
+      {type:'truefalse',tag:'判断题',question:'梅花易数可以用任意数字来起卦。',correct:true},
+      {type:'choice',tag:'选择题',question:'数字起卦时，第一个数用来确定什么？',options:['上卦','下卦','动爻','卦名'],correct:0}
+    ]
+  },
+  {
+    id:43,title:'梅花易数·体用断卦',icon:'体用',
+    steps:[
+      {type:'teach',symbol:'体 与 用',text:'梅花易数断卦的核心是<b class="highlight">体用关系</b>。六爻卦中，没有动爻的卦为<b class="highlight">体卦</b>（代表自己），有动爻的卦为<b class="highlight">用卦</b>（代表所问之事）。体卦是主体，用卦是客体。断卦看体用之间的<b class="highlight">五行生克</b>：用生体→吉，用克体→凶，体生用→耗费，体克用→得利，体用比和→顺。'},
+      {type:'choice',tag:'选择题',question:'梅花易数中，没有动爻的卦叫什么？',options:['用卦','体卦','主卦','变卦'],correct:1},
+      {type:'truefalse',tag:'判断题',question:'"用生体"是吉利的征兆。',correct:true},
+      {type:'teach',symbol:'五行生克',text:'体用断卦要结合<b class="highlight">五行</b>：乾兑属金，震巽属木，坎属水，离属火，坤艮属土。断卦步骤：①分体用②看五行③判生克④观互卦（中间四爻组成的卦，看过程）⑤看变卦（动爻变后的卦，看结果）。邵雍的智慧在于：不拘泥于卦辞爻辞，而是以五行生克的动态关系来判断事态走向。'},
+      {type:'choice',tag:'第4题',question:'梅花易数断卦时，"体克用"意味着什么？',options:['得利','耗费','吉利','凶险'],correct:0}
+    ]
+  },
+  {
+    id:44,title:'先天之门·总测验',icon:'总测',
+    steps:[
+      {type:'choice',tag:'第1题',question:'邵雍的谥号是？',options:['濂溪','康节','横渠','明道'],correct:1},
+      {type:'choice',tag:'第2题',question:'先天六十四卦方圆图中，方图代表什么？',options:['时间运行','空间方位','五行生克','卦爻变化'],correct:1},
+      {type:'truefalse',tag:'第3题',question:'梅花易数可以用数字起卦，也可以用时间起卦。',correct:true},
+      {type:'choice',tag:'第4题',question:'先天卦序口诀"乾一兑二"后面是什么？',options:['离三震四','坤七艮八','坎六巽五','震四巽五'],correct:0},
+      {type:'choice',tag:'第5题',question:'学完先天学入门，以下哪个说法最准确？',options:['先天学以数为本，推演万物变化','先天学只研究八卦不涉及六十四卦','先天学完全否定后天八卦的价值','先天学就是算命术的一种'],correct:0}
+    ]
+  },
+  {
+  id:45,title:'错卦：阴阳全翻',icon:'错',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾',lines:[1, 1, 1],sub:''},{label:'坤',lines:[0, 0, 0],sub:''}],text:'<b class="highlight">错卦</b>，又称旁通卦，将一卦的每一爻阴阳互换所得的新卦。乾卦六爻皆阳，全翻则为坤卦六爻皆阴——乾与坤互为错卦。错卦揭示的是<b class="highlight">事物的对立面</b>，当你处于乾的刚健之境，不妨看看坤的柔顺之象，往往能照见盲区。'},
+    {type:'teach',trigrams:[{label:'坎',lines:[0, 1, 0],sub:''},{label:'离',lines:[1, 0, 1],sub:''}],text:'再看坎与离。坎中满（二阴夹一阳），离中虚（二阳夹一阴）。坎为水为险，离为火为明，二者互为错卦，说明<b class="highlight">险难与光明互为镜像</b>。同理，震与巽、艮与兑也互为错卦。八经卦两两相错，恰成四对。'},
+    {type:'choice',tag:'选择题',question:'泰卦（坤上乾下）的错卦是哪一个？',options:['否卦（乾上坤下）','既济卦','未济卦','随卦'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'错卦和综卦是同一个概念。',correct:false},
+  ]
+  },
+  {
+  id:46,title:'综卦：倒置看新角度',icon:'综',
+  steps:[
+    {type:'teach',trigrams:[{label:'坎·上',lines:[0, 1, 0],sub:'水'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'<b class="highlight">综卦</b>，是把一卦整个倒过来看所得的新卦。将屯卦（坎上震下）倒置，原来的初爻变成上爻，上爻变成初爻——屯的综卦就是蒙卦。综卦揭示的是<b class="highlight">换个角度看到的另一面</b>，同一件事翻转过来，意义可能截然不同。'},
+    {type:'teach',trigrams:[{label:'坎·上',lines:[0, 1, 0],sub:'水'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'再看需卦（坎上乾下），倒过来就是讼卦（乾上坎下）。需讲等待，讼讲争端——等待的背面就是争端。六十四卦中，除乾、坤、坎、离、大过、小过、中孚、颐这八个卦综卦为自身外，其余五十六卦两两互综，共二十八对。'},
+    {type:'choice',tag:'选择题',question:'六十四卦中有几个卦的综卦是自身？',options:['四个','六个','八个','十个'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'屯卦与蒙卦互为综卦。',correct:true},
+  ]
+  },
+  {
+  id:47,title:'互卦：取中四爻看过程',icon:'互',
+  steps:[
+    {type:'teach',symbol:'互卦',text:'<b class="highlight">互卦</b>，是把一卦的第二、三、四爻组成下卦，第三、四、五爻组成上卦，得到的新卦。它取的是原卦的中间四爻，去掉初爻和上爻——初爻是事之始，上爻是事之终，去掉首尾，看的就是<b class="highlight">事态发展的中间过程</b>。'},
+    {type:'teach',symbol:'互卦实例',text:'以泰卦为例：坤上乾下，六爻为阳阳阳阴阴阴。二三四爻为阳阳阴=兑，三四五爻为阳阴阴=震。所以泰卦的互卦是<b class="highlight">雷泽归妹</b>。泰讲通泰，但过程中暗含归妹之象——通泰之中有归妹之偏，提醒人通泰之时不可忘乎所以。'},
+    {type:'choice',tag:'选择题',question:'互卦取的是原卦的哪几爻？',options:['初三五爻','二三四爻和三四五爻','初二爻和五六爻','全卦六爻'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'互卦反映的是事态发展的中间过程。',correct:true},
+  ]
+  },
+  {
+  id:48,title:'变卦：一爻动则全局变',icon:'变',
+  steps:[
+    {type:'teach',symbol:'变卦',text:'<b class="highlight">变卦</b>，是一卦中某爻发生阴阳变化后产生的新卦。占卜时动爻是变化的核心——动爻变后，原卦（本卦）就变成了新卦（之卦）。本卦看<b class="highlight">当下的状态</b>，变卦看<b class="highlight">未来的走向</b>。一爻之变，可能让全局格局完全反转。'},
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'以乾卦为例：初九为动爻，阳变阴，则下卦由乾变巽，全卦变为<b class="highlight">天风姤</b>——纯阳之下生出一线阴，预示着变局的开端。若九五为动爻，则上卦由乾变离，全卦变为<b class="highlight">火天大有</b>——飞龙在天而变，从纯刚走向明照万方。'},
+    {type:'choice',tag:'选择题',question:'乾卦九五动（上卦中爻变），变卦是？',options:['天风姤','火天大有','泽天夬','天地否'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'本卦看当下状态，变卦看未来走向。',correct:true},
+  ]
+  },
+  {
+  id:49,title:'卦变综合测验',icon:'测',
+  steps:[
+    {type:'choice',tag:'第1题',question:'坎卦与离卦的关系属于哪种卦变？',options:['综卦','错卦','互卦','变卦'],correct:1},
+    {type:'truefalse',tag:'第2题',question:'屯卦与蒙卦互为综卦。',correct:true},
+    {type:'choice',tag:'第3题',question:'互卦反映的是事物的哪个层面？',options:['表面现象','对立面','内在过程','未来走向'],correct:2},
+    {type:'choice',tag:'第4题',question:'以下哪组卦互为错卦？',options:['屯与蒙','需与讼','震与巽','师与比'],correct:2},
+  ]
+  },
+  {
+  id:50,title:'家人卦与睽卦',icon:'家睽',
+  steps:[
+    {type:'teach',trigrams:[{label:'巽·上',lines:[1, 1, 0],sub:'风'},{label:'离·下',lines:[1, 0, 1],sub:'火'}],text:'<b class="highlight">家人卦</b>（风火家人）：风在火上，火燃而风助，如家中各司其职、内外有序。卦辞"利女贞"——家道之正在于女主内之德。<b class="highlight">睽卦</b>（火泽睽）：火向上燃，泽向下润，二者背道而驰，故为睽（乖违）。卦辞"小事吉"——大事不可为，小事尚可。家人讲聚，睽讲散，一体两面。'},
+    {type:'choice',tag:'选择题',question:'家人卦的卦辞是？',options:['利女贞','利男贞','元亨利贞','小事吉'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'睽卦表示乖违背离之象。',correct:true},
+    {type:'choice',tag:'选择题',question:'家人卦与睽卦的关系是？',options:['互为错卦','互为综卦','同一卦','无关系'],correct:1},
+  ]
+  },
+  {
+  id:51,title:'蹇卦与解卦',icon:'蹇解',
+  steps:[
+    {type:'teach',trigrams:[{label:'坎·上',lines:[0, 1, 0],sub:'水'},{label:'艮·下',lines:[1, 0, 0],sub:'山'}],text:'<b class="highlight">蹇卦</b>（水山蹇）：山高水险，前路艰难。卦辞"利西南，不利东北，利见大人"——西南平地可行，东北山险不可往，逢困难需寻贵人相助。<b class="highlight">解卦</b>（雷水解）：雷震而雨降，险难得以解除。卦辞"利西南"——解难之后宜走平坦之路。蹇讲遇险而止，解讲险难消解，先蹇后解。'},
+    {type:'choice',tag:'选择题',question:'蹇卦的卦辞说"利"哪个方位？',options:['东北','西南','东南','西北'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'解卦表示险难得以解除。',correct:true},
+    {type:'choice',tag:'选择题',question:'蹇卦与解卦的关系是？',options:['互为错卦','互为综卦','无关系','同一卦'],correct:1},
+  ]
+  },
+  {
+  id:52,title:'损卦与益卦',icon:'损益',
+  steps:[
+    {type:'teach',trigrams:[{label:'艮·上',lines:[1, 0, 0],sub:'山'},{label:'兑·下',lines:[0, 1, 1],sub:'泽'}],text:'<b class="highlight">损卦</b>（山泽损）：损下益上，山下有泽，泽自损以益山。卦辞"有孚，元吉"——损中有诚则吉。<b class="highlight">益卦</b>（风雷益）：损上益下，风在雷上，天施于地。卦辞"利有攸往，利涉大川"——益道可行可进。损非纯损，益非纯益，<b class="highlight">损中有益，益中有损</b>，这是周易的辩证智慧。'},
+    {type:'choice',tag:'选择题',question:'损卦的含义是？',options:['损下益上','损上益下','纯损无益','损人利己'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'益卦卦辞说"利涉大川"，表示益道可以进取。',correct:true},
+    {type:'choice',tag:'选择题',question:'损卦与益卦的关系是？',options:['互为错卦','互为综卦','互为互卦','无关系'],correct:1},
+  ]
+  },
+  {
+  id:53,title:'夬卦与姤卦',icon:'夬姤',
+  steps:[
+    {type:'teach',trigrams:[{label:'兑·上',lines:[0, 1, 1],sub:'泽'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">夬卦</b>（泽天夬）：五阳决一阴，阳气盛极而决去最后残余之阴。卦辞"扬于王庭"——果决之举当光明正大。<b class="highlight">姤卦</b>（天风姤）：一阴生于五阳之下，不期而遇。卦辞"女壮，勿用取女"——此阴虽微却壮，不可轻视。夬是阳之终，姤是阴之始，<b class="highlight">决去与相遇</b>，一刚一柔。'},
+    {type:'choice',tag:'选择题',question:'夬卦的结构是？',options:['五阴决一阳','五阳决一阴','六阳无阴','三阳三阴'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'姤卦表示一阴生于五阳之下，不期而遇。',correct:true},
+    {type:'choice',tag:'选择题',question:'夬卦与姤卦互为？',options:['错卦','综卦','互卦','变卦'],correct:1},
+  ]
+  },
+  {
+  id:54,title:'萃卦与升卦',icon:'萃升',
+  steps:[
+    {type:'teach',trigrams:[{label:'兑·上',lines:[0, 1, 1],sub:'泽'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'<b class="highlight">萃卦</b>（泽地萃）：泽润大地，万物萃聚。卦辞"王假有庙"——聚之时当以诚敬聚人心。<b class="highlight">升卦</b>（地风升）：地中有风，木自地中生长而上。卦辞"元亨，用见大人"——升进之时需得贵人相助。萃讲聚，升讲进，<b class="highlight">聚而后能升</b>，先聚力量再求上进。'},
+    {type:'choice',tag:'选择题',question:'萃卦的核心含义是？',options:['分散','萃聚','决断','停止'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'升卦象征木从地中生长而上。',correct:true},
+    {type:'choice',tag:'选择题',question:'萃卦与升卦互为？',options:['错卦','综卦','互卦','同一卦'],correct:1},
+  ]
+  },
+  {
+  id:55,title:'家人卦精读',icon:'家人',
+  steps:[
+    {type:'teach',trigrams:[{label:'巽·上',lines:[1, 1, 0],sub:'风'},{label:'离·下',lines:[1, 0, 1],sub:'火'}],text:'<b class="highlight">家人卦</b>（风火家人）：风在火上，内明外柔。六二居内卦之中，为一家之主妇之象；九五居外卦之中，为一家之长之象。二五相应，内外各正。卦辞"利女贞"——家道之正在于女贞，女正则家正，家正则天下定。家人卦的核心：<b class="highlight">各司其职，内外有序</b>。'},
+    {type:'choice',tag:'选择题',question:'家人卦"利女贞"的深层含义是？',options:['女子占卜吉利','家道之正在于女主内之德','只有女性能占此卦','女子主外'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'家人卦的二五相应象征内外各正。',correct:true},
+    {type:'choice',tag:'选择题',question:'家人卦的风火之象象征什么？',options:['内明外柔','外刚内柔','上下交争','阴阳背离'],correct:0},
+  ]
+  },
+  {
+  id:56,title:'蹇卦精读',icon:'蹇',
+  steps:[
+    {type:'teach',trigrams:[{label:'坎·上',lines:[0, 1, 0],sub:'水'},{label:'艮·下',lines:[1, 0, 0],sub:'山'}],text:'<b class="highlight">蹇卦</b>（水山蹇）：山在前水在后，前有险阻。卦辞"利西南，不利东北，利见大人，贞吉"——西南为平地，东北为山险，遇蹇难时宜就平不宜就险，宜求贤人相助。<b class="highlight">见险而止</b>是蹇卦的智慧：不是不前进，而是看清形势，择路而行。蹇难之中往往蕴含转机。'},
+    {type:'choice',tag:'选择题',question:'蹇卦"利西南不利东北"的原因是？',options:['西南平地可行，东北山险','西南温暖东北寒冷','西方向吉东方向凶','无特殊原因'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'蹇卦的核心智慧是见险而止，择路而行。',correct:true},
+    {type:'choice',tag:'选择题',question:'蹇卦卦辞中"利见大人"的含义是？',options:['逢蹇难时需寻贵人相助','只有大人才吉利','大人也会遇到困难','大人能避免蹇难'],correct:0},
+  ]
+  },
+  {
+  id:57,title:'损益之道',icon:'损益',
+  steps:[
+    {type:'teach',trigrams:[{label:'艮·上',lines:[1, 0, 0],sub:'山'},{label:'兑·下',lines:[0, 1, 1],sub:'泽'}],text:'<b class="highlight">损卦</b>损下益上，看似在损，实则损中有益。卦辞"二簋可用享"——祭品虽简，心诚则灵。<b class="highlight">益卦</b>损上益下，看似在益，实则益中藏损。满招损谦受益，天道如此。损益之道的关键不在于损益本身，而在于<b class="highlight">何时损、何时益、损什么、益什么</b>。得道者损己利人，反而得益；失道者损人利己，终必招损。'},
+    {type:'choice',tag:'选择题',question:'损卦"二簋可用享"说明什么？',options:['祭品越丰越好','心诚比物丰更重要','不宜祭祀','只有两簋才能祭祀'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'损中有益，益中有损，是周易的辩证智慧。',correct:true},
+    {type:'choice',tag:'选择题',question:'"满招损谦受益"体现了哪两卦的智慧？',options:['乾与坤','损与益','泰与否','既济与未济'],correct:1},
+  ]
+  },
+  {
+  id:58,title:'夬卦决断',icon:'夬',
+  steps:[
+    {type:'teach',trigrams:[{label:'兑·上',lines:[0, 1, 1],sub:'泽'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">夬卦</b>（泽天夬）：五阳在下，一阴在上，阳盛至极即将决去最后之阴。卦辞"扬于王庭，孚号有厉"——决断之事当光明正大地进行于王庭之上，但同时要有诚信的告诫，因为<b class="highlight">决断之中含着危险</b>。上六一阴将尽，犹作最后挣扎，所以决断不可掉以轻心。'},
+    {type:'choice',tag:'选择题',question:'夬卦"扬于王庭"的含义是？',options:['秘密决断','光明正大地决断','在王庭犹豫不决','不宜决断'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'夬卦五阳决一阴，表示决断之中没有危险。',correct:false},
+    {type:'choice',tag:'选择题',question:'夬卦上六爻的位置说明什么？',options:['阴气已尽','一阴将尽犹作挣扎','阳气最弱','阴阳平衡'],correct:1},
+  ]
+  },
+  {
+  id:59,title:'萃升之机',icon:'萃升',
+  steps:[
+    {type:'teach',trigrams:[{label:'兑·上',lines:[0, 1, 1],sub:'泽'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'<b class="highlight">萃卦</b>（泽地萃）：水润大地，万物萃聚。卦辞"王假有庙，利见大人"——萃聚之时当以诚敬之心聚人，以贤人之力成事。<b class="highlight">升卦</b>（地风升）：地中有木，木自地中升起。卦辞"南征吉"——向南进取则吉。萃与升的内在逻辑：<b class="highlight">先萃聚力量，再顺势升进</b>。无萃则无升，无聚则无进。凡事欲进，先要蓄势。'},
+    {type:'choice',tag:'选择题',question:'萃卦与升卦的内在逻辑是？',options:['先升后萃','先萃聚再升进','同时进行','互不相干'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'升卦象征木从地中生长而上。',correct:true},
+    {type:'choice',tag:'选择题',question:'萃卦"王假有庙"强调什么？',options:['武力征服','诚敬聚人','祭祀仪式','建筑庙宇'],correct:1},
+  ]
+  },
+  {
+  id:60,title:'困卦与井卦',icon:'困井',
+  steps:[
+    {type:'teach',trigrams:[{label:'兑·上',lines:[0, 1, 1],sub:'泽'},{label:'坎·下',lines:[0, 1, 0],sub:'水'}],text:'<b class="highlight">困卦</b>（泽水困）：泽本润物，水在泽下，泽中无水，困乏之象。卦辞"亨，贞，大人吉"——困中守正则亨，惟大人能处困而不失其道。<b class="highlight">井卦</b>（水风井）：水在木上，木为井壁，水为井泉。卦辞"改邑不改井"——村邑可迁，井不可移，喻<b class="highlight">常道不变</b>。困讲困顿，井讲恒养，困时当如井——守常不变，养人不竭。'},
+    {type:'choice',tag:'选择题',question:'困卦"大人吉"的含义是？',options:['只有大人能占困卦','大人处困守正则吉','大人不会困','困时不宜见大人'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'井卦"改邑不改井"喻常道不变。',correct:true},
+    {type:'choice',tag:'选择题',question:'困卦与井卦互为？',options:['错卦','综卦','互卦','同一卦'],correct:1},
+  ]
+  },
+  {
+  id:61,title:'革卦与鼎卦',icon:'革鼎',
+  steps:[
+    {type:'teach',trigrams:[{label:'兑·上',lines:[0, 1, 1],sub:'泽'},{label:'离·下',lines:[1, 0, 1],sub:'火'}],text:'<b class="highlight">革卦</b>（泽火革）：泽中有火，火燃水干，水灭火熄——变革之象。卦辞"己日乃孚"——变革需等到时机成熟才能取信于人。<b class="highlight">鼎卦</b>（火风鼎）：火在木上，木为柴薪，鼎以烹煮。卦辞"元吉，亨"——鼎新之事大吉。革是<b class="highlight">去旧</b>，鼎是<b class="highlight">鼎新</b>，革故鼎新，破而后立。'},
+    {type:'choice',tag:'选择题',question:'革卦"己日乃孚"的意思是？',options:['变革立即取信于人','变革需等时机成熟才能取信','不宜变革','只有己日才能变革'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'革故鼎新是指革去旧物、建立新制。',correct:true},
+    {type:'choice',tag:'选择题',question:'革卦与鼎卦互为？',options:['错卦','综卦','互卦','无关系'],correct:1},
+  ]
+  },
+  {
+  id:62,title:'震卦与艮卦',icon:'震艮',
+  steps:[
+    {type:'teach',trigrams:[{label:'震·上',lines:[0, 0, 1],sub:'雷'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'<b class="highlight">震卦</b>（震为雷）：上下皆雷，雷声震动。卦辞"震来虩虩，笑言哑哑"——雷来时恐惧，雷过后谈笑，先惧后安。<b class="highlight">艮卦</b>（艮为山）：上下皆山，山巍然不动。卦辞"艮其背，不获其身"——止于背则不见其身，止得其所则忘我。震为动，艮为止，<b class="highlight">动静相宜</b>才是正道。该动时如雷震动，该止时如山不动。'},
+    {type:'choice',tag:'选择题',question:'震卦卦辞"震来虩虩，笑言哑哑"说明什么？',options:['雷来恐惧雷后安','一直恐惧不安','一直谈笑','雷来时笑雷后哭'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'艮卦的核心是"止"——止得其所。',correct:true},
+    {type:'choice',tag:'选择题',question:'震为动艮为止，说明的智慧是？',options:['只动不止','只止不动','动静相宜','先动后止'],correct:2},
+  ]
+  },
+  {
+  id:63,title:'渐卦与归妹',icon:'渐归',
+  steps:[
+    {type:'teach',trigrams:[{label:'巽·上',lines:[1, 1, 0],sub:'风'},{label:'艮·下',lines:[1, 0, 0],sub:'山'}],text:'<b class="highlight">渐卦</b>（风山渐）：山上有木，木在山上渐渐生长。卦辞"女归吉，利贞"——如女子出嫁按礼渐进则吉。<b class="highlight">归妹卦</b>（雷泽归妹）：雷在泽上，震动泽随。卦辞"征凶，无攸利"——情之所归而非礼之正，强行则凶。渐讲<b class="highlight">循序渐进</b>之正，归妹讲<b class="highlight">情之所归</b>之偏，正与偏的对比，正是周易教人择正道而行。'},
+    {type:'choice',tag:'选择题',question:'渐卦"女归吉"的含义是？',options:['女子回家吉利','按礼渐进则吉','女子不宜外出','归卦与吉卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'归妹卦卦辞"征凶"说明情之所归非礼之正。',correct:true},
+    {type:'choice',tag:'选择题',question:'渐卦与归妹卦的核心对比是？',options:['快与慢','正与偏','大与小','吉与凶'],correct:1},
+  ]
+  },
+  {
+  id:64,title:'困卦精读',icon:'困',
+  steps:[
+    {type:'teach',trigrams:[{label:'兑·上',lines:[0, 1, 1],sub:'泽'},{label:'坎·下',lines:[0, 1, 0],sub:'水'}],text:'<b class="highlight">困卦</b>（泽水困）：泽中无水，困乏之极。卦辞"亨，贞，大人吉，无咎。有言不信"——困中能亨，惟守正之大人可致。困时"有言不信"——说也没人信，不如<b class="highlight">沉默修德</b>。君子处困之道：外困而内不困，身困而道不困。如孔子困于陈蔡仍弦歌不辍，此乃大人之困。'},
+    {type:'choice',tag:'选择题',question:'困卦"有言不信"的智慧是？',options:['大声辩解','沉默修德','放弃沟通','强词夺理'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'困卦认为大人处困可以致亨。',correct:true},
+    {type:'choice',tag:'选择题',question:'"君子处困之道"是？',options:['外困内也困','身困道也困','外困内不困，身困道不困','逃避困境'],correct:2},
+  ]
+  },
+  {
+  id:65,title:'革鼎之变',icon:'革鼎',
+  steps:[
+    {type:'teach',trigrams:[{label:'兑·上',lines:[0, 1, 1],sub:'泽'},{label:'离·下',lines:[1, 0, 1],sub:'火'}],text:'<b class="highlight">革卦</b>去旧，<b class="highlight">鼎卦</b>鼎新。革是水火相息——旧秩序在冲突中瓦解；鼎是木火相生——新秩序在融合中建立。革卦"己日乃孚"强调时机，鼎卦"元吉亨"强调结果。<b class="highlight">革故鼎新</b>不是简单的推翻重来，而是先破后立：革去不合时宜的旧制，鼎立顺应时代的新法。破而不立则乱，立而不破则滞。'},
+    {type:'choice',tag:'选择题',question:'革卦与鼎卦的关系是？',options:['革是立鼎是破','革是破鼎是立','两者都是破','两者都是立'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'革故鼎新的关键是先破后立，破而不立则乱。',correct:true},
+    {type:'choice',tag:'选择题',question:'革卦"己日乃孚"强调什么？',options:['变革要快','变革要等时机','不宜变革','变革不需取信'],correct:1},
+  ]
+  },
+  {
+  id:66,title:'震艮之道',icon:'震艮',
+  steps:[
+    {type:'teach',trigrams:[{label:'震·上',lines:[0, 0, 1],sub:'雷'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'<b class="highlight">震</b>为雷为动，<b class="highlight">艮</b>为山为止。震卦"震惊百里，不丧匕鬯"——雷虽惊天动地，祭祀之人手中匕鬯不失，此为<b class="highlight">动中能定</b>。艮卦"艮其背，不获其身，行其庭不见其人"——止于背则忘身，行于庭则忘人，此为<b class="highlight">止中能静</b>。震艮之道：动时如雷霆万钧，止时如山岳不动。动静不失其时，其道光明。'},
+    {type:'choice',tag:'选择题',question:'震卦"不丧匕鬯"说明什么品质？',options:['动中能定','止中能静','胆小怕事','无所谓'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'艮卦"艮其背"的境界是止得其所则忘我。',correct:true},
+    {type:'choice',tag:'选择题',question:'震艮之道的核心是？',options:['只动不止','只止不动','动静不失其时','先止后动'],correct:2},
+  ]
+  },
+  {
+  id:67,title:'渐归之道',icon:'渐归',
+  steps:[
+    {type:'teach',trigrams:[{label:'巽·上',lines:[1, 1, 0],sub:'风'},{label:'艮·下',lines:[1, 0, 0],sub:'山'}],text:'<b class="highlight">渐卦</b>（风山渐）：山上有木，木在山上渐渐生长，日积月累终成大树。卦辞"女归吉"——如嫁娶之礼，循序渐进则吉。<b class="highlight">归妹卦</b>（雷泽归妹）：情之所归，非礼之正。卦辞"征凶"——急于求成则凶。渐是<b class="highlight">正而渐</b>，归妹是<b class="highlight">急而偏</b>。凡事欲速则不达，循礼渐进方能致远。渐归之道教人：择正道、守节奏、不急于求成。'},
+    {type:'choice',tag:'选择题',question:'渐卦以"山上有木"为象，说明什么？',options:['木会折断','渐渐生长积累','木不长','山比木高'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'归妹卦"征凶"说明急于求成则凶。',correct:true},
+    {type:'choice',tag:'选择题',question:'渐归之道教人的核心是？',options:['择正道守节奏不急','快速行动','等待观望','放弃追求'],correct:0},
+  ]
+  },
+  {
+  id:68,title:'丰卦与旅卦',icon:'丰旅',
+  steps:[
+    {type:'teach',trigrams:[{label:'震·上',lines:[0, 0, 1],sub:'雷'},{label:'离·下',lines:[1, 0, 1],sub:'火'}],text:'<b class="highlight">丰卦</b>（雷火丰）：雷电交加，声势浩大，丰盛之极。卦辞"勿忧，宜日中"——丰盛之时不必忧，但宜如日中天时保持光明。<b class="highlight">旅卦</b>（火山旅）：山上有火，火行不停，如旅人漂泊。卦辞"小亨，旅贞吉"——旅居之时小事可通，守正则吉。丰讲<b class="highlight">盛极之态</b>，旅讲<b class="highlight">漂泊之境</b>，盛与衰、定与漂，互为因果。'},
+    {type:'choice',tag:'选择题',question:'丰卦"宜日中"的含义是？',options:['中午做事','保持光明鼎盛','不宜日中','日中则凶'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'旅卦描述的是漂泊旅居之境。',correct:true},
+    {type:'choice',tag:'选择题',question:'丰卦与旅卦互为？',options:['错卦','综卦','互卦','同一卦'],correct:1},
+  ]
+  },
+  {
+  id:69,title:'巽卦与兑卦',icon:'巽兑',
+  steps:[
+    {type:'teach',trigrams:[{label:'巽·上',lines:[1, 1, 0],sub:'风'},{label:'巽·下',lines:[1, 1, 0],sub:'风'}],text:'<b class="highlight">巽卦</b>（巽为风）：上下皆风，风无孔不入。卦辞"小亨，利有攸往"——柔顺而入，小有所通。<b class="highlight">兑卦</b>（兑为泽）：上下皆泽，泽润万物。卦辞"亨，利贞"——喜悦而亨通。巽为<b class="highlight">顺入</b>，兑为<b class="highlight">喜悦</b>。顺而能入则事可达，悦而能通则人必聚。一柔一刚，一入一说，皆以柔道行事。'},
+    {type:'choice',tag:'选择题',question:'巽卦的核心特质是？',options:['刚健','顺入','喜悦','停止'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'兑卦的核心特质是喜悦。',correct:true},
+    {type:'choice',tag:'选择题',question:'巽卦与兑卦的共同点是？',options:['都以柔道行事','都是刚卦','都表示停止','都表示危险'],correct:0},
+  ]
+  },
+  {
+  id:70,title:'涣卦与节卦',icon:'涣节',
+  steps:[
+    {type:'teach',trigrams:[{label:'巽·上',lines:[1, 1, 0],sub:'风'},{label:'坎·下',lines:[0, 1, 0],sub:'水'}],text:'<b class="highlight">涣卦</b>（风水涣）：风行水上，水波涣散。卦辞"王假有庙"——涣散之时当以诚敬聚人心。<b class="highlight">节卦</b>（水泽节）：水在泽上，泽有节制水不泛滥。卦辞"亨。苦节，不可贞"——适度节制则亨，苦节则不可常守。涣讲<b class="highlight">散</b>，节讲<b class="highlight">收</b>。当散则散，当节则节，散收有度。涣而不收则泛滥，节而不散则壅塞。'},
+    {type:'choice',tag:'选择题',question:'涣卦的核心含义是？',options:['聚拢','涣散','节制','停止'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'节卦"苦节不可贞"说明过度节制不可长久。',correct:true},
+    {type:'choice',tag:'选择题',question:'涣卦与节卦互为？',options:['错卦','综卦','互卦','同一卦'],correct:1},
+  ]
+  },
+  {
+  id:71,title:'中孚与小过',icon:'孚过',
+  steps:[
+    {type:'teach',trigrams:[{label:'巽·上',lines:[1, 1, 0],sub:'风'},{label:'兑·下',lines:[0, 1, 1],sub:'泽'}],text:'<b class="highlight">中孚卦</b>（风泽中孚）：上下两阳、中虚两阴，如卵中有黄，信在其中。卦辞"豚鱼吉，利涉大川"——诚信感及豚鱼则吉。<b class="highlight">小过卦</b>（雷山小过）：上下两阴、中实两阳，如鸟之身。卦辞"可小事，不可大事"——小有过越尚可，大事不可。中孚讲<b class="highlight">诚信</b>，小过讲<b class="highlight">小过</b>。以诚信为本，以小过为戒。'},
+    {type:'choice',tag:'选择题',question:'中孚卦的卦体特征是？',options:['上下两阴，中实四阳','上下两阳，中虚两阴','六爻皆阳','六爻皆阴'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'小过卦"可小事不可大事"说明小过尚可大事不可。',correct:true},
+    {type:'choice',tag:'选择题',question:'中孚卦与小过卦的关系是？',options:['错卦','综卦','互卦','同一卦'],correct:0},
+  ]
+  },
+  {
+  id:72,title:'卦序之理',icon:'序',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'周文王演六十四卦，并非随意排列，而是遵循<b class="highlight">非错即综</b>的严密规律。六十四卦两两成对，共三十二组。每对卦的关系只有两种：要么是<b class="highlight">错卦</b>（阴阳全变），要么是<b class="highlight">综卦</b>（整体倒置）。如乾卦与坤卦，六爻阴阳全反，即为错卦。这种排列暗含事物对立转化的深层智慧。'},
+    {type:'teach',trigrams:[{label:'坎·上',lines:[0, 1, 0],sub:'水'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'再看屯卦与蒙卦。屯卦下震上坎，将六爻<b class="highlight">整体倒置</b>后，下卦变为艮，上卦变为坎，恰好成为蒙卦——这便是<b class="highlight">综卦</b>关系。综卦意味着同一事物换一个角度看，面貌虽变，本质相通。六十四卦中大部分卦对都是综卦，少数为错卦，合称“非错即综”。'},
+    {type:'choice',tag:'选择题',question:'乾卦与坤卦在文王卦序中属于哪种关系？',options:['综卦，上下倒置','错卦，阴阳全变','既非错卦也非综卦','同卦关系'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'文王卦序中六十四卦两两成对，每对卦非错即综，没有例外。',correct:true},
+  ]
+  },
+  {
+  id:73,title:'序卦传·上',icon:'序',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'《序卦传》专门解释六十四卦排列的内在逻辑。上经从乾坤始，至坎离终，讲述的是<b class="highlight">天地万物生成演化</b>的自然之道。开篇云：“有天地，然后万物生焉。盈天地之间者唯万物，故受之以屯。”天地既立，万物始生，故乾坤之后继以屯卦。屯者，万物初生之艰难也。'},
+    {type:'teach',symbol:'坎·离',text:'上经的收尾以坎离为终。序卦传云：“物不可以终过，故受之以坎。坎者陷也。陷必有所丽，故受之以离。离者丽也。”坎为险陷，离为附丽，<b class="highlight">险极必有所附</b>，终归于光明。上经三十卦，从天地开创到坎离交错，完成了自然界运行法则的完整叙述。'},
+    {type:'choice',tag:'选择题',question:'序卦传上经从哪两卦开始，到哪两卦结束？',options:['从屯蒙开始，到坎离结束','从乾坤开始，到坎离结束','从乾坤开始，到既济未济结束','从咸恒开始，到坎离结束'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'序卦传认为乾坤之后接以屯卦，是因为“有天地然后万物生”，屯代表万物初生。',correct:true},
+  ]
+  },
+  {
+  id:74,title:'序卦传·下',icon:'序',
+  steps:[
+    {type:'teach',trigrams:[{label:'兑·上',lines:[0, 1, 1],sub:'泽'},{label:'艮·下',lines:[1, 0, 0],sub:'山'}],text:'序卦传下经从咸恒始，至既济未济终，讲述的是<b class="highlight">人伦社会的发展</b>。开篇云：“有天地，然后有万物；有万物，然后有男女；有男女，然后有夫妇。”咸卦象征少男少女相感，即夫妇之始。夫妇之道不可不久，故继之以恒。从男女相感到家庭恒久，下经以人伦为线索展开。'},
+    {type:'teach',symbol:'既·未',text:'下经的结尾极为精妙。“有过物者必济，故受之以既济。物不可穷也，故受之以未济终焉。”既济是完成，未济是未完成。<b class="highlight">以未济收尾</b>，意味着事物永远不会真正终结，旧的终点即新的起点。六十四卦不以“完成”作结，而以“未完成”收束，道出了宇宙生生不息的深刻哲理。'},
+    {type:'choice',tag:'选择题',question:'六十四卦以未济卦作为最后一卦，其深层含义是什么？',options:['表示事物已彻底完结','表示事物发展无止境，终结即新的开始','表示占卜无效','表示未济卦最吉利'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'序卦传下经以咸恒始，讲述的是自然界万物的生成演化。',correct:false},
+  ]
+  },
+  {
+  id:75,title:'卦序中的对与反',icon:'反',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'错卦又称<b class="highlight">“对”</b>，指两卦的每一爻阴阳全变。如泰卦下乾上坤，六爻全变后即成否卦——泰与否互为错卦。泰象征通泰，否象征闭塞，通与塞恰恰是阴阳全反的镜像。错卦揭示了事物的<b class="highlight">对立面</b>：任何状态走到极处，其反面便隐含其中。'},
+    {type:'teach',symbol:'反',text:'综卦又称<b class="highlight">“反”</b>，指将一卦上下倒置后得到另一卦。如需卦倒置即成讼卦，师卦倒置即成比卦。综卦揭示了事物的<b class="highlight">多面性</b>：立场转换，同一事物呈现不同面貌。值得注意的是，乾、坤、坎、离等八卦倒置后不变，称为“自综卦”，它们只能以错卦配对。这就是“非错即综”的完整密码。'},
+    {type:'choice',tag:'选择题',question:'泰卦与否卦每一爻阴阳全变，二者互为什么关系？',options:['综卦（反），上下倒置','错卦（对），阴阳全变','自综卦，倒置不变','无对应关系'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'乾坤坎离等八卦倒置后卦象不变，因此它们在卦序中只能以错卦配对。',correct:true},
+  ]
+  },
+  {
+  id:76,title:'卦序的人生隐喻',icon:'喻',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'六十四卦的排列顺序，暗合<b class="highlight">事物发展的完整周期</b>。乾坤为创业之始，屯蒙为蒙昧初开，需讼为等待与纷争，泰否为通达与闭塞的交替，同人大有为合作共赢，谦豫为谦逊与安乐。每一步递进都有其因果逻辑，仿佛一部人生百科全书。'},
+    {type:'teach',trigrams:[{label:'离·上',lines:[1, 0, 1],sub:'火'},{label:'坎·下',lines:[0, 1, 0],sub:'水'}],text:'卦序以既济、未济收尾，意味深长。既济代表<b class="highlight">功成名就</b>，未济则提醒<b class="highlight">事情远未终结</b>。从乾坤创业到既济未济循环，六十四卦完整映射了事物从萌芽、成长、鼎盛到转化的全过程。未济非终局，而是新一轮乾坤的序曲——这正是周易“周而复始”的核心智慧。'},
+    {type:'choice',tag:'选择题',question:'以下哪组卦序排列最能体现从创业到循环的人生隐喻？',options:['既济到未济到乾坤到屯蒙','乾坤到屯蒙到泰否到既济未济','坎离到咸恒到乾坤到未济','未济到既济到否泰到乾坤'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'六十四卦以既济卦收尾，表示一切事物终将圆满完成。',correct:false},
+  ]
+  },
+  {
+  id:77,title:'文王卦序测验',icon:'测',
+  steps:[
+    {type:'teach',symbol:'序',text:'回顾本章要点：文王六十四卦序遵循<b class="highlight">非错即综</b>原则，错卦即“对”（阴阳全变），综卦即“反”（上下倒置）。序卦传上经述天地万物之演化（乾坤到坎离），下经述人伦社会之发展（咸恒到既济未济）。以未济收尾，寓意生生不息、循环不已。'},
+    {type:'choice',tag:'选择题',question:'以下哪一对卦属于错卦关系？',options:['屯与蒙','需与讼','乾与坤','师与比'],correct:2},
+    {type:'choice',tag:'选择题',question:'“有天地，然后有万物；有万物，然后有男女”出自序卦传的哪一部分？',options:['序卦传上经开头','序卦传下经开头','系辞传','说卦传'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'六十四卦中，乾坤、泰否、坎离这几对卦都是错卦关系。',correct:true},
+    {type:'truefalse',tag:'判断题',question:'自综卦（倒置后不变的卦）在卦序中只能以综卦配对。',correct:false},
+  ]
+  },
+  {
+  id:78,title:'六爻位含义',icon:'位',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'一卦六爻，自下而上依次为初、二、三、四、五、上。每爻代表事物发展的不同阶段：<b class="highlight">初爻</b>为事之始，萌芽未显；<b class="highlight">二爻</b>为事之渐，稳步成长；<b class="highlight">五爻</b>为君位，鼎盛尊贵；<b class="highlight">上爻</b>为事之终，盛极而衰。六爻从下到上，描绘了一幅完整的事态演进图。'},
+    {type:'teach',symbol:'凶·惧',text:'系辞传指出：<b class="highlight">“二多誉，四多惧”</b>，二爻居下卦之中多有赞誉，四爻近君之位多怀恐惧；<b class="highlight">“三多凶，五多功”</b>，三爻处于上下卦之交，进退两难多凶险，五爻居尊位多建功业。三与四是最不安定的位置，因为它们恰好处于上下卦的过渡地带。'},
+    {type:'choice',tag:'选择题',question:'根据系辞传，以下哪个爻位多誉？',options:['三爻','四爻','二爻','上爻'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'五爻被称为君位，是六爻中最尊贵的位置，因此多功。',correct:true},
+  ]
+  },
+  {
+  id:79,title:'当位与不当位',icon:'当',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'六爻之中，初、三、五为<b class="highlight">阳位</b>（奇数位），二、四、上为<b class="highlight">阴位</b>（偶数位）。阳爻居阳位、阴爻居阴位，称为<b class="highlight">当位</b>（得位），表示名实相符、行得其宜。反之则不当位（失位）。如既济卦，离下坎上，阳爻居阳位、阴爻居阴位，六爻皆当位。'},
+    {type:'teach',symbol:'否',text:'再看未济卦，离上坎下，阳爻居阴位、阴爻居阳位，<b class="highlight">六爻皆不当位</b>。当位意味着合乎时宜、顺应规律，不当位则暗示错位与矛盾。但需注意，当位并非万事大吉，不当位也非必然凶险——还需结合中正、乘承、比应等关系综合判断。当位是基础，而非全部。'},
+    {type:'choice',tag:'选择题',question:'一个卦的第三爻是阳爻，这是否当位？',options:['当位，因为三为阳位','不当位，因为三为阴位','当位，因为阳爻总当位','无法判断'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'当位的爻一定吉利，不当位的爻一定凶险。',correct:false},
+  ]
+  },
+  {
+  id:80,title:'中与正',icon:'中',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'二爻居下卦之中，五爻居上卦之中，合称<b class="highlight">“中”</b>。居中之爻往往得吉，因为“中”代表不偏不倚、恰到好处。若既居中又当位，称为<b class="highlight">中正</b>，是最理想的状态。如乾卦九五，阳爻居五（阳位），既中且正，故爻辞“飞龙在天，利见大人”，为全卦最吉之爻。'},
+    {type:'teach',symbol:'六五',text:'反观六五之爻，阴爻居五（阳位），居中但不当位，称为<b class="highlight">“中而不正”</b>。虽非最优，但因其居中，仍多有善果。周易极重“中”道，中庸之德贯穿始终。<b class="highlight">中胜于正</b>——居中虽不正，往往优于当位而不中。这启示我们：位置恰当比形式正确更重要。'},
+    {type:'choice',tag:'选择题',question:'乾卦九五为何被称为中正之位？',options:['因为九五是阳爻居阳位且居上卦之中','因为九五是最高的爻','因为九五一定是吉利的','因为九五代表天'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'在周易判断中，中的重要性往往高于正，居中而不正有时优于当位而不中。',correct:true},
+  ]
+  },
+  {
+  id:81,title:'乘与承',icon:'乘',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'相邻两爻之间，上爻对下爻的关系叫<b class="highlight">“乘”</b>（上乘下），下爻对上爻的关系叫<b class="highlight">“承”</b>（下承上）。关键在于阴阳搭配：阴爻在阳爻之上为“阴乘阳”，象征柔凌刚，多主不顺；阳爻在阴爻之下为“阳承阴”，象征刚从柔，亦非吉象。'},
+    {type:'teach',symbol:'柔·刚',text:'理想的乘承关系是<b class="highlight">阳乘阴、阴承阳</b>——刚上柔下，符合天尊地卑的自然秩序。如泰卦虽下乾上坤看似反常，但其深层寓意在于<b class="highlight">天地交泰</b>，阴阳虽位置倒置却互相感应、流通无碍。乘承之理提醒我们：相邻关系的和谐，比表面的尊卑更重要。'},
+    {type:'choice',tag:'选择题',question:'阴乘阳指的是什么情况？',options:['阳爻在阴爻之上','阴爻在阳爻之上，柔凌刚','阴爻和阳爻相邻','阴爻在阳爻之下'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'阳承阴（阳爻在阴爻之下）在周易中通常被视为吉利的乘承关系。',correct:false},
+  ]
+  },
+  {
+  id:82,title:'比与应',icon:'应',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">“比”</b>指相邻两爻之间的关系，如初与二、二与三、三与四等。相比之爻若一阴一阳则相亲密，同性则相排斥。<b class="highlight">“应”</b>则指初与四、二与五、三与上这三对隔三爻的对应关系。一阴一阳相应为<b class="highlight">“有应”</b>，象征志同道合、遥相呼应；同性则“无应”，缺乏外援。'},
+    {type:'teach',symbol:'应',text:'如泰卦，初九应六四（阴阳相应）、九二应六五（阴阳相应）、九三应上六（阴阳相应），<b class="highlight">三爻皆有所应</b>，故泰卦象征上下交融、通达无碍。比与应共同构成了爻际关系的网络，是判断一爻吉凶的重要参照。有应则有助力，无应则形单影只。'},
+    {type:'choice',tag:'选择题',question:'一卦中二爻与哪个爻构成应的关系？',options:['初爻','三爻','五爻','上爻'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'两爻相应时，同性（阳对阳或阴对阴）比异性（一阴一阳）更吉利。',correct:false},
+  ]
+  },
+  {
+  id:83,title:'爻变与变卦',icon:'变',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'占筮中，若某爻为动爻（发生变化），阳变阴或阴变阳，便产生一个新卦，称为<b class="highlight">“之卦”</b>。原卦称“本卦”。如乾卦初九为动爻，初爻由阳变阴，下卦乾变为巽，整个卦变为<b class="highlight">姤卦</b>——即“乾之姤”。动爻是变化的核心，指示事物发展的关键转折点。'},
+    {type:'teach',trigrams:[{label:'巽·上',lines:[1, 1, 0],sub:'风'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'爻变的意义在于揭示<b class="highlight">动态趋势</b>。本卦显示当下状态，之卦预示未来走向。一爻变看该爻爻辞，多爻变则需综合判断。<b class="highlight">动爻是连接现在与将来的桥梁</b>，体现了周易“变易”的核心精神——万事万物无时无刻不在变化之中。'},
+    {type:'choice',tag:'选择题',question:'乾卦初九爻变为阴爻后，产生的新卦（之卦）是哪一卦？',options:['坤卦','姤卦','否卦','泰卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'本卦代表事物未来的发展趋势，之卦代表当下的状态。',correct:false},
+  ]
+  },
+  {
+  id:84,title:'用九与用六',icon:'用',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'乾卦六爻皆阳，特设<b class="highlight">“用九”</b>一爻，辞曰：“见群龙无首，吉。”群龙并出而无首领，象征阳刚之德各尽其能、不相争夺，故吉。用九的含义是<b class="highlight">六爻全变</b>（阳尽变阴），即乾变为坤。刚极化柔，方能圆融无碍。'},
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'坤卦六爻皆阴，特设<b class="highlight">“用六”</b>一爻，辞曰：“利永贞。”意为永远保持贞正之德。用六表示六爻全变（阴尽变阳），即坤变为乾。柔极化刚，但须以<b class="highlight">“永贞”</b>为前提——柔中守正，方能转化为刚健。用九用六揭示了阴阳互变的终极法则。'},
+    {type:'choice',tag:'选择题',question:'见群龙无首，吉，出自哪一爻的爻辞？',options:['乾卦九五','乾卦用九','坤卦用六','乾卦上九'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'用九表示乾卦六爻全变为阴，即乾变为坤。',correct:true},
+  ]
+  },
+  {
+  id:85,title:'爻位爻变测验',icon:'测',
+  steps:[
+    {type:'teach',symbol:'总',text:'回顾本章：六爻自下而上分初、二、三、四、五、上，其中<b class="highlight">二多誉、三多凶、四多惧、五多功</b>。阳居阳位、阴居阴位为当位；二五居中，中正为最优。乘承论相邻，比应论远近，爻变产生之卦。用九见群龙无首，用六利永贞，揭示阴阳互变之理。'},
+    {type:'choice',tag:'选择题',question:'以下哪个爻位被称为君位？',options:['二爻','三爻','五爻','上爻'],correct:2},
+    {type:'choice',tag:'选择题',question:'阳爻居二位（阴位），这种情况如何描述？',options:['中正——既中且正','中而不正——居中但不当位','当位而不中','既不中也不正'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'初爻与四爻构成应的关系，二爻与五爻构成应的关系。',correct:true},
+    {type:'truefalse',tag:'判断题',question:'用六的爻辞是见群龙无首，吉。',correct:false},
+  ]
+  },
+  {
+  id:86,title:'彖传：断一卦之义',icon:'彖',
+  steps:[
+    {type:'teach',symbol:'彖',text:'<b class="highlight">彖传</b>是解释卦辞的专论，“彖”有“断”义，即判断一卦的总体吉凶与核心义理。系辞传云：“彖者，言乎象者也”，又说“彖者，材也”——彖传从卦的材质、德性、象状入手，总揽一卦全貌。每卦彖传通常先释卦名，再释卦辞，最后点明吉凶趋势。'},
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'以泰卦彖传为例：“天地交而万物通也，上下交而其志同也。”泰卦下乾上坤，天气下降、地气上升，天地交感故万物通泰。彖传通过分析<b class="highlight">上下卦的交互关系</b>，揭示出“泰”的本质不在位置高低，而在于<b class="highlight">阴阳交感、上下相通</b>。这就是彖传“断一卦之义”的方法。'},
+    {type:'choice',tag:'选择题',question:'彖字在彖传中的核心含义是什么？',options:['形象','材质','判断','变化'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'彖传主要解释的是每一爻的爻辞含义。',correct:false},
+  ]
+  },
+  {
+  id:87,title:'大象传：君子取法',icon:'象',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">大象传</b>从上下两个经卦的组合卦象出发，引申出君子修身之道。其标准格式为：先描述卦象，再以“君子以……”点明取法之义。如乾卦大象：“天行健，君子以<b class="highlight">自强不息</b>。”天体运行刚健不已，君子取法于天，奋发图强、永不停歇。'},
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'坤卦大象：“地势坤，君子以<b class="highlight">厚德载物</b>。”大地势顺而承载万物，君子取法于地，以深厚之德包容万象。乾健坤顺，一刚一柔，构成了君子人格的两大基石。<b class="highlight">自强不息</b>是进取之德，<b class="highlight">厚德载物</b>是包容之德，二者缺一不可。'},
+    {type:'choice',tag:'选择题',question:'大象传的基本结构是什么？',options:['先说吉凶再说对策','先描述卦象，再以君子以引申修身之道','逐爻解释爻辞','列举历史故事'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'天行健，君子以自强不息，出自坤卦大象传。',correct:false},
+  ]
+  },
+  {
+  id:88,title:'小象传：爻位之析',icon:'爻',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">小象传</b>专门解释每一爻的爻辞，分析该爻吉凶的原因。如乾卦初九“潜龙勿用”，小象传释曰：“潜龙勿用，<b class="highlight">阳在下也</b>。”——阳刚之力尚在底层潜伏，时机未到，不宜妄动。小象传通常以简洁的因果句式揭示爻辞背后的逻辑。'},
+    {type:'teach',symbol:'时·位',text:'又如乾卦九三“君子终日乾乾”，小象传释曰：“终日乾乾，<b class="highlight">反复道也</b>。”九三处于上下卦之交，反复践行正道方能无咎。小象传的核心在于<b class="highlight">结合时与位</b>分析吉凶：同样的行为，在不同爻位上结果迥异。时位得当则吉，时位不当则凶。'},
+    {type:'choice',tag:'选择题',question:'小象传“潜龙勿用，阳在下也”解释的是乾卦哪一爻？',options:['九二','初九','九三','上九'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'小象传和彖传一样，都是解释卦辞的。',correct:false},
+  ]
+  },
+  {
+  id:89,title:'大象传的智慧',icon:'智',
+  steps:[
+    {type:'teach',trigrams:[{label:'坎·上',lines:[0, 1, 0],sub:'水'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'精选大象传智慧：屯卦“云雷屯，君子以<b class="highlight">经纶</b>”——云雷交蓄、大雨将临，君子取法以规划治理天下。蒙卦“山下出泉，蒙，君子以<b class="highlight">果行育德</b>”——泉水初出山下，虽蒙昧必流向远方，君子当果决行事、培育德行。'},
+    {type:'teach',symbol:'八象',text:'讼卦“天与水违行，讼，君子以<b class="highlight">作事谋始</b>”——天西转水东流，方向相违，君子做事必先谋于始。师卦“地中有水，师，君子以<b class="highlight">容民畜众</b>”——水藏于地下，象征蓄养民众。比卦“地上有水，比，先王以<b class="highlight">建万国，亲诸侯</b>”——水沁润大地，象征亲近团结。每一大象传都是一幅<b class="highlight">以象悟道</b>的生动画面。'},
+    {type:'choice',tag:'选择题',question:'山下出泉，蒙，君子以果行育德，出自哪一卦的大象传？',options:['屯卦','蒙卦','需卦','讼卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'大象传中天与水违行讼君子以作事谋始启示我们在做事之初就要做好谋划。',correct:true},
+  ]
+  },
+  {
+  id:90,title:'彖传的断法',icon:'断',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'彖传判断一卦吉凶，主要从三个维度入手：<b class="highlight">卦体</b>（上下经卦的组合关系）、<b class="highlight">卦德</b>（八卦各自的德性特征）、<b class="highlight">卦象</b>（八卦象征的自然现象）。如泰卦彖传“天地交而万物通”，从卦体论乾坤交感；否卦彖传“天地不交而万物不通”，从卦体论乾坤隔绝。'},
+    {type:'teach',symbol:'德·象',text:'又如咸卦彖传：“柔上而刚下，二气感应以相与。”从<b class="highlight">卦体</b>分析刚柔位置；“止而说（悦）”，从<b class="highlight">卦德</b>论艮止兑悦；“男下女”，从<b class="highlight">卦象</b>论少男少女。三者结合，方能全面把握一卦的精神实质。彖传的断法不是孤看一端，而是<b class="highlight">综合卦体、卦德、卦象</b>三位一体地分析。'},
+    {type:'choice',tag:'选择题',question:'彖传判断吉凶的三个主要维度是什么？',options:['吉凶、悔吝、无咎','卦体、卦德、卦象','当位、中正、乘承','本卦、之卦、变卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'泰卦彖传天地交而万物通是从卦德的角度来判断的。',correct:false},
+  ]
+  },
+  {
+  id:91,title:'彖象测验',icon:'测',
+  steps:[
+    {type:'teach',symbol:'总',text:'回顾本章：彖传断一卦之义，通过<b class="highlight">卦体、卦德、卦象</b>三维度分析。大象传从卦象引申君子修身之道，“天行健”取法于天，“地势坤”取法于地。小象传逐爻解释爻辞，结合<b class="highlight">时与位</b>分析吉凶。彖论总体，大象论取法，小象论细节，三者各司其职。'},
+    {type:'choice',tag:'选择题',question:'地势坤君子以厚德载物出自哪一卦的大象传？',options:['乾卦','坤卦','泰卦','否卦'],correct:1},
+    {type:'choice',tag:'选择题',question:'彖传、大象传、小象传三者的分工分别是？',options:['彖传解爻辞大象解卦象小象解卦辞','彖传解卦辞大象论修身小象解爻辞','三者都解卦辞','三者都解爻辞'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'小象传解释爻辞时核心是结合时与位分析吉凶原因。',correct:true},
+    {type:'truefalse',tag:'判断题',question:'大象传的格式通常是先描述卦象再以君子以引出修身之道。',correct:true},
+  ]
+  },
+  {
+  id:92,title:'文言传·乾卦',icon:'乾',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">文言传</b>是唯一专解乾坤二卦的传，篇幅远超其他卦的解释。乾卦文言提出著名的<b class="highlight">“四德”</b>：“元者，善之长也；亨者，嘉之会也；利者，义之和也；贞者，事之干也。”元为众善之首，亨为众美之会，利为义之和谐，贞为做事之主干。'},
+    {type:'teach',symbol:'四德',text:'文言传进一步阐释：君子体仁足以长人，嘉会足以合礼，利物足以和义，贞固足以干事。君子行此四德，故曰“乾，元亨利贞”。<b class="highlight">四德不是抽象概念</b>，而是君子修身的实践指南：以仁为本、以礼为序、以义为衡、以贞为基。乾卦文言将天道的刚健转化为人生的具体准则。'},
+    {type:'choice',tag:'选择题',question:'乾卦文言中元者善之长也的元指的是什么？',options:['开始的时间','众善之首万善之源','最大的利益','天地的元气'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'文言传解释了六十四卦中每一卦的卦辞。',correct:false},
+  ]
+  },
+  {
+  id:93,title:'文言传·坤卦',icon:'坤',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'坤卦文言云：“坤至柔而动也刚，至静而德方。”坤卦虽以柔为体，但动起来也有刚的一面；虽以静为性，但其德方正不阿。这揭示了<b class="highlight">柔中有刚、静中有动</b>的辩证智慧。柔不等于弱，静不等于止——坤之柔是在顺应中蕴含力量。'},
+    {type:'teach',symbol:'柔·刚',text:'文言传又云：“后得主而有常，含万物而化光。”坤道<b class="highlight">承天而行</b>，不自为先，故能得常道。含育万物而化生光明，正是大地默默承载的伟大。坤卦文言的核心启示：真正的力量不在于争先，而在于<b class="highlight">柔顺中坚守正道、包容中孕育光明</b>。'},
+    {type:'choice',tag:'选择题',question:'坤至柔而动也刚揭示了什么哲理？',options:['坤卦完全是柔弱的','柔中有刚柔顺中蕴含力量','坤卦比乾卦更强','动静没有区别'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'坤卦文言后得主而有常强调的是坤道承天而行不自为先的智慧。',correct:true},
+  ]
+  },
+  {
+  id:94,title:'系辞上传·一',icon:'系',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">系辞传</b>是周易的总论，分上下两篇，被誉为“易之通论”。开篇即立定乾坤：“天尊地卑，乾坤定矣。卑高以陈，贵贱位矣。动静有常，刚柔断矣。”天高地卑是宇宙基本秩序，由此定出乾坤；高低排列显现贵贱之位；动静有常规律可循，刚柔因此判分。'},
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'系辞进而论万物生成：“在天成象，在地成形，变化见矣。”天上有日月星辰之象，地上有山川草木之形，<b class="highlight">变化</b>便从中显现。系辞将天地万物的秩序追溯至乾坤定位，再由乾坤推演八卦、六十四卦，构建了一套从<b class="highlight">宇宙论到符号系统</b>的完整体系。'},
+    {type:'choice',tag:'选择题',question:'天尊地卑乾坤定矣出自哪篇文献？',options:['序卦传','说卦传','系辞传','杂卦传'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'系辞传认为天高地卑的宇宙秩序是乾坤定位的基础。',correct:true},
+  ]
+  },
+  {
+  id:95,title:'系辞上传·二',icon:'系',
+  steps:[
+    {type:'teach',symbol:'道',text:'系辞传的核心命题：<b class="highlight">“一阴一阳之谓道”</b>。阴阳交替流转就是“道”本身。继之者善也——继承此道便是善；成之者性也——成就此道便是性。仁者见之谓之仁，知者见之谓之知，百姓日用而不知。道不远人，就在日常阴阳消长之中。'},
+    {type:'teach',symbol:'易·简',text:'系辞又论<b class="highlight">易简之理</b>：“易则易知，简则易从。易知则有亲，易从则有功。”易简不是简单粗暴，而是<b class="highlight">把握本质后的通达</b>。可久则贤人之德，可大则贤人之业。“易简而天下之理得矣”——掌握了简易之道，天下之理便在其中了。'},
+    {type:'choice',tag:'选择题',question:'一阴一阳之谓道中继之者善也的含义是什么？',options:['继承阴阳之道就是善','善良的人才能继承道','道是善的延续','善是阴阳的源头'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'系辞传认为易简就是简单粗暴不加深思。',correct:false},
+  ]
+  },
+  {
+  id:96,title:'系辞下传·一',icon:'系',
+  steps:[
+    {type:'teach',symbol:'象',text:'系辞下传开篇：“八卦成列，象在其中矣。因而重之，爻在其中矣。”八卦排列组合，万物之象便蕴含其中；将八卦重叠为六十四卦，三百八十四爻的变化便在其中。<b class="highlight">卦以象显，爻以变生</b>——象是静态的图景，变是动态的推演。'},
+    {type:'teach',symbol:'变',text:'继言“刚柔相推，变在其中矣。系辞焉而命之，动在其中矣。”刚柔交替推移产生变化，系以辞句加以说明便指示了动向。系辞下传强调：<b class="highlight">变化不是混乱，而是有规律可循的</b>。卦象、爻变、辞义三者构成一个完整的认知系统——以象观变，以变知动，以动断吉凶。'},
+    {type:'choice',tag:'选择题',question:'八卦成列象在其中矣的含义是什么？',options:['八卦排列后万物之象就蕴含其中','八卦只在排列时才有象','象在八卦之外','八卦就是象本身'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'系辞下传认为刚柔相推是产生变化的根本机制。',correct:true},
+  ]
+  },
+  {
+  id:97,title:'系辞精要·三易',icon:'易',
+  steps:[
+    {type:'teach',symbol:'三易',text:'易学三义——<b class="highlight">变易、简易、不易</b>，是周易的核心哲学框架。<b class="highlight">变易</b>：万物无时无刻不在变化，没有永恒不变的事物。<b class="highlight">简易</b>：变化虽繁，根本规律却至简——阴阳消长、刚柔推荡而已。<b class="highlight">不易</b>：变化本身是不变的法则，“变”这一规律永远不变。'},
+    {type:'teach',symbol:'圆',text:'三者构成一个完整的认知圆环：变易是现象，简易是方法，不易是本质。知变易则不固执，知简易则不迷惘，知不易则有定力。<b class="highlight">在变化中把握不变的规律，用最简的方法应对最繁的变化</b>——这正是周易教给我们的生存智慧。三易之说由汉代郑玄在《易赞》中正式提出。'},
+    {type:'choice',tag:'选择题',question:'以下对不易的理解哪个是正确的？',options:['事物永远不会变化','变化本身是不变的法则','周易不容易学习','不变的事物才是真实的'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'变易简易不易三者中简易指的是变化虽然复杂但根本规律是简易的。',correct:true},
+  ]
+  },
+  {
+  id:98,title:'系辞精要·太极',icon:'极',
+  steps:[
+    {type:'teach',symbol:'太极',text:'系辞传提出著名的宇宙生成论：<b class="highlight">“易有太极，是生两仪，两仪生四象，四象生八卦”</b>。太极是宇宙的原始本体，两仪即阴阳，四象为太阳、少阴、少阳、太阴，八卦则衍生万物。这一序列描绘了从<b class="highlight">浑然一体到分化万物</b>的完整过程。'},
+    {type:'teach',symbol:'生',text:'太极“生”两仪，不是机械的分裂，而是<b class="highlight">内在分化</b>。阴阳既对立又统一，在动态平衡中生成四象，四象再演化为八卦，八卦重为六十四卦，映射天地万物。系辞续言“八卦定吉凶，吉凶生大业”——从宇宙生成到人事吉凶，形成了一条<b class="highlight">从本体到实践</b>的完整链条。'},
+    {type:'choice',tag:'选择题',question:'两仪生四象中的四象指的是什么？',options:['春夏秋冬四季','太阳少阴少阳太阴','东南西北四方','金木水火四元素'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'系辞传的宇宙生成论中太极分化为两仪两仪即阴阳。',correct:true},
+  ]
+  },
+  {
+  id:99,title:'文言系辞测验',icon:'测',
+  steps:[
+    {type:'teach',symbol:'总',text:'回顾本章：文言传专解乾坤二卦，乾论<b class="highlight">四德</b>（元亨利贞），坤论柔中有刚。系辞传为周易总论，“一阴一阳之谓道”揭示道的本质，“易有太极”描绘宇宙生成。三易之理——<b class="highlight">变易、简易、不易</b>——构成完整哲学框架。易简而天下之理得，是周易的最高智慧。'},
+    {type:'choice',tag:'选择题',question:'文言传中元者善之长亨者嘉之会利者义之和贞者事之干概括的是？',options:['坤卦四德','乾卦四德','八卦四德','系辞四原则'],correct:1},
+    {type:'choice',tag:'选择题',question:'易有太极是生两仪的完整生成序列是？',options:['太极到两仪到八卦到四象','太极到两仪到四象到八卦','两仪到太极到四象到八卦','四象到两仪到太极到八卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'文言传不仅解释乾坤二卦还解释了其他六十二卦。',correct:false},
+    {type:'truefalse',tag:'判断题',question:'一阴一阳之谓道意味着阴阳交替流转本身就是道。',correct:true},
+  ]
+  },
+  {
+  id:100,title:'说卦传·八卦取象',icon:'象',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">说卦传</b>系统列举八卦对应的各种物象。乾为天、为圜、为君、为父、为玉、为金——象征<b class="highlight">刚健尊贵</b>之物。坤为地、为母、为布、为釜、为众——象征<b class="highlight">柔顺承载</b>之物。每一卦的取象不是随意的，而是由该卦的阴阳结构所决定的基本属性延伸而来。'},
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'其余六卦亦各有取象：震为雷、为龙、为长子；巽为风、为木、为长女；坎为水、为月、为中男；离为火、为日、为中女；艮为山、为少男；兑为泽、为少女。八卦取象构建了一套<b class="highlight">以八个基本符号映射万物</b>的分类体系，是占筮和取象推演的基础工具。'},
+    {type:'choice',tag:'选择题',question:'根据说卦传以下哪一项不属于乾卦的取象？',options:['天','父','君','水'],correct:3},
+    {type:'truefalse',tag:'判断题',question:'说卦传中坎为水为月离为火为日。',correct:true},
+  ]
+  },
+  {
+  id:101,title:'说卦传·八卦方位',icon:'位',
+  steps:[
+    {type:'teach',symbol:'先天',text:'八卦方位有<b class="highlight">先天</b>与<b class="highlight">后天</b>之分。先天八卦（伏羲八卦）以乾坤为南北定轴：乾南坤北，离东坎西，侧重表达<b class="highlight">阴阳对待</b>的静态平衡。先天八卦描绘的是宇宙的本然秩序，强调对立面的对称与和谐。'},
+    {type:'teach',symbol:'后天',text:'后天八卦（文王八卦）载于说卦传“帝出乎震”章：“帝出乎震，齐乎巽，相见乎离，致役乎坤，说言乎兑，战乎乾，劳乎坎，成言乎艮。”<b class="highlight">震东、巽东南、离南、坤西南、兑西、乾西北、坎北、艮东北</b>——描述万物从春生到冬成的动态循环，侧重<b class="highlight">四时流转</b>与方位配合。'},
+    {type:'choice',tag:'选择题',question:'后天八卦中帝出乎震震卦位于哪个方位？',options:['南方','东方','北方','西方'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'先天八卦侧重表达阴阳对待的静态平衡后天八卦侧重四时流转的动态循环。',correct:true},
+  ]
+  },
+  {
+  id:102,title:'杂卦传',icon:'杂',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">杂卦传</b>以极简的一两个字概括每卦精髓，打破了文王卦序，按卦义重新编排。开篇“乾刚坤柔，比乐师忧”——乾主刚健，坤主柔顺；比卦主和乐，师卦主忧劳。杂卦传的“杂”不是杂乱，而是<b class="highlight">打破顺序、直指要义</b>的精炼表达。'},
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'再看几例：“震起也，艮止也”——震主兴起发动，艮主静止安止。“损益，盛衰之始也”——损为衰之始，益为盛之始，损益互为因果。“临观之义，或与或求”——临卦主给予，观卦主求索。杂卦传以最精炼的文字<b class="highlight">直击每卦核心精神</b>，是理解卦义的高效指南。'},
+    {type:'choice',tag:'选择题',question:'乾刚坤柔比乐师忧出自哪篇传？',options:['序卦传','说卦传','杂卦传','系辞传'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'杂卦传按照文王六十四卦的顺序依次解释每卦。',correct:false},
+  ]
+  },
+  {
+  id:103,title:'说卦杂卦测验',icon:'测',
+  steps:[
+    {type:'teach',symbol:'总',text:'回顾本章：说卦传列举八卦万物取象，乾为天为父为君，坤为地为母为众，构建了<b class="highlight">以八卦映射万物</b>的分类体系。八卦方位分先天（乾坤定南北，重对待）与后天（帝出乎震，重流转）。杂卦传以一两个字<b class="highlight">直指每卦核心</b>，如“乾刚坤柔，比乐师忧”，是理解卦义的精炼指南。'},
+    {type:'choice',tag:'选择题',question:'以下哪一项是杂卦传对震卦和艮卦的概括？',options:['震起也艮止也','震动也艮静也','震刚也艮柔也','震行也艮止也'],correct:0},
+    {type:'choice',tag:'选择题',question:'说卦传中帝出乎震章描述的是哪种八卦方位？',options:['先天八卦','后天八卦','中天八卦','混合八卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'说卦传中兑为泽为少女巽为风为长女。',correct:true},
+    {type:'truefalse',tag:'判断题',question:'杂卦传中损益盛衰之始也意为损是兴盛的开始益是衰败的开始。',correct:true},
+  ]
+  },
+  {
+  id:104,title:'大衍之数',icon:'衍',
+  steps:[
+    {type:'teach',symbol:'大衍',text:'<b class="highlight">大衍之数五十，其用四十有九</b>。这是《系辞上传》记载的最古老的占筮方法。取五十根蓍草，抽出一根不用（象征太极），实际用四十九根分合运算，经过三变成一爻，十八变成一卦。大衍筮法是周易最正统的起卦方式，曾仕强先生曾特别强调：<b class="highlight">仪式感本身就是一种诚敬的修炼</b>，不必求快，过程即修行。'},
+    {type:'choice',tag:'选择题',question:'大衍之数五十，实际使用多少根？',options:['五十根','四十九根','四十八根','五十根全用'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'大衍筮法需要十八变才能成一卦。',correct:true},
+    {type:'choice',tag:'选择题',question:'抽出一根不用的蓍草象征什么？',options:['天地','太极','阴阳','八卦'],correct:1},
+  ]
+  },
+  {
+  id:105,title:'三变成爻',icon:'三变',
+  steps:[
+    {type:'teach',symbol:'三变',text:'<b class="highlight">三变成一爻</b>。第一变：将四十九根任意分两堆，取右堆中的一根夹于左手小指间，然后四根四根数左堆，余数加夹指的一根；同理数右堆。两次余数加起来，得到第一变结果。如此重复三变，根据余数确定爻的阴阳和老少。<b class="highlight">老阳可变、老阴可变、少阳少阴不变</b>，这就是动爻的来源。'},
+    {type:'choice',tag:'选择题',question:'三变确定一爻，其中可变的是？',options:['少阳和少阴','老阳和老阴','全部可变','全部不变'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'大衍筮法中每爻需要三变，一卦六爻共需十八变。',correct:true},
+    {type:'choice',tag:'选择题',question:'四十九根蓍草第一次分开后，取哪一堆的一根夹于指间？',options:['左堆','右堆','不取','两堆各取一根'],correct:1},
+  ]
+  },
+  {
+  id:106,title:'老少阴阳',icon:'老少',
+  steps:[
+    {type:'teach',symbol:'老少',text:'三变之后，根据余数得到四种结果：九为<b class="highlight">老阳</b>（可变阳爻），六为<b class="highlight">老阴</b>（可变阴爻），七为<b class="highlight">少阳</b>（不变阳爻），八为<b class="highlight">少阴</b>（不变阴爻）。老阳老阴为动爻，主变化；少阳少阴为静爻，主安定。傅佩荣先生讲解时强调：<b class="highlight">动爻是占断的核心</b>，它告诉你变化的焦点在哪里。'},
+    {type:'choice',tag:'选择题',question:'以下哪个代表可变的阳爻？',options:['六','七','八','九'],correct:3},
+    {type:'truefalse',tag:'判断题',question:'少阳和少阴是静爻，不发生变化。',correct:true},
+    {type:'choice',tag:'选择题',question:'动爻在占断中的意义是？',options:['无关紧要','变化的焦点','必须忽略','只看动爻'],correct:1},
+  ]
+  },
+  {
+  id:107,title:'十八变成卦',icon:'成卦',
+  steps:[
+    {type:'teach',symbol:'成卦',text:'<b class="highlight">十八变成一卦</b>。每三变得一爻，从下往上排：初爻、二爻、三爻、四爻、五爻、上爻。六爻排定，本卦即成。若其中有动爻（老阳或老阴），动爻变后得到之卦（变卦）。本卦看当下，变卦看走向，两者结合推断吉凶。整个过程约需半小时，慢则一小时——<b class="highlight">慢即是快，心静则灵</b>。'},
+    {type:'choice',tag:'选择题',question:'成卦时爻的排列顺序是？',options:['从上到下','从下到上','从中间向两边','随机排列'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'本卦看当下状态，变卦看未来走向。',correct:true},
+    {type:'choice',tag:'选择题',question:'大衍筮法一卦完成大约需要多长时间？',options:['几分钟','半小时到一小时','一整天','不需要时间'],correct:1},
+  ]
+  },
+  {
+  id:108,title:'大衍筮法总结',icon:'总结',
+  steps:[
+    {type:'choice',tag:'第1题',question:'大衍之数是多少？',options:['四十九','五十','五十五','六十四'],correct:1},
+    {type:'truefalse',tag:'第2题',question:'老阳数为九，老阴数为六。',correct:true},
+    {type:'choice',tag:'第3题',question:'大衍筮法的精神核心是什么？',options:['速度','诚敬','复杂','神秘'],correct:1},
+    {type:'choice',tag:'第4题',question:'十八变中，每几变确定一爻？',options:['一变','两变','三变','六变'],correct:2},
+  ]
+  },
+  {
+  id:109,title:'金钱卦法',icon:'金钱',
+  steps:[
+    {type:'teach',symbol:'金钱卦',text:'<b class="highlight">金钱卦</b>是最常用的简易起卦法。取三枚铜钱（或硬币），同时掷出，根据正反面的组合确定爻的阴阳：两正一反为少阴（--），三正为老阳（动爻），两反一正为少阳（─），三反为老阴（动爻）。从下往上掷六次，即成一卦。曾仕强先生推荐此法：<b class="highlight">简便而不失诚敬</b>，适合日常使用。'},
+    {type:'choice',tag:'选择题',question:'金钱卦中三枚硬币两正一反代表？',options:['老阳','少阳','老阴','少阴'],correct:3},
+    {type:'truefalse',tag:'判断题',question:'三枚硬币全正面朝上为老阳，是动爻。',correct:true},
+    {type:'choice',tag:'选择题',question:'金钱卦起卦需要掷几次？',options:['三次','六次','八次','十二次'],correct:1},
+  ]
+  },
+  {
+  id:110,title:'时间起卦法',icon:'时间',
+  steps:[
+    {type:'teach',symbol:'时间卦',text:'<b class="highlight">时间起卦法</b>以年月日时的数字起卦。年支数加月数加日数，除以八取余为上卦；年支数加月数加日数加时支数，除以八取余为下卦；总数除以六取余为动爻。此法源自邵雍梅花易数，<b class="highlight">不拘形式，随机应变</b>。傅佩荣先生指出：时间起卦法体现了"万物皆可起卦"的周易精神，关键在于心诚则灵。'},
+    {type:'choice',tag:'选择题',question:'时间起卦法中除以八取余确定什么？',options:['动爻','上下卦','吉凶','变卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'时间起卦法源自邵雍的梅花易数。',correct:true},
+    {type:'choice',tag:'选择题',question:'确定动爻时用什么数除以六取余？',options:['上卦数','下卦数','总数','月数'],correct:2},
+  ]
+  },
+  {
+  id:111,title:'数字起卦法',icon:'数字',
+  steps:[
+    {type:'teach',symbol:'数字卦',text:'<b class="highlight">数字起卦法</b>：随意报两个数，第一个数除以八取余为上卦，第二个数除以八取余为下卦，两数之和除以六取余为动爻。若余数为0则取8（卦）或6（爻）。梅花易数讲究<b class="highlight">心念一动即可起卦</b>，看到什么、听到什么、想到什么，都可以成为起卦的契机。大道至简，不必拘泥于形式。'},
+    {type:'choice',tag:'选择题',question:'数字起卦法中第一个数除以八取余确定什么？',options:['下卦','上卦','动爻','吉凶'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'梅花易数认为心念一动即可起卦。',correct:true},
+    {type:'choice',tag:'选择题',question:'若余数为0，卦取几、爻取几？',options:['卦取0，爻取0','卦取8，爻取6','卦取1，爻取1','不可取'],correct:1},
+  ]
+  },
+  {
+  id:112,title:'起卦注意事项',icon:'注意',
+  steps:[
+    {type:'teach',symbol:'心法',text:'起卦有三不占：<b class="highlight">不诚不占、不疑不占、不义不占</b>。不诚则心不专，卦象不灵；不疑则无事可占，浪费心力；不义则心存侥幸，违背正道。此外，同一件事不宜反复占——初筮告，再三渎，渎则不告。曾仕强先生特别提醒：<b class="highlight">占卦是借天理明人事，不是求神拜佛</b>，占完要自己反思、自己决策。'},
+    {type:'choice',tag:'选择题',question:'"再三渎，渎则不告"的意思是？',options:['多占几次更准','同一事反复占则不灵','占三次最好','不宜占卜'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'"不义不占"意味着心存侥幸违背正道的事不宜占。',correct:true},
+    {type:'choice',tag:'选择题',question:'起卦三不占不包括以下哪个？',options:['不诚不占','不疑不占','不义不占','不会不占'],correct:3},
+  ]
+  },
+  {
+  id:113,title:'起卦法总结',icon:'总结',
+  steps:[
+    {type:'choice',tag:'第1题',question:'以下哪种起卦法最古老？',options:['金钱卦','大衍筮法','时间起卦','数字起卦'],correct:1},
+    {type:'truefalse',tag:'第2题',question:'梅花易数的核心精神是万物皆可起卦。',correct:true},
+    {type:'choice',tag:'第3题',question:'"初筮告，再三渎"出自哪里？',options:['系辞传','说卦传','蒙卦卦辞','乾卦文言'],correct:2},
+    {type:'choice',tag:'第4题',question:'金钱卦三枚全反代表？',options:['老阳','少阳','老阴','少阴'],correct:2},
+  ]
+  },
+  {
+  id:114,title:'断卦第一步：看卦象',icon:'卦象',
+  steps:[
+    {type:'teach',symbol:'第一步',text:'<b class="highlight">断卦第一步：看卦象</b>。先看本卦的整体形象——是哪两个八卦组合？上下卦的关系如何？如火水未济，火在上水在下，二者不交，事未成之象。再看变卦——动爻变后卦象如何变化？是变好了还是变差了？傅佩荣先生强调：<b class="highlight">卦象是天地语言的图形化</b>，先看懂画面，再读文字。'},
+    {type:'choice',tag:'选择题',question:'断卦第一步应该看什么？',options:['爻辞','卦象','变卦','五行'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'火水未济的卦象表示事未成之象。',correct:true},
+    {type:'choice',tag:'选择题',question:'看卦象时上下卦的关系反映什么？',options:['天气','人事关系','时间','方位'],correct:1},
+  ]
+  },
+  {
+  id:115,title:'断卦第二步：读卦辞',icon:'卦辞',
+  steps:[
+    {type:'teach',symbol:'第二步',text:'<b class="highlight">断卦第二步：读卦辞</b>。卦辞是一卦的总纲，概括全卦吉凶大势。如乾卦"元亨利贞"——大通利正；坤卦"元亨，利牝马之贞"——大通利于柔顺之正。读卦辞要看三个层次：<b class="highlight">吉凶判断、条件限定、行动指引</b>。不是简单看吉凶，而是看在什么条件下吉、什么条件下凶。'},
+    {type:'choice',tag:'选择题',question:'读卦辞时应看哪三个层次？',options:['上中下爻','吉凶判断+条件限定+行动指引','春夏秋冬','金木水火土'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'卦辞是一卦的总纲，概括全卦吉凶大势。',correct:true},
+    {type:'choice',tag:'选择题',question:'坤卦"利牝马之贞"强调什么？',options:['刚健','柔顺之正','进取','停止'],correct:1},
+  ]
+  },
+  {
+  id:116,title:'断卦第三步：看动爻',icon:'动爻',
+  steps:[
+    {type:'teach',symbol:'第三步',text:'<b class="highlight">断卦第三步：看动爻</b>。动爻是变化的焦点，决定了占断的方向。动爻的爻辞是最核心的参考。若一卦多爻动，则根据动爻数量按朱熹《启蒙》规则分别取用。朱熹在《启蒙》中定下规则：一爻动看本卦动爻辞，二爻动看本卦上动爻辞，三爻动看本卦卦辞和变卦卦辞，四爻动看变卦下不动爻辞，五爻动看变卦不动爻辞，六爻动看变卦卦辞。'},
+    {type:'choice',tag:'选择题',question:'一爻动时，主要看什么？',options:['本卦卦辞','本卦动爻辞','变卦卦辞','彖传'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'动爻是变化的焦点，决定占断方向。',correct:true},
+    {type:'choice',tag:'选择题',question:'六爻全动时，看什么？',options:['本卦卦辞','本卦爻辞','变卦卦辞','不看'],correct:2},
+  ]
+  },
+  {
+  id:117,title:'断卦第四步：察体用',icon:'体用',
+  steps:[
+    {type:'teach',symbol:'第四步',text:'<b class="highlight">断卦第四步：察体用</b>。梅花易数中以不动之卦为<b class="highlight">体</b>（自己），动爻所在之卦为<b class="highlight">用</b>（对方或事态）。体克用为吉，用克体为凶，体生用为泄，用生体为得，体用比和为顺。体用的五行关系是判断吉凶的重要依据。曾仕强先生提醒：体用分析要结合实际情况，不能死套公式。'},
+    {type:'choice',tag:'选择题',question:'梅花易数中"体"代表什么？',options:['对方','自己','时间','方位'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'体克用为吉，用克体为凶。',correct:true},
+    {type:'choice',tag:'选择题',question:'以下哪种体用关系最吉？',options:['用克体','体克用','体用比和','体生用'],correct:2},
+  ]
+  },
+  {
+  id:118,title:'断卦第五步：综合断',icon:'综合',
+  steps:[
+    {type:'teach',symbol:'第五步',text:'<b class="highlight">断卦第五步：综合断</b>。将卦象、卦辞、动爻、体用四步的信息综合起来，形成完整判断。不能只看一条就下结论——卦象定大方向，卦辞定大势，动爻定细节，体用定关系。<b class="highlight">四者相互印证，方可断事</b>。傅佩荣先生常说：断卦如看病，望闻问切缺一不可，综合判断才能对症下药。'},
+    {type:'choice',tag:'选择题',question:'断卦第五步综合断需要结合前几步的信息？',options:['一步','两步','三步','四步'],correct:3},
+    {type:'truefalse',tag:'判断题',question:'综合断要求四步信息相互印证，不能只看一条下结论。',correct:true},
+    {type:'choice',tag:'选择题',question:'傅佩荣先生将断卦比作什么？',options:['下棋','看病','打仗','经商'],correct:1},
+  ]
+  },
+  {
+  id:119,title:'断卦原则：时位中应',icon:'时位',
+  steps:[
+    {type:'teach',symbol:'时位中应',text:'断卦四大原则：<b class="highlight">时、位、中、应</b>。时——当下处于什么时机；位——所处爻位是否得当（阳居阳位、阴居阴位为得位）；中——是否居二五之中位；应——上下卦对应爻是否阴阳相应。曾仕强先生总结：<b class="highlight">得时得位得中得应，则吉；失时失位失中失应，则凶</b>。四者不必全得，得一二者亦有可为。'},
+    {type:'choice',tag:'选择题',question:'阳爻居阳位、阴爻居阴位称为？',options:['得中','得位','得时','得应'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'二爻和五爻是中位，居中为得中。',correct:true},
+    {type:'choice',tag:'选择题',question:'初爻与四爻、二爻与五爻、三爻与上爻的关系称为什么？',options:['比邻','相应','相承','相敌'],correct:1},
+  ]
+  },
+  {
+  id:120,title:'断卦原则：吉凶悔吝',icon:'吉凶',
+  steps:[
+    {type:'teach',symbol:'吉凶悔吝',text:'《系辞》云："吉凶者，失得之象也；悔吝者，忧虞之象也。"<b class="highlight">吉</b>是顺利得宜，<b class="highlight">凶</b>是失利遭难，<b class="highlight">悔</b>是事后懊悔（趋于好转），<b class="highlight">吝</b>是事中为难（趋于恶化）。还有<b class="highlight">无咎</b>——本有咎而能免。梁冬在解读时说得好：周易不讲宿命论，吉凶不是定论，而是<b class="highlight">趋势判断加行动建议</b>。悔则趋吉，吝则趋凶，关键看你如何应对。'},
+    {type:'choice',tag:'选择题',question:'"悔"的趋势是？',options:['趋凶','趋吉','不变','不确定'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'"无咎"的意思是本有咎而能免。',correct:true},
+    {type:'choice',tag:'选择题',question:'周易中吉凶的性质是什么？',options:['宿命定论','趋势判断加行动建议','随机结果','不可改变'],correct:1},
+  ]
+  },
+  {
+  id:121,title:'断卦五步法总结',icon:'总结',
+  steps:[
+    {type:'choice',tag:'第1题',question:'断卦五步的正确顺序是？',options:['卦象→卦辞→动爻→体用→综合','卦辞→卦象→体用→动爻→综合','动爻→卦象→卦辞→体用→综合','体用→动爻→卦辞→卦象→综合'],correct:0},
+    {type:'truefalse',tag:'第2题',question:'得时得位得中得应则吉，四者不必全得。',correct:true},
+    {type:'choice',tag:'第3题',question:'"吝"的趋势是？',options:['趋吉','趋凶','不变','大吉'],correct:1},
+    {type:'choice',tag:'第4题',question:'朱熹《启蒙》中一爻动看什么？',options:['本卦卦辞','本卦动爻辞','变卦卦辞','彖传'],correct:1},
+  ]
+  },
+  {
+  id:122,title:'案例一：乾卦问事业',icon:'案例',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">案例：某创业者问事业，得乾卦，九五动</b>。乾为天，纯刚健行，事业大方向正确。九五"飞龙在天，利见大人"——正值鼎盛，有贵人相助。变卦为大有，火天大有——光明普照，大有所获。综合断：<b class="highlight">事业正当其时，宜大胆进取，但需借助贵人之力</b>。傅佩荣先生评此案例：乾卦九五是最理想的创业卦象，但"亢龙有悔"提醒盛极必衰，得意时不忘收敛。'},
+    {type:'choice',tag:'选择题',question:'乾卦九五动的变卦是？',options:['天风姤','火天大有','泽天夬','天地否'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'乾卦九五"飞龙在天"是最理想的创业卦象之一。',correct:true},
+    {type:'choice',tag:'选择题',question:'此案例的断语核心是？',options:['宜守不宜进','事业正当其时宜进取','不宜创业','必有凶险'],correct:1},
+  ]
+  },
+  {
+  id:123,title:'案例二：坤卦问投资',icon:'案例',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'<b class="highlight">案例：某人问投资前景，得坤卦，六五动</b>。坤为地，厚德载物，柔顺守正。六五"黄裳，元吉"——中正之德，文采内蕴，大吉。变卦为水地比——水润大地，亲比互助。综合断：<b class="highlight">投资宜守不宜攻，以稳健为上，选择可靠伙伴合作</b>。曾仕强先生点评：坤卦问投资重在"厚"——不追求高回报，而追求稳健持久，厚积薄发。'},
+    {type:'choice',tag:'选择题',question:'坤卦六五动的变卦是？',options:['山地剥','水地比','风地观','雷地豫'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'坤卦问投资的核心建议是以稳健为上。',correct:true},
+    {type:'choice',tag:'选择题',question:'坤卦"黄裳元吉"中的"黄"象征什么？',options:['中正之德','财富','土地','黄色物品'],correct:0},
+  ]
+  },
+  {
+  id:124,title:'案例三：屯卦问创业',icon:'案例',
+  steps:[
+    {type:'teach',trigrams:[{label:'坎·上',lines:[0, 1, 0],sub:'水'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'<b class="highlight">案例：年轻人问新项目前景，得屯卦，初九动</b>。屯卦讲万事开头难，雷雨交加、萌芽破土。初九"磐桓，利居贞，利建侯"——起步虽难，但坚守正道、建立根基则利。变卦为比卦——水地比，亲比互助。综合断：<b class="highlight">创业初期困难重重，不宜冒进，先打好根基、找好团队</b>。梁冬曾解读屯卦：创业如种子发芽，需要时间破土，急不得。'},
+    {type:'choice',tag:'选择题',question:'屯卦初九动的变卦是？',options:['水地比','山水蒙','地水师','风天小畜'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'屯卦的核心主题是万事开头难。',correct:true},
+    {type:'choice',tag:'选择题',question:'此案例对创业者的建议是？',options:['立即扩张','先打根基找好团队','放弃项目','等待市场变化'],correct:1},
+  ]
+  },
+  {
+  id:125,title:'案例四：谦卦问人际关系',icon:'案例',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'艮·下',lines:[1, 0, 0],sub:'山'}],text:'<b class="highlight">案例：某人问职场人际关系，得谦卦，无动爻</b>。谦卦（地山谦）：山在地下，高者下之，谦之象也。谦卦是六十四卦中唯一<b class="highlight">六爻皆吉</b>的卦。无动爻则看卦辞："亨，君子有终"——谦则亨通，君子有善终。综合断：<b class="highlight">职场关系以谦逊为本，低调做人终有善果</b>。傅佩荣先生特别推崇谦卦：这是周易中最圆满的卦，因为真正的谦不是软弱，而是内心的强大。'},
+    {type:'choice',tag:'选择题',question:'谦卦的特殊之处是？',options:['六爻皆凶','六爻皆吉','无卦辞','无爻辞'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'无动爻时以卦辞为主断。',correct:true},
+    {type:'choice',tag:'选择题',question:'谦卦的卦象是山在地下，象征什么？',options:['山被埋没','高者下之，谦逊之象','山在地中生长','地震之象'],correct:1},
+  ]
+  },
+  {
+  id:126,title:'案例五：豫卦问决策',icon:'案例',
+  steps:[
+    {type:'teach',trigrams:[{label:'震·上',lines:[0, 0, 1],sub:'雷'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'<b class="highlight">案例：管理者问重大决策，得豫卦，六五动</b>。豫卦（雷地豫）：雷出地上，万物振奋，欢乐之象。六五"贞疾，恒不死"——居安思危则虽病恒存。变卦为萃卦——泽地萃，萃聚之象。综合断：<b class="highlight">决策时机已到，可以行动，但必须在乐观中保持警觉</b>。曾仕强先生评：豫卦的快乐不是放纵，而是有备而乐。六五提醒快乐中不忘危机意识。'},
+    {type:'choice',tag:'选择题',question:'豫卦六五动的变卦是？',options:['泽地萃','火地晋','风地观','雷天大壮'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'豫卦的核心是"有备而乐"，不是放纵之乐。',correct:true},
+    {type:'choice',tag:'选择题',question:'六五"贞疾恒不死"的智慧是？',options:['有病不治','居安思危则长存','快乐就好','不宜决策'],correct:1},
+  ]
+  },
+  {
+  id:127,title:'案例六：剥卦问风险',icon:'案例',
+  steps:[
+    {type:'teach',trigrams:[{label:'艮·上',lines:[1, 0, 0],sub:'山'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'<b class="highlight">案例：投资者问是否撤资，得剥卦，上九动</b>。剥卦（山地剥）：山附于地，五阴剥一阳，剥落之极。上九"硕果不食，君子得舆，小人剥庐"——最后一线阳气尚存，君子能保本，小人则连根基都失。变卦为坤卦——纯阴无阳。综合断：<b class="highlight">形势已到剥落极点，宜果断撤出保本，不可恋战</b>。傅佩荣先生评：剥卦上九是最后的撤退窗口，"硕果不食"说明尚有本钱可保，错过则全盘皆输。'},
+    {type:'choice',tag:'选择题',question:'剥卦上九动的变卦是？',options:['坤为地','地雷复','地泽临','地风升'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'剥卦五阴剥一阳，是剥落之极的卦象。',correct:true},
+    {type:'choice',tag:'选择题',question:'"硕果不食"在此案例中的含义是？',options:['果实太多吃不完','尚有本钱可保，宜果断撤出','不宜吃水果','等待果实成熟'],correct:1},
+  ]
+  },
+  {
+  id:128,title:'案例七：复卦问转机',icon:'案例',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'<b class="highlight">案例：低谷期问何时转机，得复卦，初九动</b>。复卦（地雷复）：一阳生于下，冬至阳生，万物复苏。初九"不远复，无祇悔，元吉"——走错不远就回头，没有大悔，大吉。变卦为坤卦。综合断：<b class="highlight">转机已现，最困难的时候正在过去，但不宜急躁，顺其自然恢复</b>。梁冬解读复卦时说：复卦是周易中最有希望的卦之一，它告诉你黑暗中已有微光，但不要急于追光，让光自己长大。'},
+    {type:'choice',tag:'选择题',question:'复卦初九动的变卦是？',options:['坤为地','山地剥','水雷屯','风雷益'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'复卦象征一阳复生，万物复苏。',correct:true},
+    {type:'choice',tag:'选择题',question:'复卦在此案例中的核心信息是？',options:['无转机','转机已现但不宜急躁','立即行动','放弃希望'],correct:1},
+  ]
+  },
+  {
+  id:129,title:'案例八：既济问稳定',icon:'案例',
+  steps:[
+    {type:'teach',trigrams:[{label:'坎·上',lines:[0, 1, 0],sub:'水'},{label:'离·下',lines:[1, 0, 1],sub:'火'}],text:'<b class="highlight">案例：企业问发展态势，得既济卦，九五动</b>。既济（水火既济）：水在火上，水火相交，事已成功。九五"东邻杀牛，不如西邻之禴祭，实受其福"——简朴诚敬胜于奢华形式。变卦为明夷卦——地火明夷，光明受伤。综合断：<b class="highlight">当前已成功，但盛极防衰，宜简朴务实、不骄不奢</b>。曾仕强先生评：既济卦最危险的是"成功后的松懈"，九五变明夷警示——成功中已埋下衰败的种子。'},
+    {type:'choice',tag:'选择题',question:'既济卦九五动的变卦是？',options:['地火明夷','风火家人','雷火丰','泽火革'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'既济卦表示事已成功，但暗藏衰败之机。',correct:true},
+    {type:'choice',tag:'选择题',question:'九五爻辞"东邻杀牛不如西邻禴祭"说明什么？',options:['杀牛不好','简朴诚敬胜于奢华形式','不宜祭祀','东边比西边好'],correct:1},
+  ]
+  },
+  {
+  id:130,title:'案例九：革卦问变革',icon:'案例',
+  steps:[
+    {type:'teach',trigrams:[{label:'兑·上',lines:[0, 1, 1],sub:'泽'},{label:'离·下',lines:[1, 0, 1],sub:'火'}],text:'<b class="highlight">案例：公司问是否转型，得革卦，九四动</b>。革卦（泽火革）：泽中有火，水火相息，变革之象。九四"悔亡，有孚改命，吉"——悔恨消失，有诚信地改变旧制则吉。变卦为既济——水火既济，事成之象。综合断：<b class="highlight">转型时机已到，诚信执行则成功，但需彻底改变而非小修小补</b>。傅佩荣先生评：革卦九四是变革的最佳时机点——"改命"意味着根本性的改变，不是表面文章。'},
+    {type:'choice',tag:'选择题',question:'革卦九四动的变卦是？',options:['水火既济','火风鼎','天火同人','雷火丰'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'革卦九四"改命"意味着根本性的改变。',correct:true},
+    {type:'choice',tag:'选择题',question:'此案例对转型的建议是？',options:['小修小补','彻底改变诚信执行','不宜转型','等待时机'],correct:1},
+  ]
+  },
+  {
+  id:131,title:'断卦案例总结',icon:'总结',
+  steps:[
+    {type:'choice',tag:'第1题',question:'谦卦在六十四卦中的独特之处是？',options:['最凶的卦','六爻皆吉','最长的卦辞','无爻辞'],correct:1},
+    {type:'truefalse',tag:'第2题',question:'断卦案例中，傅佩荣先生认为乾卦九五是最理想的创业卦象。',correct:true},
+    {type:'choice',tag:'第3题',question:'复卦案例的核心启示是？',options:['黑暗中无光','转机已现但不宜急躁','必须立即行动','没有希望'],correct:1},
+    {type:'choice',tag:'第4题',question:'既济卦九五变明夷提醒我们什么？',options:['成功后可以放松','成功中已埋下衰败种子','不宜成功','明夷比既济好'],correct:1},
+  ]
+  },
+  {
+  id:132,title:'初九·潜龙勿用',icon:'潜',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'乾卦初九爻辞<b class="highlight">「潜龙勿用」</b>。初九处乾卦最下位，象征阳气初萌于地下，如龙潜伏于深渊。此时位卑力弱，<b class="highlight">不宜妄动</b>，当隐忍蓄力，静待时机。此爻之象，犹如人才初成而未遇时，虽有龙德，仍需养晦韬光。孔子释之曰「龙德而隐者也」，强调的是<b class="highlight">时机未到时的自守之道</b>。'},
+    {type:'teach',symbol:'勿用',text:'初九之「勿用」，非无能而不用，乃<b class="highlight">能而不急用</b>。潜龙虽在渊，其德已具，所缺者时与位耳。故此爻启示：人生低谷期，最重要的不是急于表现，而是<b class="highlight">充实内在</b>，待风云际会之日，方能一飞冲天。'},
+    {type:'choice',tag:'选择题',question:'「潜龙勿用」中「勿用」的核心含义是什么？',options:['能力不足，无法使用','时机未到，不宜妄动','龙已衰老，不堪使用','潜水太深，无法现身'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'乾卦初九「潜龙勿用」意味着此时应放弃努力，顺其自然。',correct:false},
+  ]
+  },
+  {
+  id:133,title:'九二·见龙在田',icon:'田',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'乾卦九二爻辞<b class="highlight">「见龙在田，利见大人」</b>。九二居下卦之中，得中位，阳气已从地下升至田地，龙出现在地面上。「<b class="highlight">利见大人</b>」谓宜拜见有德有位之人，以得提携。此爻象征人才初露头角，已具备被赏识的条件，关键是<b class="highlight">寻求贵人相助</b>，借势发力。'},
+    {type:'teach',symbol:'见龙',text:'九二与九五虽不同位，却同具龙德。九二之「见」，是主动展现而非被动等待。然仅靠自己尚不足成大事，<b class="highlight">须得大人之助</b>。此处「大人」可理解为师长、伯乐或有利的外部条件。见龙在田，正是从小舞台走向大舞台的<b class="highlight">关键转折</b>。'},
+    {type:'choice',tag:'选择题',question:'「见龙在田，利见大人」中「大人」最贴切的含义是？',options:['年龄大的人','有德有位能提携自己的人','任意一个长辈','地位高于自己的人'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'九二「见龙在田」表示阳气已完全成熟，可以独当一面。',correct:false},
+  ]
+  },
+  {
+  id:134,title:'九三·终日乾乾',icon:'乾',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'乾卦九三爻辞<b class="highlight">「君子终日乾乾，夕惕若厉，无咎」</b>。九三居下卦之极，是<b class="highlight">多凶之位</b>——不居中不正，上不在天、下不在田。处此位者，当终日勤勉不息，夜晚仍保持警惕，如同面临危厉一般。如此则虽处险位，亦可<b class="highlight">无咎</b>。'},
+    {type:'teach',symbol:'乾乾',text:'「乾乾」即健而又健，不懈怠之义。「夕惕若厉」不是恐惧，而是<b class="highlight">居安思危的警觉</b>。九三之位好比中层干部，上承下接，最容易出错。此爻启示：越是承上启下之位，越需要<b class="highlight">勤勉加谨慎</b>，才能化险为夷。'},
+    {type:'choice',tag:'选择题',question:'九三「终日乾乾，夕惕若厉」的核心精神是什么？',options:['昼夜不停地工作','勤勉做事同时保持警觉','害怕危险不敢行动','夜晚比白天更努力'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'乾卦九三被称为「多凶之位」，是因为它既不在中位又承上启下。',correct:true},
+  ]
+  },
+  {
+  id:135,title:'九四·或跃在渊',icon:'跃',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'乾卦九四爻辞<b class="highlight">「或跃在渊，无咎」</b>。九四居上卦之初，处于<b class="highlight">进退之机</b>——可跃升至九五之尊位，亦可退守于深渊之中。「或」字极妙，表不确定性，非犹豫不决，而是<b class="highlight">审时度势</b>。跃与不跃，皆无咎，关键在于因时而行。'},
+    {type:'choice',tag:'选择题',question:'九四「或跃在渊」中「或」字体现了什么态度？',options:['犹豫不决，优柔寡断','审时度势，进退有据','随波逐流，听天由命','盲目冒进，不顾后果'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'乾卦九四处于上卦之初，是可进可退的关键位置。',correct:true},
+    {type:'choice',tag:'选择题',question:'九四与九三相比，处境有何不同？',options:['九四更危险，必须退守','九三在下卦极位，九四在上卦初位，各有进退之难','九四已到君位，无需努力','九三比九四更安全'],correct:1},
+  ]
+  },
+  {
+  id:136,title:'九五·飞龙在天',icon:'飞',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'乾卦九五爻辞<b class="highlight">「飞龙在天，利见大人」</b>。九五居上卦之中，<b class="highlight">中正得位</b>，是乾卦最佳之位。龙已腾飞于天，象征事业鼎盛、大权在握。「利见大人」在此处有两层含义：一是自己已为大人，二是<b class="highlight">仍需贤人辅佐</b>以成大业。此爻为乾卦全卦之核心。'},
+    {type:'teach',symbol:'飞龙',text:'九五之尊，非天上掉下来的。从初九潜龙、九二见龙、九三乾乾、九四或跃，一路磨砺至此，方有飞龙在天之盛。此爻启示：盛极之时仍需<b class="highlight">利见大人</b>，说明再高的位置也需要人才辅佐。<b class="highlight">居尊位而不骄</b>，才是真正的龙德。'},
+    {type:'choice',tag:'选择题',question:'九五「利见大人」与九二「利见大人」相比，有何不同？',options:['完全相同，没有区别','九二求人提携，九五需贤人辅佐且自身已为大人','九五不需要大人','九二不需要大人'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'乾卦九五是全卦中最好的位置，因为它既中且正。',correct:true},
+  ]
+  },
+  {
+  id:137,title:'上九·亢龙有悔',icon:'亢',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'乾卦上九爻辞<b class="highlight">「亢龙有悔」</b>。上九居乾卦之极，<b class="highlight">阳极而亢</b>，盛极必衰。「亢」者，过高也。龙飞过高，超出极限，不能不悔。此爻警示：<b class="highlight">知进不知退，知存不知亡，知得不知丧</b>，终将招致悔吝。'},
+    {type:'teach',symbol:'亢龙',text:'乾卦六爻如同一部完整的奋斗史：潜龙蓄力→见龙初露→乾乾勤勉→或跃抉择→飞龙鼎盛→亢龙有悔。上九之悔，并非失败，而是<b class="highlight">盛极之后的必然</b>。真正的智者，在飞龙在天之时就应思退之路，方免亢龙之悔。<b class="highlight">知进退存亡而不失其正</b>，才是乾卦终极的智慧。'},
+    {type:'choice',tag:'选择题',question:'「亢龙有悔」的核心教训是什么？',options:['能力太强会招致祸患','盛极不知退则必生悔咎','龙不应该飞得太高','成功之后应该立刻退隐'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'乾卦从初九到上九，体现了事物从萌芽到极盛再到衰变的完整发展规律。',correct:true},
+  ]
+  },
+  {
+  id:138,title:'坤卦六四·括囊',icon:'囊',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'坤·下',lines:[0, 0, 0],sub:'地'}],text:'坤卦六四爻辞<b class="highlight">「括囊，无咎无誉」</b>。括囊者，扎紧口袋也。六四居上卦之初，近君之位，多惧之地。「<b class="highlight">括囊</b>」比喻收敛自持，不张扬、不冒进，如同扎紧口袋不露锋芒。如此则虽无赞誉，亦无过错——在敏感位置上，<b class="highlight">无咎即是福</b>。'},
+    {type:'choice',tag:'选择题',question:'「括囊，无咎无誉」反映的处世智慧是什么？',options:['不做事就不会犯错','在敏感位置收敛自持，不张扬不冒进','无誉比有咎好，所以不求有功','口袋里没有东西所以无咎'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'坤卦六四「括囊」之意是鼓励人积极表现以获得赞誉。',correct:false},
+    {type:'choice',tag:'选择题',question:'坤卦六四处于什么位置？',options:['下卦之初','上卦之初，近君之位','全卦之中','卦之最上位'],correct:1},
+  ]
+  },
+  {
+  id:139,title:'师卦九二·在师中',icon:'师',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'坎·下',lines:[0, 1, 0],sub:'水'}],text:'师卦九二爻辞<b class="highlight">「在师中，吉无咎，王三锡命」</b>。师卦为兵众之象，九二居下卦之中，为师之统帅。「<b class="highlight">在师中</b>」谓居中持正，以中道统兵，故吉而无咎。「王三锡命」言君王多次嘉奖，因统帅行军有道、战功卓著。此爻揭示：<b class="highlight">统帅之道贵在持中</b>，不偏不倚方能服众。'},
+    {type:'choice',tag:'选择题',question:'「在师中」的「中」字最核心的含义是什么？',options:['在军队中间','居中持正，以中道统兵','中等水平','中途参战'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'师卦九二「王三锡命」意为君王多次嘉奖赏赐，因统帅有功。',correct:true},
+    {type:'choice',tag:'选择题',question:'师卦的卦象组成是？',options:['坎上坤下','坤上坎下','坎上坎下','坤上坤下'],correct:1},
+  ]
+  },
+  {
+  id:140,title:'泰卦九三·无平不陂',icon:'泰',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'泰卦九三爻辞<b class="highlight">「无平不陂，无往不复，艰贞无咎」</b>。泰卦天地交泰，本为吉卦。然九三处下卦之极，泰极将否之时。爻辞直言：没有平坦不化为陡坡的，没有去而不返的。<b class="highlight">物极必反</b>乃天地常理，处泰之时当思否之将至，以艰难守正则无咎。'},
+    {type:'choice',tag:'选择题',question:'「无平不陂，无往不复」揭示的哲学道理是？',options:['平地和坡地交替出现','事物发展到极点必然走向反面','路总是不平的','去了就回不来'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'泰卦九三提醒人们在通达安泰之时就要警惕可能到来的变化。',correct:true},
+    {type:'choice',tag:'选择题',question:'泰卦的卦象是地天泰，其含义是？',options:['天在上地在下，各居其位','地在上天在下，天地交感通达','天地不分','只有天没有地'],correct:1},
+  ]
+  },
+  {
+  id:141,title:'谦卦全卦精读',icon:'谦',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'艮·下',lines:[1, 0, 0],sub:'山'}],text:'谦卦，地山谦，坤上艮下。山本在上而今居下，<b class="highlight">高而能下</b>，谦之象也。谦卦是六十四卦中<b class="highlight">唯一六爻皆吉</b>的卦，可见《周易》对谦德的推崇。卦辞「谦，亨，君子有终」，言谦必通达，君子行谦终有善果。'},
+    {type:'teach',symbol:'谦益',text:'谦卦六爻皆吉，其精髓在于「谦受益，满招损」。<b class="highlight">初六谦谦君子</b>涉大川而吉，<b class="highlight">九三劳谦</b>有终而吉，<b class="highlight">六五不富以其邻</b>而利用侵伐。谦虚并非软弱退让，而是<b class="highlight">有实力而不自矜</b>，内蕴力量而外表谦和，故无往不利。'},
+    {type:'choice',tag:'选择题',question:'谦卦在六十四卦中的独特之处是什么？',options:['唯一全卦无凶的卦','唯一六爻皆吉的卦','唯一没有爻辞的卦','唯一以单字命名的卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'谦卦的卦象是山在地下，表示高而能下、谦逊之象。',correct:true},
+    {type:'choice',tag:'选择题',question:'谦卦九三「劳谦，君子有终，吉」中「劳谦」的含义是？',options:['劳累而谦虚','有功劳而不自夸，谦虚之至','劳动使人谦卑','疲劳时需要谦虚'],correct:1},
+  ]
+  },
+  {
+  id:142,title:'复卦初九·不远复',icon:'复',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'复卦初九爻辞<b class="highlight">「不远复，无祗悔，元吉」</b>。复卦一阳生于五阴之下，象征生机复苏。初九即此复卦之主爻，「<b class="highlight">不远复</b>」谓走不远就知返——有过错能迅速改正，不至于酿成大悔。「<b class="highlight">无祗悔</b>」即不至于大悔，「元吉」为大善之吉。此爻赞美<b class="highlight">知错能改、迷途知返</b>之德。'},
+    {type:'choice',tag:'选择题',question:'「不远复」最贴切的含义是什么？',options:['走不远就返回，表示胆小','有错能迅速改正，迷途知返','不去远方','返回原来的地方'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'复卦的卦象是一阳生于五阴之下，象征生机开始复苏。',correct:true},
+    {type:'choice',tag:'选择题',question:'复卦初九「元吉」的原因是？',options:['位置最高','知错能改，不至于大悔','得到贵人相助','财运亨通'],correct:1},
+  ]
+  },
+  {
+  id:143,title:'坎卦九五·坎不盈',icon:'坎',
+  steps:[
+    {type:'teach',trigrams:[{label:'坎·上',lines:[0, 1, 0],sub:'水'},{label:'坎·下',lines:[0, 1, 0],sub:'水'}],text:'坎卦九五爻辞<b class="highlight">「坎不盈，祗既平，无咎」</b>。坎为险陷之卦，九五居尊位而处险中。「<b class="highlight">坎不盈</b>」谓险难尚未漫溢到不可收拾，「<b class="highlight">祗既平</b>」言险情趋于平复。虽处险境而险不盈满，以中正之德持守，终能渡过难关而无咎。此爻揭示：<b class="highlight">险中求稳，以静制动</b>。'},
+    {type:'choice',tag:'选择题',question:'「坎不盈」的核心含义是什么？',options:['险难已完全消除','险难尚未到不可收拾的地步','坑里没有水','不满足于现状'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'坎卦九五虽居尊位，但仍在险境之中，需要以中正之德持守。',correct:true},
+    {type:'choice',tag:'选择题',question:'坎卦的卦象组成是？',options:['坎上坤下','坎上坎下','坤上坎下','离上坎下'],correct:1},
+  ]
+  },
+  {
+  id:144,title:'恒卦六五·恒其德',icon:'恒',
+  steps:[
+    {type:'teach',trigrams:[{label:'震·上',lines:[0, 0, 1],sub:'雷'},{label:'巽·下',lines:[1, 1, 0],sub:'风'}],text:'恒卦六五爻辞<b class="highlight">「恒其德，贞，妇人吉夫子凶」</b>。六五居恒卦君位，「<b class="highlight">恒其德</b>」谓持久守德。然此爻之奇在于「妇人吉夫子凶」——妇人从一而终为吉，夫子（丈夫）若一味固执、不知变通则为凶。此爻揭示：<b class="highlight">恒德需因人而异</b>，守常与变通须兼顾，死守一端非真恒。'},
+    {type:'choice',tag:'选择题',question:'「妇人吉夫子凶」揭示的道理是什么？',options:['女性比男性更适合守恒','恒德需因人因时而异，不可一味固执','男性不应该有恒心','妇人的品德比夫子好'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'恒卦六五「恒其德」的意思是无论什么情况下都要坚持不变。',correct:false},
+    {type:'choice',tag:'选择题',question:'恒卦的卦象组成是？',options:['巽上震下','震上巽下','震上震下','巽上巽下'],correct:1},
+  ]
+  },
+  {
+  id:145,title:'鼎卦九三·鼎耳革',icon:'鼎',
+  steps:[
+    {type:'teach',trigrams:[{label:'离·上',lines:[1, 0, 1],sub:'火'},{label:'巽·下',lines:[1, 1, 0],sub:'风'}],text:'鼎卦九三爻辞<b class="highlight">「鼎耳革，其行塞，雉膏不食」</b>。鼎为烹饪之器，「<b class="highlight">鼎耳革</b>」谓鼎耳变形，无法举鼎移动，故「其行塞」——行动受阻。「<b class="highlight">雉膏不食</b>」言美味当前却无法享用。此爻比喻<b class="highlight">变革过程中遭遇阻碍</b>，条件尚不成熟。然「方雨亏悔，终吉」，阴阳调和之后终将化解困境。'},
+    {type:'choice',tag:'选择题',question:'「鼎耳革，其行塞」比喻什么？',options:['鼎坏了要扔掉','变革过程中遭遇阻碍，条件未成熟','鼎耳是可以更换的','做饭时锅耳断了'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'鼎卦九三虽行塞不通，但最终结果是「终吉」。',correct:true},
+    {type:'choice',tag:'选择题',question:'鼎卦的卦象组成是？',options:['巽上离下','离上巽下','离上离下','巽上巽下'],correct:1},
+  ]
+  },
+  {
+  id:146,title:'渐卦九五·鸿渐于陵',icon:'渐',
+  steps:[
+    {type:'teach',trigrams:[{label:'巽·上',lines:[1, 1, 0],sub:'风'},{label:'艮·下',lines:[1, 0, 0],sub:'山'}],text:'渐卦九五爻辞<b class="highlight">「鸿渐于陵，妇三岁不孕，终莫之胜，吉」</b>。渐卦讲循序渐进之理，以鸿雁渐次飞行为喻。九五「鸿渐于陵」，鸿雁已飞至高陵。「<b class="highlight">妇三岁不孕</b>」比喻三年间愿望未遂，但「终莫之胜」——<b class="highlight">最终无人能阻挡</b>，结果为吉。此爻揭示：<b class="highlight">循序渐进，虽迟终达</b>。'},
+    {type:'choice',tag:'选择题',question:'「妇三岁不孕，终莫之胜，吉」的核心启示是什么？',options:['不孕症可以治愈','虽经长期等待，坚持到底终能如愿','三年是一个期限','妇人应该耐心等待'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'渐卦九五以鸿雁渐次飞行比喻事物循序渐进的发展过程。',correct:true},
+    {type:'choice',tag:'选择题',question:'渐卦的卦象组成是？',options:['艮上巽下','巽上艮下','艮上艮下','巽上巽下'],correct:1},
+  ]
+  },
+  {
+  id:147,title:'既济六四·繻有衣袽',icon:'济',
+  steps:[
+    {type:'teach',trigrams:[{label:'坎·上',lines:[0, 1, 0],sub:'水'},{label:'离·下',lines:[1, 0, 1],sub:'火'}],text:'既济卦六四爻辞<b class="highlight">「繻有衣袽，终日戒」</b>。既济为水火相交、事已成功之卦。然六四近君之位，居安思危之象。「<b class="highlight">繻有衣袽</b>」谓华美之衣中备有破旧衣絮——比喻在成功时准备应对不测。「<b class="highlight">终日戒</b>」言整日保持警惕。此爻揭示：<b class="highlight">成功之时更需居安思危</b>，未雨绸缪方能保泰持盈。'},
+    {type:'choice',tag:'选择题',question:'「繻有衣袽，终日戒」的核心思想是什么？',options:['穿好衣服也要准备破衣服','成功时更要居安思危，防患未然','衣服破了要补','终日都要穿好衣服'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'既济卦表示事情已经成功完成，因此无需再警惕。',correct:false},
+    {type:'choice',tag:'选择题',question:'既济卦的卦象组成是？',options:['离上坎下','坎上离下','坎上坎下','离上离下'],correct:1},
+  ]
+  },
+  {
+  id:148,title:'十二消息卦总论',icon:'消',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'<b class="highlight">十二消息卦</b>是《周易》揭示阴阳消长规律的核心体系。「消」为阴消阳，「息」为阳息阴。从复卦一阳生到乾卦六阳，为<b class="highlight">阳息阴消</b>之六卦；从姤卦一阴生到坤卦六阴，为<b class="highlight">阴息阳消</b>之六卦。十二卦循环往复，完美映射一年十二个月的阴阳变化，是理解天人合一思想的<b class="highlight">关键钥匙</b>。'},
+    {type:'teach',symbol:'辟卦',text:'消息卦又称「十二月卦」或「辟卦」，「辟」为君，谓十二卦各主一月。<b class="highlight">复、临、泰、大壮、夬、乾</b>代表阳气从萌生到极盛；<b class="highlight">姤、遯、否、观、剥、坤</b>代表阴气从萌生到极盛。二者首尾相接，构成<b class="highlight">天道循环</b>的完整图景。'},
+    {type:'choice',tag:'选择题',question:'「消息卦」中「消」和「息」分别是什么意思？',options:['消=消息，息=休息','消=阴消阳，息=阳息阴','消=消失，息=停止','消=消费，息=利息'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'十二消息卦由六个阳息卦和六个阴息卦组成，共十二个卦。',correct:true},
+    {type:'choice',tag:'选择题',question:'下列哪组属于「阳息阴消」的六个卦？',options:['复、临、泰、大壮、夬、乾','姤、遯、否、观、剥、坤','乾、坤、泰、否、坎、离','震、巽、艮、兑、坎、离'],correct:0},
+  ]
+  },
+  {
+  id:149,title:'阳息六卦',icon:'阳',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'<b class="highlight">阳息六卦</b>自下而上阳爻渐增：复卦一阳生（十一月），临卦二阳（十二月），泰卦三阳（正月），大壮四阳（二月），夬卦五阳（三月），乾卦六阳（四月）。从冬至一阳初动到四月阳气极盛，<b class="highlight">六卦呈现阳气步步壮大</b>的过程。其中泰卦三阳开泰最为人熟知，象征<b class="highlight">阴阳平衡、通达安泰</b>。'},
+    {type:'teach',symbol:'阳长',text:'阳息六卦揭示了一个重要规律：<b class="highlight">阳气的增长是渐进的</b>，不是一蹴而就。复卦一阳虽微，却代表生机复苏；至乾卦六阳全盛，已到阳极。正所谓「冬至一阳生」，最冷的时节恰恰蕴含着<b class="highlight">生机萌发的种子</b>。'},
+    {type:'choice',tag:'选择题',question:'阳息六卦中，「三阳开泰」对应的是哪个卦？',options:['复卦','临卦','泰卦','大壮卦'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'阳息六卦从复卦到乾卦，阳爻数量依次为一、二、三、四、五、六。',correct:true},
+  ]
+  },
+  {
+  id:150,title:'阴息六卦',icon:'阴',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'巽·下',lines:[1, 1, 0],sub:'风'}],text:'<b class="highlight">阴息六卦</b>自下而上阴爻渐增：姤卦一阴生（五月），遯卦二阴（六月），否卦三阴（七月），观卦四阴（八月），剥卦五阴（九月），坤卦六阴（十月）。从夏至一阴初生到十月阴气极盛，<b class="highlight">六卦呈现阴气步步壮大</b>的过程。其中否卦三阴象征天地不交、<b class="highlight">阴阳隔绝</b>，与泰卦形成鲜明对比。'},
+    {type:'teach',symbol:'阴长',text:'阴息六卦虽言阴气增长，但并非纯然消极。姤卦一阴生于五阳之下，提示<b class="highlight">盛极之中已含衰变之机</b>。正如「夏至一阴生」，在最炎热的时候，阴气已悄然萌发。此即《周易》「物极必反」之理——<b class="highlight">否极泰来，泰极否来</b>，循环不息。'},
+    {type:'choice',tag:'选择题',question:'阴息六卦中，「三阴」对应的卦和含义是？',options:['剥卦，阴将剥尽阳','否卦，天地不交，阴阳隔绝','观卦，观察形势','坤卦，纯阴无阳'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'姤卦一阴生于五阳之下，提示盛极之中已含衰变之机。',correct:true},
+  ]
+  },
+  {
+  id:151,title:'月卦配应',icon:'月',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'十二消息卦与十二月、十二地支<b class="highlight">一一对应</b>：子=十一月=复卦，丑=十二月=临卦，寅=正月=泰卦，卯=二月=大壮卦，辰=三月=夬卦，巳=四月=乾卦，午=五月=姤卦，未=六月=遯卦，申=七月=否卦，酉=八月=观卦，戌=九月=剥卦，亥=十月=坤卦。此配应以<b class="highlight">夏历为准</b>，冬至所在月为子月（十一月）。'},
+    {type:'choice',tag:'选择题',question:'下列地支与消息卦的对应，哪一项是正确的？',options:['子=复卦','午=乾卦','卯=泰卦','亥=剥卦'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'十二消息卦对应十二个月份时，以冬至所在月（子月）对应复卦。',correct:true},
+    {type:'choice',tag:'选择题',question:'正月（寅月）对应的消息卦是？',options:['临卦','泰卦','大壮卦','夬卦'],correct:1},
+  ]
+  },
+  {
+  id:152,title:'消息卦与节气',icon:'节',
+  steps:[
+    {type:'teach',trigrams:[{label:'坤·上',lines:[0, 0, 0],sub:'地'},{label:'震·下',lines:[0, 0, 1],sub:'雷'}],text:'十二消息卦与二十四节气密切相关。最关键的两个节点：<b class="highlight">冬至一阳生，对应复卦</b>；<b class="highlight">夏至一阴生，对应姤卦</b>。冬至是北半球日照最短之日，此后阳气渐复；夏至日照最长，此后阴气渐生。此外，立春近泰卦三阳，立秋近否卦三阴，春分、秋分则阴阳各半。<b class="highlight">节气与卦象互参</b>，可窥天道运行之妙。'},
+    {type:'teach',symbol:'天人',text:'消息卦与节气的对应体现了古人<b class="highlight">以天文观测指导人文</b>的智慧。冬至虽寒极，却是一阳初生之时，故有「冬至大如年」之说。夏至虽热盛，一阴已生，提醒人们防暑亦防寒变。二十四节气将一年细分为<b class="highlight">阴阳消长的精确刻度</b>，而消息卦则提供了宏观的阴阳走势图谱。'},
+    {type:'choice',tag:'选择题',question:'「冬至一阳生」对应的卦象是？',options:['乾卦','复卦','泰卦','临卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'夏至一阴生对应姤卦，表示阳气开始衰退、阴气开始增长。',correct:true},
+  ]
+  },
+  {
+  id:153,title:'消息卦测验',icon:'测',
+  steps:[
+    {type:'teach',symbol:'总览',text:'本关综合复习十二消息卦的核心知识：<b class="highlight">阳息六卦</b>（复、临、泰、大壮、夬、乾）代表阳气从冬至到四月的增长；<b class="highlight">阴息六卦</b>（姤、遯、否、观、剥、坤）代表阴气从夏至到十月的增长。十二卦对应十二地支与十二月，冬至复卦、夏至姤卦是两个关键转折点。<b class="highlight">物极必反、循环往复</b>是其核心哲理。'},
+    {type:'choice',tag:'选择题',question:'按阳爻从少到多排列，以下顺序正确的是？',options:['复→泰→乾→夬','复→临→泰→大壮→夬→乾','乾→夬→大壮→泰→临→复','临→复→泰→大壮→夬→乾'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'消息卦体系中，乾卦代表阳气极盛，坤卦代表阴气极盛，二者构成循环的两极。',correct:true},
+    {type:'choice',tag:'选择题',question:'下列关于消息卦的说法，哪一项是错误的？',options:['泰卦对应正月寅月','姤卦对应五月午月','剥卦对应九月戌月','否卦对应八月酉月'],correct:3},
+    {type:'truefalse',tag:'判断题',question:'十二消息卦又称「辟卦」，「辟」有「君」义，谓十二卦各主一月。',correct:true},
+  ]
+  },
+  {
+  id:154,title:'纳甲·天干配卦',icon:'甲',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'<b class="highlight">纳甲</b>是汉代京房所创的占筮体系，将天干地支纳入卦爻之中。天干配卦之法：<b class="highlight">乾纳甲壬</b>（内卦纳甲，外卦纳壬），<b class="highlight">坤纳乙癸</b>（内卦纳乙，外卦纳癸），坎纳戊，离纳己，震纳庚，巽纳辛，艮纳丙，兑纳丁。此配法依据<b class="highlight">八卦月相方位</b>而定，甲乙为东方木，丙丁为南方火等。'},
+    {type:'teach',symbol:'纳干',text:'纳甲之名，取自「纳干支于卦爻」之意。乾坤纳甲壬乙癸，取<b class="highlight">天地包罗万象</b>之义，故乾坤各纳二干。其余六卦各纳一干，依方位五行排列：<b class="highlight">震纳庚、巽纳辛、坎纳戊、离纳己、艮纳丙、兑纳丁</b>。纳甲是六爻预测的<b class="highlight">基础框架</b>。'},
+    {type:'choice',tag:'选择题',question:'在纳甲体系中，乾卦内卦纳的是哪个天干？',options:['壬','甲','乙','丙'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'纳甲法中，坤卦内卦纳乙，外卦纳癸。',correct:true},
+    {type:'choice',tag:'选择题',question:'下列天干配卦，哪一项是正确的？',options:['坎纳己，离纳戊','震纳庚，巽纳辛','艮纳丁，兑纳丙','乾纳甲乙，坤纳壬癸'],correct:1},
+  ]
+  },
+  {
+  id:155,title:'纳甲·地支配爻',icon:'支',
+  steps:[
+    {type:'teach',trigrams:[{label:'乾·上',lines:[1, 1, 1],sub:'天'},{label:'乾·下',lines:[1, 1, 1],sub:'天'}],text:'纳甲体系中，六爻各配地支。<b class="highlight">阳卦顺行</b>：乾、震、坎、艮四阳卦，地支从初爻到上爻顺排<b class="highlight">子、寅、辰、午、申、戌</b>（六阳支顺行，各卦起始不同）。<b class="highlight">阴卦逆行</b>：坤、巽、离、兑四阴卦，地支从初爻到上爻逆排<b class="highlight">未、巳、卯、丑、亥、酉</b>（六阴支逆行，各卦起始不同）。阳顺阴逆，体现了<b class="highlight">阴阳运行方向相反</b>的法则。'},
+    {type:'teach',symbol:'配爻',text:'具体而言，以乾卦为例：初九子、九二寅、九三辰、九四午、九五申、上九戌。以坤卦为例：初六未、六二巳、六三卯、六四丑、六五亥、上六酉。乾震从子起，坎从寅起，艮从辰起；坤从未起，巽从丑起，离从卯起，兑从巳起，<b class="highlight">六阳支与六阴支各成体系</b>，井然有序。'},
+    {type:'choice',tag:'选择题',question:'阳卦（乾、震、坎、艮）的地支配爻顺序是？',options:['子、丑、寅、卯、辰、巳','子、寅、辰、午、申、戌','未、巳、卯、丑、亥、酉','丑、亥、酉、未、巳、卯'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'阴卦（坤、巽、离、兑）的地支配爻采用六阴支逆行排列。',correct:true},
+    {type:'choice',tag:'选择题',question:'乾卦九二爻所配的地支是？',options:['子','寅','辰','午'],correct:1},
+  ]
+  },
+  {
+  id:156,title:'六亲·父母爻',icon:'父',
+  steps:[
+    {type:'teach',symbol:'父母',text:'<b class="highlight">六亲</b>是纳甲占卜中分析事物关系的重要概念，依据<b class="highlight">五行生克</b>而定。<b class="highlight">生我者为父母爻</b>，主文书、契约、保护、辛劳、长辈、教育等象。父母爻如同庇护之伞，既代表保护与滋养，也代表约束与负担。占得父母爻旺相，多主文书之事、长辈助力；若休囚受克，则主辛劳无获、文书阻滞。'},
+    {type:'choice',tag:'选择题',question:'在六亲关系中，「父母爻」的确定依据是？',options:['我生者','生我者','克我者','同我者'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'父母爻主要代表文书、保护、辛劳和长辈等象。',correct:true},
+    {type:'choice',tag:'选择题',question:'以下哪项属于父母爻所主的事项？',options:['钱财收益','文书契约','竞争对手','疾病忧患'],correct:1},
+  ]
+  },
+  {
+  id:157,title:'六亲·兄弟爻',icon:'兄',
+  steps:[
+    {type:'teach',symbol:'兄弟',text:'<b class="highlight">同我者为兄弟爻</b>，即五行属性相同者。兄弟爻主竞争、破财、劫耗，也主助力、同伴、朋友。兄弟爻具有<b class="highlight">两面性</b>：旺则帮身助力、同心协力；过旺则争财夺利、内耗不断。占财运遇兄弟爻发动，多主<b class="highlight">破财或分财</b>；占事业遇之，则需警惕同侪竞争。'},
+    {type:'choice',tag:'选择题',question:'「兄弟爻」的确定依据是？',options:['生我者','我生者','同我者','我克者'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'兄弟爻只有负面含义，代表竞争和破财。',correct:false},
+    {type:'choice',tag:'选择题',question:'占财运时兄弟爻发动，通常预示什么？',options:['财运大好','破财或分财','贵人相助','官运亨通'],correct:1},
+  ]
+  },
+  {
+  id:158,title:'六亲·子孙爻',icon:'子',
+  steps:[
+    {type:'teach',symbol:'子孙',text:'<b class="highlight">我生者为子孙爻</b>，主福禄、欢乐、制官、消灾。子孙爻是六亲中的<b class="highlight">福德之星</b>，象征生机、快乐与无忧。子孙爻克制官鬼爻，故有<b class="highlight">消灾解厄</b>之功。占病遇子孙爻旺相，多主痊愈；占事业遇之，虽制官但主轻松自在。然子孙爻过旺则贪图享乐、不思进取。'},
+    {type:'choice',tag:'选择题',question:'「子孙爻」的确定依据是？',options:['生我者','我生者','克我者','同我者'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'子孙爻克制官鬼爻，因此具有消灾解厄的功能。',correct:true},
+    {type:'choice',tag:'选择题',question:'以下哪项是子孙爻的主要象征？',options:['压力与忧患','福禄与欢乐','竞争与破财','文书与辛劳'],correct:1},
+  ]
+  },
+  {
+  id:159,title:'六亲·妻财爻',icon:'财',
+  steps:[
+    {type:'teach',symbol:'妻财',text:'<b class="highlight">我克者为妻财爻</b>，主钱财、收益、感情、妻室。妻财爻是六亲中的<b class="highlight">财利之星</b>，旺相则财运亨通、收益丰厚。占求财遇妻财爻旺动，主财源广进；占感情遇之，主姻缘可成。然财爻过旺而身弱，则<b class="highlight">财多身弱反不任财</b>，犹如体弱者难以承载重金。'},
+    {type:'choice',tag:'选择题',question:'「妻财爻」的确定依据是？',options:['我克者','克我者','生我者','我生者'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'妻财爻旺相一定意味着财运大好，不会有负面影响。',correct:false},
+    {type:'choice',tag:'选择题',question:'妻财爻所主的事项不包括以下哪项？',options:['钱财收益','感情姻缘','事业升迁','妻室'],correct:2},
+  ]
+  },
+  {
+  id:160,title:'六亲·官鬼爻',icon:'官',
+  steps:[
+    {type:'teach',symbol:'官鬼',text:'<b class="highlight">克我者为官鬼爻</b>，主事业、功名、压力、疾病、忧患。官鬼爻是六亲中<b class="highlight">最具两面性</b>的一爻：对求官求名者，官鬼旺相是升迁之兆；对占病占灾者，官鬼发动则是凶象。官鬼爻既代表<b class="highlight">权力与地位</b>，也代表<b class="highlight">制约与压力</b>。关键在于所测之事与官鬼爻的生克关系。'},
+    {type:'teach',symbol:'吉凶',text:'官鬼爻之所以兼具吉凶，因为「克我」本身就有<b class="highlight">双重含义</b>：一方面，被管制约束可以转化为动力和秩序，故主事业功名；另一方面，被克制过度则为压力、灾祸、疾病。在六爻预测中，<b class="highlight">官鬼爻的旺衰与所测事项</b>决定了它是福是祸。'},
+    {type:'choice',tag:'选择题',question:'「官鬼爻」的确定依据是？',options:['我克者','生我者','克我者','同我者'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'官鬼爻既可代表事业功名，也可代表疾病忧患，取决于所测之事。',correct:true},
+    {type:'choice',tag:'选择题',question:'下列关于官鬼爻的说法，哪项是正确的？',options:['官鬼爻只有凶义','官鬼爻只有吉义','官鬼爻兼具吉凶两面性','官鬼爻与六亲无关'],correct:2},
+  ]
+  },
+  {
+  id:161,title:'纳甲六亲测验',icon:'考',
+  steps:[
+    {type:'teach',symbol:'总览',text:'本关综合复习纳甲与六亲体系。<b class="highlight">纳甲</b>将天干地支纳入卦爻：天干配卦（乾甲壬、坤乙癸、坎戊、离己、震庚、巽辛、艮丙、兑丁），地支配爻（阳卦顺行子寅辰午申戌，阴卦逆行未巳卯丑亥酉）。<b class="highlight">六亲</b>依五行生克而定：生我=父母，同我=兄弟，我生=子孙，我克=妻财，克我=官鬼。二者合用，构成六爻预测的<b class="highlight">核心分析框架</b>。'},
+    {type:'choice',tag:'选择题',question:'下列六亲与五行关系，哪一项是正确的？',options:['生我者=子孙','我克者=官鬼','克我者=官鬼','同我者=父母'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'纳甲法中，天干配卦和地支配爻共同构成了卦爻的干支体系。',correct:true},
+    {type:'choice',tag:'选择题',question:'以下地支配爻的描述，正确的是？',options:['阳卦用六阴支逆行','阴卦用六阳支顺行','阳卦用六阳支顺行，阴卦用六阴支逆行','所有卦都用相同的地支顺序'],correct:2},
+    {type:'choice',tag:'选择题',question:'六亲中代表「文书、保护、辛劳」的是哪一爻？',options:['子孙爻','妻财爻','父母爻','官鬼爻'],correct:2},
+  ]
+  },
+  {
+  id:162,title:'后天八卦方位',icon:'方位',
+  steps:[
+    {type:'teach',symbol:'后天八卦',text:'<b class="highlight">后天八卦</b>即文王八卦，出自《说卦传》第五章：“帝出乎震，齐乎巽，相见乎离，致役乎坤，说言乎兑，战乎乾，劳乎坎，成言乎艮。”震居东方（春），巽居东南，离居南方（夏），坤居西南，兑居西方（秋），乾居西北，坎居北方（冬），艮居东北。后天八卦描述的是<b class="highlight">万物在时空中的流转</b>，对应四季循环与五行生克。'},
+    {type:'choice',tag:'选择题',question:'后天八卦中离卦居何方？',options:['东方','南方','西方','北方'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'后天八卦的方位安排出自《说卦传》。',correct:true},
+    {type:'choice',tag:'选择题',question:'后天八卦中震卦对应哪个季节？',options:['秋','冬','春','夏'],correct:2},
+  ]
+  },
+  {
+  id:163,title:'先天与后天之别',icon:'先后',
+  steps:[
+    {type:'teach',symbol:'先天后天',text:'<b class="highlight">先天八卦</b>传为伏羲所画，邵雍在《皇极经世》中阐发：乾南坤北、离东坎西，阴阳对待，体定位定。<b class="highlight">后天八卦</b>传为文王所演，震东兑西、离南坎北，流行不息，用行变化。先天讲<b class="highlight">对待</b>（空间结构），后天讲<b class="highlight">流行</b>（时间流转）。邵雍认为先天为体、后天为用，二者相辅相成。'},
+    {type:'choice',tag:'选择题',question:'先天八卦的核心特征是？',options:['流行不息','阴阳对待','时间流转','五行生克'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'邵雍认为先天为体、后天为用。',correct:true},
+    {type:'choice',tag:'选择题',question:'先天八卦中乾居何方？',options:['东方','南方','北方','西方'],correct:1},
+  ]
+  },
+  {
+  id:164,title:'八卦与五行配应',icon:'五行',
+  steps:[
+    {type:'teach',symbol:'八卦五行',text:'八卦与五行的配应：<b class="highlight">乾兑属金，震巽属木，坎属水，离属火，坤艮属土</b>。此配应源自《说卦传》与后世象数易学发展。在后天八卦中，五行分布恰成相生之序：东方木（震巽）→南方火（离）→中央土（坤艮）→西方金（乾兑）→北方水（坎）→复归东方木。<b class="highlight">五行生克是断卦体用分析的基础</b>。'},
+    {type:'choice',tag:'选择题',question:'坎卦的五行属性是？',options:['金','木','水','火'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'乾卦和兑卦的五行都属金。',correct:true},
+    {type:'choice',tag:'选择题',question:'后天八卦中五行分布的顺序是？',options:['金→水→木→火→土','木→火→土→金→水','水→木→火→土→金','土→金→水→木→火'],correct:1},
+  ]
+  },
+  {
+  id:165,title:'八卦与天时季节',icon:'天时',
+  steps:[
+    {type:'teach',symbol:'天时',text:'后天八卦配天时：<b class="highlight">震为春分（万物出），离为夏至（万物相见），兑为秋分（万物悦），坎为冬至（万物归藏）</b>。巽为春夏之交，坤为夏秋之交，乾为秋冬之交，艮为冬春之交。八卦对应八方八节，恰是一年四时八节的完整循环。这体现了周易“<b class="highlight">观乎天文以察时变</b>”（《贲卦·彖传》）的精神。'},
+    {type:'choice',tag:'选择题',question:'后天八卦中坎卦对应的天时是？',options:['春分','夏至','秋分','冬至'],correct:3},
+    {type:'truefalse',tag:'判断题',question:'“观乎天文以察时变”出自《贲卦·彖传》。',correct:true},
+    {type:'choice',tag:'选择题',question:'后天八卦八方对应几节？',options:['四节','八节','十二节','二十四节'],correct:1},
+  ]
+  },
+  {
+  id:166,title:'八卦与人体方位',icon:'人身',
+  steps:[
+    {type:'teach',symbol:'人身',text:'《说卦传》将八卦配人身：<b class="highlight">乾为首，坤为腹，震为足，巽为股，坎为耳，离为目，艮为手，兑为口</b>。这是八卦取象的重要内容。在后天八卦方位中，南方离为目（明），北方坎为耳（聪），东方震为足（行），西方兑为口（言）。八卦配人身体现了周易“<b class="highlight">近取诸身，远取诸物</b>”（《系辞下传》）的取象方法。'},
+    {type:'choice',tag:'选择题',question:'《说卦传》中乾卦配人身的哪个部位？',options:['首','腹','足','手'],correct:0},
+    {type:'truefalse',tag:'判断题',question:'“近取诸身，远取诸物”出自《系辞下传》。',correct:true},
+    {type:'choice',tag:'选择题',question:'坎卦配人身哪个部位？',options:['目','耳','口','股'],correct:1},
+  ]
+  },
+  {
+  id:167,title:'后天八卦总结',icon:'总结',
+  steps:[
+    {type:'choice',tag:'第1题',question:'后天八卦中哪个卦居西方？',options:['震','兑','乾','巽'],correct:1},
+    {type:'truefalse',tag:'第2题',question:'先天八卦讲对待，后天八卦讲流行。',correct:true},
+    {type:'choice',tag:'第3题',question:'坤卦的五行属性是？',options:['木','火','土','金'],correct:2},
+    {type:'choice',tag:'第4题',question:'“帝出乎震”出自哪部典籍？',options:['系辞传','说卦传','文言传','彖传'],correct:1},
+  ]
+  },
+  {
+  id:168,title:'伏羲与文王',icon:'伏羲',
+  steps:[
+    {type:'teach',symbol:'圣王',text:'相传<b class="highlight">伏羲画八卦</b>，《系辞下传》载：“古者包牺氏之王天下也，仰则观象于天，俯则观法于地，观鸟兽之文与地之宜，近取诸身，远取诸物，于是始作八卦。”<b class="highlight">文王演周易</b>，《史记·周本纪》载文王“囚羑里，盖益易之八卦为六十四卦”。文王被囚羑里而演六十四卦并作卦辞，这是周易成书的关键节点。周公旦作爻辞，完成周易经文部分。'},
+    {type:'choice',tag:'选择题',question:'“仰则观象于天，俯则观法于地”描述的是谁画八卦？',options:['文王','伏羲','孔子','周公'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'《史记》记载文王在羑里被囚时演六十四卦。',correct:true},
+    {type:'choice',tag:'选择题',question:'相传作爻辞的是谁？',options:['伏羲','文王','周公','孔子'],correct:2},
+  ]
+  },
+  {
+  id:169,title:'孔子与十翼',icon:'孔子',
+  steps:[
+    {type:'teach',symbol:'十翼',text:'相传<b class="highlight">孔子作十翼</b>（即《易传》），包括彖传上下、象传上下、系辞传上下、文言传、说卦传、序卦传、杂卦传共十篇。《史记·孔子世家》载孔子“晚而喜易，序彖、系、象、说卦、文言”。孔子将周易从占筮之书提升为<b class="highlight">义理之书</b>，强调“不占而已矣”（《论语·子路》引孔子语）。十翼是理解周易经文的根本钥匙。'},
+    {type:'choice',tag:'选择题',question:'十翼共有几篇？',options:['八篇','十篇','十二篇','六篇'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'《史记》记载孔子晚年喜好周易。',correct:true},
+    {type:'choice',tag:'选择题',question:'孔子说“不占而已矣”表明他如何看待周易？',options:['重视占卜','重义理轻占卜','反对学易','只占大事'],correct:1},
+  ]
+  },
+  {
+  id:170,title:'京房与象数派',icon:'京房',
+  steps:[
+    {type:'teach',symbol:'京房',text:'<b class="highlight">京房</b>（前77-前37），西汉易学家，师从焦延寿。创立<b class="highlight">京房易</b>，发明八宫卦说、纳甲法、世应说、飞伏说等，是象数易学的奠基人。他将八卦分八宫，每宫八卦按特定规律排列，配以天干地支和六亲，形成了系统的占筮体系。<b class="highlight">纳甲法</b>至今仍是六爻占法的核心框架。京房最终因直言遭害，英年早逝。'},
+    {type:'choice',tag:'选择题',question:'京房是哪个朝代的易学家？',options:['秦朝','西汉','东汉','魏晋'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'纳甲法是京房创立的占筮方法。',correct:true},
+    {type:'choice',tag:'选择题',question:'京房易的八宫卦说属于哪个学派？',options:['义理派','象数派','考据派','理学派'],correct:1},
+  ]
+  },
+  {
+  id:171,title:'王弼与义理派',icon:'王弼',
+  steps:[
+    {type:'teach',symbol:'王弼',text:'<b class="highlight">王弼</b>（226-249），魏晋玄学家，著《周易注》。他一改汉易重象数的传统，<b class="highlight">扫象阐理</b>，主张通过卦爻辞的义理来理解周易，不拘泥于卦象和互体之说。王弼的注解被收入唐代孔颖达《周易正义》，成为官方标准读本。王弼虽英年早逝（年仅24岁），但其义理解易的方法影响深远，开义理派解易之先河。'},
+    {type:'choice',tag:'选择题',question:'王弼解易的核心方法是？',options:['重象数','扫象阐理','重占卜','重考据'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'王弼的《周易注》被收入唐代《周易正义》成为官方标准。',correct:true},
+    {type:'choice',tag:'选择题',question:'王弼是哪个时期的学者？',options:['西汉','东汉','魏晋','唐代'],correct:2},
+  ]
+  },
+  {
+  id:172,title:'邵雍与先天学',icon:'邵雍',
+  steps:[
+    {type:'teach',symbol:'邵雍',text:'<b class="highlight">邵雍</b>（1011-1077），北宋五子之一，著《皇极经世》，传《梅花易数》。创立<b class="highlight">先天学</b>，提出伏羲先天八卦图和六十四卦圆图方图。邵雍认为先天八卦才是周易本源，后天八卦为文王所演之用。其<b class="highlight">梅花易数</b>以时间、数字、声音等万物皆可起卦，简便灵活，是后世最流行的占法之一。邵雍的学说影响了朱熹等理学大家。'},
+    {type:'choice',tag:'选择题',question:'邵雍的代表作不包括以下哪部？',options:['皇极经世','梅花易数','周易本义','先天图说'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'邵雍是北宋五子之一。',correct:true},
+    {type:'choice',tag:'选择题',question:'梅花易数的核心特点是？',options:['必须用蓖草','万物皆可起卦','只能用铜钱','必须在庙中起卦'],correct:1},
+  ]
+  },
+  {
+  id:173,title:'朱熹与周易本义',icon:'朱熹',
+  steps:[
+    {type:'teach',symbol:'朱熹',text:'<b class="highlight">朱熹</b>（1130-1200），南宋理学集大成者，著《周易本义》《易学启蒙》。朱熹主张“<b class="highlight">易本卜筮之书</b>”，认为应从占筮本义出发理解周易，既不废弃象数，也不忽略义理。他吸取邵雍先天学，以<b class="highlight">经传分离</b>的方式编排周易。《周易本义》成为元明清科举标准读本，影响中国读书人六百余年。'},
+    {type:'choice',tag:'选择题',question:'朱熹对周易的根本观点是？',options:['只重象数','只重义理','易本卜筮之书','周易不可学'],correct:2},
+    {type:'truefalse',tag:'判断题',question:'《周易本义》是元明清科举标准读本。',correct:true},
+    {type:'choice',tag:'选择题',question:'朱熹编排周易时采用什么方式？',options:['经传合一','经传分离','只保留经','只保留传'],correct:1},
+  ]
+  },
+  {
+  id:174,title:'程颐与伊川易传',icon:'程颐',
+  steps:[
+    {type:'teach',symbol:'程颐',text:'<b class="highlight">程颐</b>（1033-1107），北宋理学家，著《伊川易传》（又名《周易程氏传》）。与朱熹不同，程颐重义理轻象数，<b class="highlight">以儒家义理解易</b>，将周易视为修身治国的指南。程颐强调“<b class="highlight">随时变易以从道</b>”，认为周易的核心在于教人顺应时变而守正道。《伊川易传》与朱熹《周易本义》并称宋易双璧。'},
+    {type:'choice',tag:'选择题',question:'程颐解易的特点是？',options:['重象数轻义理','以儒家义理解易','重占卜','重考据'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'《伊川易传》又名《周易程氏传》。',correct:true},
+    {type:'choice',tag:'选择题',question:'程颐认为周易的核心在于？',options:['占卜技术','随时变易以从道','象数推演','五行生克'],correct:1},
+  ]
+  },
+  {
+  id:175,title:'王夫之与周易内传',icon:'夫之',
+  steps:[
+    {type:'teach',symbol:'王夫之',text:'<b class="highlight">王夫之</b>（1619-1692），明清之际大儒，著《周易内传》《周易外传》《周易大象解》。王夫之集象数义理于一身，<b class="highlight">主张乾坤并建</b>，反对先天后天之说。他认为周易是“<b class="highlight">即事以穷理</b>”之书——通过具体事物来探究天道。王夫之的易学博大精深，是古典易学的总结性人物。'},
+    {type:'choice',tag:'选择题',question:'王夫之易学的核心主张是？',options:['扫象阐理','乾坤并建','纳甲六亲','先天学'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'王夫之是明清之际的思想家。',correct:true},
+    {type:'choice',tag:'选择题',question:'王夫之认为周易是什么性质的书？',options:['占卜之书','即事以穷理之书','象数之书','考据之书'],correct:1},
+  ]
+  },
+  {
+  id:176,title:'象数与义理两大派',icon:'两派',
+  steps:[
+    {type:'teach',symbol:'两派',text:'易学史上分<b class="highlight">象数派</b>与<b class="highlight">义理派</b>两大传统。象数派重卦象、爻数、互体、纳甲等推演方法，以汉易（京房、郑玄、虞翻）为代表。义理派重卦爻辞的哲学义理，以王弼、程颐为代表。<b class="highlight">两派并非水火不容</b>，朱熹即兼取两家之长。象数为周易之术，义理为周易之道，术道并重方能全面理解周易。'},
+    {type:'choice',tag:'选择题',question:'象数派的代表人物是？',options:['王弼','京房','程颐','朱熹'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'象数派与义理派完全对立，互不相容。',correct:false},
+    {type:'choice',tag:'选择题',question:'以下哪位学者兼取象数义理之长？',options:['京房','王弼','朱熹','程颐'],correct:2},
+  ]
+  },
+  {
+  id:177,title:'汉易：象数之盛',icon:'汉易',
+  steps:[
+    {type:'teach',symbol:'汉易',text:'<b class="highlight">汉代</b>是象数易学的鼎盛期。西汉孟喜倡卦气说，以六十四卦配四时十二月；京房创八宫卦、纳甲法、世应说，奠定六爻占法基础；东汉郑玄以爻辰说解易，虞翻以<b class="highlight">变卦互体</b>解经。汉易象数体系庞大精微，但至汉末趋于繁琐附会，引发后来王弼扫象之反动。'},
+    {type:'choice',tag:'选择题',question:'卦气说由谁创立？',options:['京房','孟喜','郑玄','虞翻'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'京房的八宫卦和纳甲法奠定了六爻占法基础。',correct:true},
+    {type:'choice',tag:'选择题',question:'汉易象数至汉末的问题是什么？',options:['过于简略','趋于繁琐附会','放弃象数','转向义理'],correct:1},
+  ]
+  },
+  {
+  id:178,title:'宋易：理学解易',icon:'宋易',
+  steps:[
+    {type:'teach',symbol:'宋易',text:'<b class="highlight">宋代</b>是易学的新高峰。周敦颐著《太极图说》，以太极-阴阳-五行-万物构建宇宙论；邵雍立先天学，提出先天六十四卦图式；程颐著《伊川易传》，以义理解易；朱熹著《周易本义》，兼取象数义理，定“易本卜筮之书”之说。宋易将周易与<b class="highlight">理学体系</b>深度融合，使周易成为宋代理学的思想根基。'},
+    {type:'choice',tag:'选择题',question:'《太极图说》的作者是？',options:['邵雍','周敦颐','程颐','朱熹'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'宋易将周易与理学体系深度融合。',correct:true},
+    {type:'choice',tag:'选择题',question:'朱熹对周易性质的核心论断是？',options:['易为义理之书','易本卜筮之书','易为象数之书','易为考据之书'],correct:1},
+  ]
+  },
+  {
+  id:179,title:'清易：考据与回归',icon:'清易',
+  steps:[
+    {type:'teach',symbol:'清易',text:'<b class="highlight">清代</b>易学以考据为特色。清儒不满宋易以理学说易的倾向，主张回归汉唐古注，通过文字训诂和文献考据还原周易本义。惠栋著《周易述》，张惠言著《周易虞氏义》，致力于恢复汉易象数传统。王夫之则从哲学高度重新审视周易。<b class="highlight">清易的精神是实事求是</b>，虽有琐碎之弊，但为现代易学研究奠定了文献基础。'},
+    {type:'choice',tag:'选择题',question:'清代易学的核心特色是？',options:['理学解易','考据训诂','占筮实践','象数推演'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'清儒主张回归汉唐古注，通过文字训诂还原周易本义。',correct:true},
+    {type:'choice',tag:'选择题',question:'惠栋的代表作是？',options:['周易本义','周易述','伊川易传','周易内传'],correct:1},
+  ]
+  },
+  {
+  id:180,title:'现代易学：多元并存',icon:'现代',
+  steps:[
+    {type:'teach',symbol:'现代',text:'<b class="highlight">20世纪以来</b>，易学进入多元并存时代。考古发现如马王堆帛书周易、上博楚简周易，为经文校勘提供了新材料。学术上，高亨《周易古经今注》以文史方法解经，黄寿祺《周易译注》兼通象数义理。<b class="highlight">傅佩荣</b>以通俗语言讲解周易义理与占筮实践，<b class="highlight">曾仕强</b>将周易智慧应用于管理与人生，<b class="highlight">梁冬</b>以媒体人视角推广周易文化。当代易学既有学术深度，也走向大众。'},
+    {type:'choice',tag:'选择题',question:'马王堆帛书周易的发现对易学研究的意义是？',options:['无影响','为经文校勘提供新材料','推翻周易','改变卦序'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'傅佩荣以通俗语言讲解周易义理与占筮实践。',correct:true},
+    {type:'choice',tag:'选择题',question:'曾仕强将周易智慧应用于哪个领域？',options:['医学','管理与人生','天文','数学'],correct:1},
+  ]
+  },
+  {
+  id:181,title:'易学史总结',icon:'总结',
+  steps:[
+    {type:'choice',tag:'第1题',question:'易学史上两大基本派别是？',options:['先天派与后天派','象数派与义理派','汉派与宋派','古派与今派'],correct:1},
+    {type:'truefalse',tag:'第2题',question:'王弼扫象阐理是义理派的开创之举。',correct:true},
+    {type:'choice',tag:'第3题',question:'以下哪位是宋代易学家？',options:['京房','王弼','程颐','惠栋'],correct:2},
+    {type:'choice',tag:'第4题',question:'清代易学的精神可以概括为？',options:['以理说易','实事求是','扫象阐理','万物起卦'],correct:1},
+  ]
+  },
+  {
+  id:182,title:'自强不息与厚德载物',icon:'乾坤',
+  steps:[
+    {type:'teach',symbol:'乾坤精神',text:'<b class="highlight">天行健，君子以自强不息</b>（乾卦象传），<b class="highlight">地势坤，君子以厚德载物</b>（坤卦象传）。乾卦教人如天体运行般刚健进取，坤卦教人如大地般厚实包容。乾坤合一，刚柔并济——这是周易最核心的人生智慧。傅佩荣先生解读：自强不是蛮干，而是如天体般<b class="highlight">有规律地持续</b>；厚德不是软弱，而是如大地般<b class="highlight">有容量地承载</b>。'},
+    {type:'choice',tag:'选择题',question:'天行健，君子以自强不息出自哪卦象传？',options:['坤卦','乾卦','泰卦','否卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'乾坤合一、刚柔并济是周易最核心的人生智慧。',correct:true},
+    {type:'choice',tag:'选择题',question:'傅佩荣认为自强的关键是？',options:['蛮干','有规律地持续','偶尔努力','只做大事'],correct:1},
+  ]
+  },
+  {
+  id:183,title:'谦道：唯一全吉之卦',icon:'谦道',
+  steps:[
+    {type:'teach',symbol:'谦',text:'谦卦是六十四卦中唯一<b class="highlight">六爻皆吉</b>的卦。《系辞下传》引孔子语：“谦，德之柄也。”谦不是示弱，而是<b class="highlight">内心强大而外表收敛</b>。曾仕强先生讲：中国文化的智慧就在一个谦字——满招损，谦受益（引《尚书·大禹谟》）。谦卦的智慧在于：山本在地上，今在地下，高者能下之，此为真谦。真谦者，人皆敬之。'},
+    {type:'choice',tag:'选择题',question:'谦卦在六十四卦中的独特之处是？',options:['卦辞最长','六爻皆吉','无爻辞','最凶的卦'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'满招损，谦受益出自《尚书·大禹谟》。',correct:true},
+    {type:'choice',tag:'选择题',question:'谦卦的卦象（山在地下）说明什么？',options:['山被埋','高者能下之为真谦','山在生长','地震之象'],correct:1},
+  ]
+  },
+  {
+  id:184,title:'变通之道',icon:'变通',
+  steps:[
+    {type:'teach',symbol:'变通',text:'《系辞下传》：<b class="highlight">易穷则变，变则通，通则久。</b>这是周易易字的核心——变易。当事物发展到极点（穷），就必须变化（变），变化才能通达（通），通达才能持久（久）。但周易同时强调<b class="highlight">不易</b>——万变之中有不变之道，即正道。傅佩荣先生总结：周易教我们的不是怎样变，而是<b class="highlight">在变中守住什么</b>。变的是方法，不变的是正道。'},
+    {type:'choice',tag:'选择题',question:'穷则变，变则通，通则久出自？',options:['乾卦文言','系辞下传','说卦传','坤卦象传'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'周易的易包含变易和不易两层含义。',correct:true},
+    {type:'choice',tag:'选择题',question:'傅佩荣认为周易教我们的核心是？',options:['怎样变','在变中守住什么','不要变','只守不变'],correct:1},
+  ]
+  },
+  {
+  id:185,title:'居安思危',icon:'安危',
+  steps:[
+    {type:'teach',symbol:'安危',text:'《系辞下传》：<b class="highlight">君子安而不忘危，存而不忘亡，治而不忘乱，是以身安而国家可保也。</b>既济卦象征成功，但其卦象水火相交暗藏初吉终乱之诫。未济卦象征未成，反而充满可能性。周易的智慧在于：<b class="highlight">安时思危，危时见机</b>。曾仕强先生常说：中国人最懂未雨绸缪，这不是悲观，而是周易教给我们的生存智慧——顺境中保持警觉，逆境中看到希望。'},
+    {type:'choice',tag:'选择题',question:'安而不忘危出自哪部典籍？',options:['乾卦文言','系辞下传','坤卦彖传','说卦传'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'既济卦初吉终乱提醒人成功后不可松懈。',correct:true},
+    {type:'choice',tag:'选择题',question:'曾仕强认为未雨绸缪的本质是？',options:['悲观','周易的生存智慧','多虑','胆小'],correct:1},
+  ]
+  },
+  {
+  id:186,title:'积善之家',icon:'积善',
+  steps:[
+    {type:'teach',symbol:'积善',text:'《坤卦·文言传》：<b class="highlight">积善之家必有余庆，积不善之家必有余殃。</b>周易不是宿命论——它讲的是因果趋势，不是注定结局。善行积累则有余庆，恶行积累则有余殃，关键在积字。<b class="highlight">微小的选择日积月累，终成命运的分水岭</b>。梁冬在解读时说：周易的吉凶不是老天爷的赏罚，而是你每一天选择的累积结果——这给了人改变命运的主动权。'},
+    {type:'choice',tag:'选择题',question:'积善之家必有余庆出自？',options:['乾卦文言','坤卦文言','系辞传','说卦传'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'周易讲的是因果趋势，不是宿命论。',correct:true},
+    {type:'choice',tag:'选择题',question:'梁冬认为周易吉凶的本质是？',options:['老天赏罚','每天选择的累积结果','随机事件','命中注定'],correct:1},
+  ]
+  },
+  {
+  id:187,title:'时位之道',icon:'时位',
+  steps:[
+    {type:'teach',symbol:'时位',text:'周易最重<b class="highlight">时</b>与<b class="highlight">位</b>。时——时机、时势；位——位置、身份。同样的行为，在不同的时位下吉凶不同。乾卦初九潜龙勿用——时机未到，虽有龙德也不可用事；九五飞龙在天——时位皆得，大展宏图。<b class="highlight">知时识位</b>是周易教人的大智慧：该潜则潜，该跃则跃，该飞则飞，该亢则收。曾仕强先生说：中国人讲识时务者为俊杰，这个时务就是周易的时与位。'},
+    {type:'choice',tag:'选择题',question:'乾卦初九潜龙勿用的原因是？',options:['能力不足','时机未到','不宜行动','龙受伤了'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'周易认为同样的行为在不同时位下吉凶不同。',correct:true},
+    {type:'choice',tag:'选择题',question:'曾仕强认为识时务者为俊杰中的时务指什么？',options:['时事新闻','周易的时与位','当前任务','社会地位'],correct:1},
+  ]
+  },
+  {
+  id:188,title:'中正之道',icon:'中正',
+  steps:[
+    {type:'teach',symbol:'中正',text:'周易重<b class="highlight">中</b>——二五两爻为中位，居中则得中道。重<b class="highlight">正</b>——阳居阳位、阴居阴位为得位。既中且正为<b class="highlight">中正</b>，是最理想的状态。如既济卦九五东邻杀牛不如西邻禴祭——居中正之位而守简朴诚敬，实受其福。中正之道教人：<b class="highlight">不偏不倚，恰到好处</b>。傅佩荣先生释：中不是折中，而是恰到好处的平衡；正不是刻板，而是合于时位的行为。'},
+    {type:'choice',tag:'选择题',question:'周易中哪两爻是中位？',options:['初三爻','二五爻','四上爻','初三五爻'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'中正指既居中位又得位，是最理想状态。',correct:true},
+    {type:'choice',tag:'选择题',question:'傅佩荣认为中的含义是？',options:['折中妥协','恰到好处的平衡','中间路线','不好不坏'],correct:1},
+  ]
+  },
+  {
+  id:189,title:'进退之道',icon:'进退',
+  steps:[
+    {type:'teach',symbol:'进退',text:'周易的每一卦都在教<b class="highlight">进退之机</b>。乾卦从潜龙到亢龙，是一个完整的进退循环：该潜则潜（初九），该见则见（九二），该跃则跃（九四），该飞则飞（九五），该收则收（上九亢龙有悔）。<b class="highlight">知进退者不败</b>。梁冬说得好：周易不教你怎么成功，教你怎么在该退的时候退——因为大多数人的问题不是不会进，而是不会退。亢龙有悔，盈不可久，这就是天道。'},
+    {type:'choice',tag:'选择题',question:'乾卦亢龙有悔教人什么？',options:['勇往直前','该收则收','不宜行动','放弃追求'],correct:1},
+    {type:'truefalse',tag:'判断题',question:'梁冬认为大多数人的问题不是不会进而是不会退。',correct:true},
+    {type:'choice',tag:'选择题',question:'乾卦六爻从潜龙到亢龙展示了什么？',options:['失败过程','完整的进退循环','随机变化','无意义'],correct:1},
+  ]
+  },
+  {
+  id:190,title:'终极测验·基础篇',icon:'终考',
+  steps:[
+    {type:'choice',tag:'第1题',question:'周易易字的三层含义是？',options:['容易、交易、不易','变易、简易、不易','交易、变易、容易','简易、变易、容易'],correct:1},
+    {type:'truefalse',tag:'第2题',question:'先天八卦由伏羲所画，后天八卦由文王所演，邵雍阐发先天学。',correct:true},
+    {type:'choice',tag:'第3题',question:'以下哪个不是起卦三不占的内容？',options:['不诚不占','不疑不占','不义不占','不会不占'],correct:3},
+    {type:'choice',tag:'第4题',question:'积善之家必有余庆出自哪篇？',options:['乾卦文言','坤卦文言','系辞上传','说卦传'],correct:1},
+  ]
+  },
+  {
+  id:191,title:'终极测验·卦理篇',icon:'终考',
+  steps:[
+    {type:'choice',tag:'第1题',question:'六十四卦中唯一六爻皆吉的卦是？',options:['泰卦','谦卦','既济卦','大有卦'],correct:1},
+    {type:'truefalse',tag:'第2题',question:'错卦是每爻阴阳互换，综卦是整个卦倒过来看。',correct:true},
+    {type:'choice',tag:'第3题',question:'断卦五步法的正确顺序是？',options:['卦象-卦辞-动爻-体用-综合','卦辞-卦象-体用-动爻-综合','动爻-卦象-卦辞-体用-综合','体用-动爻-卦辞-卦象-综合'],correct:0},
+    {type:'choice',tag:'第4题',question:'穷则变，变则通，通则久出自？',options:['系辞上传','系辞下传','说卦传','序卦传'],correct:1},
+  ]
+  },
+  {
+  id:192,title:'终极测验·应用篇',icon:'终考',
+  steps:[
+    {type:'choice',tag:'第1题',question:'以下哪位学者以扫象阐理著称？',options:['京房','王弼','邵雍','朱熹'],correct:1},
+    {type:'truefalse',tag:'第2题',question:'梅花易数由邵雍创立，万物皆可起卦。',correct:true},
+    {type:'choice',tag:'第3题',question:'天行健，君子以自强不息是哪卦的象传？',options:['坤卦','乾卦','泰卦','复卦'],correct:1},
+    {type:'choice',tag:'第4题',question:'既济卦初吉终乱提醒我们什么？',options:['成功后可以松懈','成功后不可松懈','不宜成功','初吉不重要'],correct:1},
+  ]
+  },
+  {
+  id:193,title:'通关·易道永传',icon:'通关',
+  steps:[
+    {type:'teach',symbol:'通关',text:'恭喜你完成<b class="highlight">194关</b>的周易学习之旅！从阴阳八卦到六十四卦，从卦变筮法到断卦案例，从历代大家到易理人生——你已经走完了从入门到进阶的完整路径。但周易的学习没有终点，《系辞上传》说：<b class="highlight">仁者见之谓之仁，智者见之谓之智，百姓日用而不知。</b>周易的智慧在于日用常行之中，不在于书本之上。学以致用，知行合一，才是周易真正的通关之道。✨'},
+    {type:'choice',tag:'毕业题',question:'周易学习的最终目标是？',options:['精通占卜','学以致用，知行合一','背诵经文','学术研究'],correct:1},
+    {type:'truefalse',tag:'毕业题',question:'百姓日用而不知说明周易智慧在日常生活中。',correct:true},
+    {type:'choice',tag:'毕业题',question:'你准备好将周易智慧融入生活了吗？',options:['准备好了','还需要继续学习','暂时不打算','只做学术研究'],correct:0},
+  ]
+  },
+];
+
+var RANKS = [
+  {exp:0,name:'初学者'},{exp:50,name:'蒙童'},{exp:100,name:'童生'},
+  {exp:200,name:'秀才'},{exp:350,name:'举人'},{exp:500,name:'进士'},
+  {exp:800,name:'翰林'},{exp:1200,name:'大师'},{exp:1600,name:'大儒'},
+  {exp:2100,name:'易士'},{exp:2700,name:'易学博士'},{exp:3400,name:'易学大家'},
+  {exp:4200,name:'通儒'},{exp:5000,name:'易圣'}
+];
+
+var ENCOURAGEMENTS = [
+  '千里之行，始于足下。你已迈出学周易的第一步！',
+  '阴阳之道，贵在感悟。你的悟性很好！',
+  '温故而知新，可以为师矣。继续保持！',
+  '学而时习之，不亦说乎？今日收获满满！',
+  '朝闻道，夕死可矣。你对道的追求令人敬佩！'
+];
+
+// ===== 状态 =====
+var STORAGE_KEY = 'quxue_zhouyi_v1';
+var state = loadState();
+
+function loadState(){
+  try{var s=JSON.parse(localStorage.getItem(STORAGE_KEY));if(s)return s}catch(e){}
+  return {exp:0,streak:0,lastStudyDate:null,completedLessons:[],correctCount:0,totalCount:0,soundOn:true};
+}
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}}
+
+// ===== 声音与震动 =====
+var audioCtx=null;
+function getAudioCtx(){
+  if(!audioCtx){try{audioCtx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+  return audioCtx;
+}
+function playTone(freq,duration,type){
+  if(!state.soundOn)return;
+  var ctx=getAudioCtx();if(!ctx)return;
+  if(ctx.state==='suspended')ctx.resume();
+  var osc=ctx.createOscillator(),gain=ctx.createGain();
+  osc.type=type||'sine';osc.frequency.value=freq;
+  gain.gain.setValueAtTime(0.12,ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+duration);
+  osc.connect(gain);gain.connect(ctx.destination);
+  osc.start();osc.stop(ctx.currentTime+duration);
+}
+function playCorrect(){
+  playTone(523.25,0.12,'sine');
+  setTimeout(function(){playTone(659.25,0.18,'sine')},80);
+  vibrate(12);
+}
+function playWrong(){
+  playTone(220,0.12,'sine');
+  setTimeout(function(){playTone(196,0.18,'sine')},80);
+  vibrate([8,30,8]);
+}
+function playComplete(){
+  playTone(523.25,0.1,'sine');
+  setTimeout(function(){playTone(659.25,0.1,'sine')},80);
+  setTimeout(function(){playTone(783.99,0.22,'sine')},160);
+  vibrate([10,40,10,40,15]);
+}
+function vibrate(pattern){
+  if(!state.soundOn)return;
+  if(navigator.vibrate){try{navigator.vibrate(pattern)}catch(e){}}
+}
+function toggleSound(){
+  state.soundOn=!state.soundOn;saveState();
+  document.getElementById('soundToggle').textContent=state.soundOn?'🔊':'🔇';
+  if(state.soundOn){playTone(659.25,0.12,'sine');vibrate(8)}
+}
+
+// ===== 卦象渲染 =====
+function renderTrigrams(trigrams){
+  var small=trigrams.length>4;
+  var barW=small?32:48,barH=small?4:5,gap=small?18:36,barGap=small?4:6,yinGap=small?4:6;
+  var yinHalf=Math.round((barW-yinGap)/2);
+  var yang='<div style="width:'+barW+'px;height:'+barH+'px;background:var(--gold-dark);border-radius:3px"></div>';
+  var yin='<div style="display:flex;gap:'+yinGap+'px"><div style="width:'+yinHalf+'px;height:'+barH+'px;background:var(--gold-dark);border-radius:3px"></div><div style="width:'+yinHalf+'px;height:'+barH+'px;background:var(--gold-dark);border-radius:3px"></div></div>';
+  var hasPair=false;
+  for(var p=0;p<trigrams.length;p++){var lb=(trigrams[p].label||'');if(lb.indexOf('上')>=0||lb.indexOf('下')>=0){hasPair=true;break}}
+  if(!hasPair){
+    var ls=small?16:22;
+    var h='<div style="display:flex;flex-wrap:wrap;gap:'+gap+'px;justify-content:center;align-items:flex-start">';
+    for(var t=0;t<trigrams.length;t++){
+      var tg=trigrams[t];
+      h+='<div style="text-align:center"><div style="display:flex;flex-direction:column;gap:'+barGap+'px;align-items:center;margin-bottom:8px">';
+      for(var j=0;j<tg.lines.length;j++){h+=tg.lines[j]?yang:yin}
+      h+='</div><div style="font-size:'+ls+'px;color:var(--gold-dark);font-weight:bold">'+tg.label;
+      if(tg.sub)h+=' · '+tg.sub;
+      h+='</div></div>';
+    }
+    h+='</div>';return h;
+  }
+  var ls=small?15:17;
+  var h='<div style="display:flex;flex-wrap:wrap;gap:'+gap+'px;justify-content:center;align-items:flex-start">';
+  var t=0;
+  while(t<trigrams.length){
+    var tg=trigrams[t];var lb=(tg.label||'');
+    if(lb.indexOf('上')>=0&&t+1<trigrams.length){
+      var lo=trigrams[t+1];
+      if((lo.label||'').indexOf('下')>=0){
+        h+='<div style="text-align:center">';
+        h+='<div style="display:flex;flex-direction:column;gap:'+barGap+'px;align-items:center;margin-bottom:6px">';
+        for(var j=0;j<tg.lines.length;j++){h+=tg.lines[j]?yang:yin}
+        h+='<div style="height:'+(small?3:5)+'px"></div>';
+        for(var j=0;j<lo.lines.length;j++){h+=lo.lines[j]?yang:yin}
+        h+='</div>';
+        var upN=tg.label.replace(/[·]?上/,'').replace('·',''),loN=lo.label.replace(/[·]?下/,'').replace('·','');
+        h+='<div style="font-size:'+ls+'px;color:var(--gold-dark);font-weight:bold">'+upN+'('+(tg.sub||'')+')上 '+loN+'('+(lo.sub||'')+')下</div>';
+        h+='</div>';t+=2;continue;
+      }
+    }
+    h+='<div style="text-align:center"><div style="display:flex;flex-direction:column;gap:'+barGap+'px;align-items:center;margin-bottom:8px">';
+    for(var j=0;j<tg.lines.length;j++){h+=tg.lines[j]?yang:yin}
+    h+='</div><div style="font-size:'+ls+'px;color:var(--gold-dark);font-weight:bold">'+tg.label;
+    if(tg.sub)h+=' · '+tg.sub;
+    h+='</div></div>';t++;
+  }
+  h+='</div>';return h;
+}
+
+function getRank(exp){var r=RANKS[0];for(var i=0;i<RANKS.length;i++){if(exp>=RANKS[i].exp)r=RANKS[i]}return r}
+function getNextRankExp(exp){
+  for(var i=0;i<RANKS.length;i++){if(exp<RANKS[i].exp)return RANKS[i].exp}
+  return RANKS[RANKS.length-1].exp;
+}
+function getPrevRankExp(exp){
+  var prev=0;for(var i=0;i<RANKS.length;i++){if(exp>=RANKS[i].exp)prev=RANKS[i].exp}
+  return prev;
+}
+
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+function checkStreak(){
+  var today=todayStr();
+  if(state.lastStudyDate!==today){
+    var y=new Date();y.setDate(y.getDate()-1);
+    var yStr=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');
+    if(state.lastStudyDate!==yStr&&state.lastStudyDate!==null){state.streak=0}
+  }
+}
+
+// ===== 首页渲染 =====
+function renderHome(){
+  checkStreak();
+  
+  document.getElementById('streakNum').textContent=state.streak;
+  document.getElementById('expNum').textContent=state.exp;
+  
+  var rankName=getRank(state.exp).name;
+  document.getElementById('rankName').textContent=rankName;
+  
+  // 称号进度条
+  var prevExp=getPrevRankExp(state.exp);
+  var nextExp=getNextRankExp(state.exp);
+  var progress=nextExp>prevExp?Math.round((state.exp-prevExp)/(nextExp-prevExp)*100):100;
+  document.getElementById('rankProgress').style.width=progress+'%';
+
+  // 学习进度寄语
+  var currentId=getCurrentLessonId();
+  var completedCount=state.completedLessons.length;
+  var dayText='连续 '+state.streak+' 天';
+  var msgText;
+  if(completedCount===0){msgText='阴阳之道，始于足下'}
+  else if(currentId>=LESSONS.length){msgText='已通关全部 '+LESSONS.length+' 关，更多内容持续更新中'}
+  else{msgText='已学 '+completedCount+'/'+LESSONS.length+' 关，想继续就往下走'}
+  document.getElementById('dailyDay').textContent=dayText;
+  document.getElementById('dailyText').textContent=msgText;
+
+  // 路径地图 - 按章节分组
+  var sections=[
+    {title:'阴阳基础',start:0,end:3},
+    {title:'八卦入门',start:4,end:9},
+    {title:'八卦深入',start:10,end:15},
+    {title:'六十四卦·总测验',start:16,end:19},
+    {title:'通读·开篇卦',start:20,end:24},
+    {title:'通读·师至复',start:25,end:29},
+    {title:'通读·中段困顿',start:30,end:34},
+    {title:'通读·解至未济',start:35,end:39},
+    {title:'先天之门·邵雍',start:40,end:44},
+    {title:'卦变之妙',start:45,end:49},
+    {title:'补遗卦·上篇',start:50,end:59},
+    {title:'补遗卦·下篇',start:60,end:67},
+    {title:'补遗卦·终篇',start:68,end:71},
+    {title:'文王卦序',start:72,end:77},
+    {title:'爻位与爻变',start:78,end:85},
+    {title:'彖传与象传',start:86,end:91},
+    {title:'文言与系辞',start:92,end:99},
+    {title:'说卦与杂卦',start:100,end:103},
+    {title:'大衍筮法',start:104,end:108},
+    {title:'简易起卦法',start:109,end:113},
+    {title:'断卦五步法',start:114,end:121},
+    {title:'断卦案例库',start:122,end:131},
+    {title:'乾卦六爻详解',start:132,end:137},
+    {title:'重点卦爻辞',start:138,end:147},
+    {title:'消息卦与月令',start:148,end:153},
+    {title:'纳甲与六亲',start:154,end:161},
+    {title:'后天八卦与方位',start:162,end:167},
+    {title:'历代易学大家',start:168,end:175},
+    {title:'易学史与流派',start:176,end:181},
+    {title:'易理通人生',start:182,end:189},
+    {title:'终极通关',start:190,end:193}
+  ];
+  var map=document.getElementById('pathMap');
+  var html='';
+  for(var s=0;s<sections.length;s++){
+    var sec=sections[s];
+    var secCompleted=0;var secTotal=sec.end-sec.start+1;
+    var secHasCurrent=false;var secAllDone=true;var secAllLocked=true;
+    for(var i=sec.start;i<=sec.end;i++){
+      if(state.completedLessons.indexOf(i)>=0){secCompleted++}
+      else{secAllDone=false}
+      if(i===currentId){secHasCurrent=true}
+      if(i<=currentId||state.completedLessons.indexOf(i)>=0){secAllLocked=false}
+    }
+    var secCls=secAllDone?'done':(secAllLocked?'locked':'');
+    var nodesCollapsed=!secHasCurrent?'collapsed':'';
+
+    html+='<div class="section-group">';
+    html+='<div class="section-header '+secCls+'" onclick="toggleSection(this)">';
+    html+='<span class="section-title">'+(secAllDone?'✓ ':secAllLocked?'🔒 ':'')+'<span>'+sec.title+'</span></span>';
+    html+='<span class="section-status">'+secCompleted+'/'+secTotal+(nodesCollapsed?' · 点击展开 ▾':'')+'</span>';
+    html+='</div>';
+    html+='<div class="section-nodes '+nodesCollapsed+'">';
+    for(var i=sec.start;i<=sec.end;i++){
+      var pos=i%2===0?'left':'right';
+      var isCompleted=state.completedLessons.indexOf(i)>=0;
+      var cls=isCompleted?'completed':(i===currentId?'current':'locked');
+      var labelCls=(i===currentId)?'active':'';
+      var wrapCls=isCompleted?'reviewable':'';
+      var clickAttr=isCompleted?(' onclick="reviewLesson('+i+')"'):'';
+
+      html+='<div class="node-wrapper '+wrapCls+'" data-pos="'+pos+'"'+clickAttr+'>';
+      html+='<div class="node-circle '+cls+'">'+(isCompleted?'✓':(cls==='locked'?'🔒':LESSONS[i].icon))+'</div>';
+      html+='<div class="node-label '+labelCls+'">'+LESSONS[i].title+'</div>';
+      html+='</div>';
+      if(i<sec.end){
+        var cCls=state.completedLessons.indexOf(i)>=0?'done':'';
+        html+='<div class="connector '+cCls+'"></div>';
+      }
+    }
+    html+='</div>'; // section-nodes
+    html+='</div>'; // section-group
+  }
+  if(state.completedLessons.length===0){
+
+  }
+  map.innerHTML=html;
+
+  // 自动滚动到当前关卡
+  setTimeout(function(){
+    var currentEl=map.querySelector('.node-circle.current');
+    if(currentEl){
+      currentEl.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  },100);
+
+  // 浮动按钮
+  var fbtn=document.getElementById('floatStartBtn');
+  if(currentId>=LESSONS.length){
+    if(fbtn){fbtn.textContent='已全部通关 ✓';fbtn.style.display='none'}
+  }else{
+    if(fbtn){fbtn.textContent='开始第 '+(currentId+1)+' 关';fbtn.style.display=''}
+  }
+}
+
+function getCurrentLessonId(){
+  for(var i=0;i<LESSONS.length;i++){if(state.completedLessons.indexOf(i)<0)return i}
+  return LESSONS.length;
+}
+
+// ===== 关卡学习 =====
+var currentLesson=null,currentStep=0,selectedOption=-1;
+var stepCorrectCount=0,stepTotalCount=0;
+var isReview=false;
+
+function startCurrentLesson(){
+  var id=getCurrentLessonId();
+  if(id>=LESSONS.length)return;
+  currentLesson=LESSONS[id];
+  currentStep=0;selectedOption=-1;
+  stepCorrectCount=0;stepTotalCount=0;
+  isReview=false;
+  document.getElementById('homeView').style.display='none';
+  document.getElementById('lessonView').classList.add('active');
+  renderStep();
+}
+
+function reviewLesson(id){
+  if(state.completedLessons.indexOf(id)<0)return;
+  currentLesson=LESSONS[id];
+  currentStep=0;selectedOption=-1;
+  stepCorrectCount=0;stepTotalCount=0;
+  isReview=true;
+  document.getElementById('homeView').style.display='none';
+  document.getElementById('lessonView').classList.add('active');
+  renderStep();
+}
+
+function renderStep(){
+  var step=currentLesson.steps[currentStep];
+  var content=document.getElementById('lessonContent');
+  var checkBar=document.getElementById('checkBar');
+  var feedbackBar=document.getElementById('feedbackBar');
+
+  feedbackBar.classList.remove('show','correct','wrong');
+  checkBar.style.display='block';
+
+  var progress=(currentStep/currentLesson.steps.length)*100;
+  document.getElementById('progressFill').style.width=progress+'%';
+  document.getElementById('progressText').textContent=(currentStep+1)+'/'+currentLesson.steps.length;
+
+  selectedOption=-1;
+
+  if(step.type==='teach'){
+    var symHtml=step.trigrams?renderTrigrams(step.trigrams):step.symbol;
+    content.innerHTML='<div class="teach-card">'+
+      '<div class="teach-symbol">'+symHtml+'</div>'+
+      '<div class="teach-text">'+step.text+'</div></div>';
+    checkBar.style.display='none';
+    feedbackBar.classList.add('show','correct');
+    document.getElementById('feedbackTitle').textContent='读到了';
+    document.getElementById('feedbackText').textContent='';
+    document.getElementById('feedbackNextBtn').textContent=(currentStep>=currentLesson.steps.length-1&&isReview)?'完成复习':'继续';
+  }else if(step.type==='choice'){
+    content.innerHTML='<div class="question-tag">'+step.tag+'</div>'+
+      '<div class="question-text">'+step.question+'</div>'+
+      '<div class="options" id="optionsContainer"></div>';
+    var opts='';
+    for(var i=0;i<step.options.length;i++){
+      opts+='<button class="option-btn" data-idx="'+i+'" onclick="selectOption('+i+')">'+step.options[i]+'</button>';
+    }
+    document.getElementById('optionsContainer').innerHTML=opts;
+    document.getElementById('checkBtn').textContent='检查';
+    document.getElementById('checkBtn').classList.remove('ready');
+  }else if(step.type==='truefalse'){
+    content.innerHTML='<div class="question-tag">'+step.tag+'</div>'+
+      '<div class="question-text">'+step.question+'</div>'+
+      '<div class="tf-options">'+
+      '<button class="tf-btn" onclick="selectOption(0)">对</button>'+
+      '<button class="tf-btn" onclick="selectOption(1)">错</button></div>';
+    document.getElementById('checkBtn').textContent='检查';
+    document.getElementById('checkBtn').classList.remove('ready');
+  }
+}
+
+function selectOption(idx){
+  selectedOption=idx;
+  var step=currentLesson.steps[currentStep];
+  if(step.type==='choice'){
+    var btns=document.querySelectorAll('.option-btn');
+    for(var i=0;i<btns.length;i++)btns[i].classList.remove('selected');
+    btns[idx].classList.add('selected');
+  }else if(step.type==='truefalse'){
+    var tfBtns=document.querySelectorAll('.tf-btn');
+    for(var j=0;j<tfBtns.length;j++)tfBtns[j].classList.remove('selected');
+    tfBtns[idx].classList.add('selected');
+  }
+  document.getElementById('checkBtn').classList.add('ready');
+}
+
+function checkAnswer(){
+  var step=currentLesson.steps[currentStep];
+  if(selectedOption<0)return;
+  stepTotalCount++;
+  var isCorrect=false,userAnswer=selectedOption;
+
+  if(step.type==='choice'){
+    isCorrect=(userAnswer===step.correct);
+    var btns=document.querySelectorAll('.option-btn');
+    btns[step.correct].classList.add('correct');
+    if(!isCorrect)btns[userAnswer].classList.add('wrong');
+  }else if(step.type==='truefalse'){
+    var tfAnswer=(userAnswer===0);
+    isCorrect=(tfAnswer===step.correct);
+    var tfBtns=document.querySelectorAll('.tf-btn');
+    var correctIdx=step.correct?0:1;
+    tfBtns[correctIdx].classList.add('correct');
+    if(!isCorrect)tfBtns[userAnswer].classList.add('wrong');
+  }
+
+  if(isCorrect){stepCorrectCount++;state.exp+=10;state.correctCount++;playCorrect()}
+  else{playWrong()}
+  state.totalCount++;
+  saveState();
+
+  var checkBar=document.getElementById('checkBar');
+  var feedbackBar=document.getElementById('feedbackBar');
+  checkBar.style.display='none';
+
+  if(isCorrect){
+    feedbackBar.classList.add('show','correct');
+    document.getElementById('feedbackTitle').textContent='答对了！';
+    var praises=['很好！','不错！','悟性极高！','继续保持！','太棒了！'];
+    document.getElementById('feedbackText').textContent=praises[Math.floor(Math.random()*praises.length)];
+  }else{
+    feedbackBar.classList.add('show','wrong');
+    document.getElementById('feedbackTitle').textContent='再想想';
+    document.getElementById('feedbackText').textContent='没关系，周易需要慢慢悟';
+  }
+  document.getElementById('feedbackNextBtn').textContent=(currentStep>=currentLesson.steps.length-1&&isReview)?'完成复习':'继续';
+}
+
+function nextStep(){
+  currentStep++;
+  if(currentStep>=currentLesson.steps.length){completeLesson()}
+  else{renderStep()}
+}
+
+function completeLesson(){
+  if(isReview){
+    // 复习模式：不计分，直接回首页
+    document.getElementById('lessonView').classList.remove('active');
+    document.getElementById('homeView').style.display='flex';
+    document.getElementById('homeView').style.flexDirection='column';
+    document.getElementById('homeView').style.minHeight='100vh';
+    renderHome();
+    return;
+  }
+  if(state.completedLessons.indexOf(currentLesson.id)<0){
+    state.completedLessons.push(currentLesson.id);
+  }
+  var today=todayStr();
+  if(state.lastStudyDate!==today){
+    state.streak++;state.lastStudyDate=today;
+  }
+  saveState();
+  autoSyncToServer();
+  playComplete();
+
+  document.getElementById('lessonView').classList.remove('active');
+  document.getElementById('celebView').classList.add('active');
+
+  var allDone=state.completedLessons.length>=LESSONS.length;
+  document.getElementById('celebTitle').textContent=allDone?'全部通关！':'关卡完成！';
+  document.getElementById('celebSub').textContent=currentLesson.title+' · 已通关';
+  document.getElementById('celebExp').textContent='+'+(stepCorrectCount*10);
+  var acc=stepTotalCount>0?Math.round(stepCorrectCount/stepTotalCount*100):100;
+  document.getElementById('celebAcc').textContent=acc+'%';
+  document.getElementById('celebStreak').textContent=state.streak;
+  document.getElementById('celebEncourage').textContent=ENCOURAGEMENTS[Math.floor(Math.random()*ENCOURAGEMENTS.length)];
+  
+  // 按钮逻辑：有下一关直接继续，全部通关才回首页
+  var celebBtn=document.getElementById('celebBtn');
+  if(allDone){
+    celebBtn.textContent='返回首页';
+    celebBtn.setAttribute('onclick','returnHome()');
+  }else{
+    celebBtn.textContent='下一关';
+    celebBtn.setAttribute('onclick','goNextLesson()');
+  }
+}
+
+function exitLesson(){
+  document.getElementById('lessonView').classList.remove('active');
+  document.getElementById('homeView').style.display='flex';
+  document.getElementById('homeView').style.flexDirection='column';
+  document.getElementById('homeView').style.minHeight='100vh';
+  renderHome();
+}
+
+function goNextLesson(){
+  document.getElementById('celebView').classList.remove('active');
+  startCurrentLesson();
+}
+
+function returnHome(){
+  document.getElementById('celebView').classList.remove('active');
+  document.getElementById('homeView').style.display='flex';
+  document.getElementById('homeView').style.flexDirection='column';
+  document.getElementById('homeView').style.minHeight='100vh';
+  renderHome();
+}
+
+// ===== 初始化 =====
+document.getElementById('soundToggle').textContent=state.soundOn?'🔊':'🔇';
+
+// ===== 同步码（固定码+服务器存储） =====
+var SYNC_API='https://playinglab.yisan.me/zhouyi-game/sync.php';
+var PAGE_VERSION='7'; // 页面版本号，更新内容时递增
+function generateUserCode(){
+  var chars='ABCDEFGHIJKLMNPQRSTUVWXYZ23456789'; // 去掉易混淆字符
+  var s='';
+  for(var i=0;i<6;i++){s+=chars[Math.floor(Math.random()*chars.length)]}
+  return s;
+}
+function getSyncCode(){
+  if(!state.userCode){
+    state.userCode=generateUserCode();
+    saveState();
+  }
+  return state.userCode;
+}
+function buildSyncData(){
+  return JSON.stringify({
+    completedLessons:state.completedLessons,
+    exp:state.exp,
+    streak:state.streak,
+    lastStudyDate:state.lastStudyDate,
+    correctCount:state.correctCount,
+    totalCount:state.totalCount
+  });
+}
+function autoSyncToServer(){
+  var code=getSyncCode();if(!code)return;
+  try{
+    var data=buildSyncData();
+    var img=new Image();
+    img.src=SYNC_API+'?action=save&code='+code+'&data='+encodeURIComponent(data)+'&_t='+Date.now();
+  }catch(e){}
+}
+function updateSyncCode(){
+  var code=getSyncCode();
+  var el=document.getElementById('syncCodeDisplay');
+  el.textContent='同步中...';
+  var data=buildSyncData();
+  fetch(SYNC_API+'?action=save&code='+code+'&data='+encodeURIComponent(data),{method:'GET'})
+    .then(function(r){return r.json()})
+    .then(function(res){
+      if(res.success){
+        el.textContent='已同步 ✅';
+        setTimeout(function(){el.textContent=code},1500);
+      }else{
+        el.textContent='同步失败';
+        setTimeout(function(){el.textContent=code},1500);
+      }
+    })
+    .catch(function(){
+      el.textContent='同步失败';
+      setTimeout(function(){el.textContent=code},1500);
+    });
+}
+function openSyncModal(){
+  var code=getSyncCode();
+  document.getElementById('syncCodeDisplay').textContent=code||'------';
+  document.getElementById('syncCodeInput').value='';
+  document.getElementById('syncModal').classList.add('active');
+}
+function closeSyncModal(){
+  document.getElementById('syncModal').classList.remove('active');
+}
+function copySyncCode(){
+  var code=getSyncCode();if(!code)return;
+  try{
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(code);
+    }else{
+      var ta=document.createElement('textarea');
+      ta.value=code;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();
+      document.execCommand('copy');document.body.removeChild(ta);
+    }
+    var el=document.getElementById('syncCodeDisplay');
+    el.textContent='已复制 ✅';
+    setTimeout(function(){el.textContent=code},1500);
+  }catch(e){}
+}
+function restoreFromCode(){
+  var input=document.getElementById('syncCodeInput').value.trim().toUpperCase();
+  if(input.length!==6){
+    alert('请输入6位同步码');
+    return;
+  }
+  var el=document.getElementById('syncCodeInput');
+  el.placeholder='正在恢复...';
+  fetch(SYNC_API+'?action=load&code='+input,{method:'GET'})
+    .then(function(r){return r.json()})
+    .then(function(res){
+      if(res.success&&res.data){
+        var d=res.data;
+        state.completedLessons=d.completedLessons||[];
+        state.exp=d.exp||0;
+        state.streak=d.streak||0;
+        state.lastStudyDate=d.lastStudyDate||null;
+        state.correctCount=d.correctCount||0;
+        state.totalCount=d.totalCount||0;
+        state.userCode=input; // 绑定此码
+        saveState();closeSyncModal();renderHome();
+        alert('进度已恢复！\n已学 '+state.completedLessons.length+' 关 · 经验 '+state.exp+' · 连续 '+state.streak+' 天');
+      }else{
+        el.placeholder='输入6位同步码';
+        alert('未找到该同步码的记录，请检查后重试');
+      }
+    })
+    .catch(function(){
+      el.placeholder='输入6位同步码';
+      alert('网络错误，请稍后重试');
+    });
+}
+
+renderHome();
+
+function toggleSection(headerEl){
+  var nodes=headerEl.nextElementSibling;
+  if(!nodes)return;
+  var isCollapsed=nodes.classList.contains('collapsed');
+  if(isCollapsed){
+    nodes.classList.remove('collapsed');
+    nodes.style.maxHeight=nodes.scrollHeight+'px';
+    setTimeout(function(){nodes.style.maxHeight='2000px'},400);
+  }else{
+    nodes.style.maxHeight=nodes.scrollHeight+'px';
+    setTimeout(function(){nodes.classList.add('collapsed');nodes.style.maxHeight=''},10);
+  }
+  var status=headerEl.querySelector('.section-status');
+  if(status){
+    var txt=status.textContent;
+    if(isCollapsed){txt=txt.replace(' · 点击展开 ▾','')}
+    else{txt=txt+' · 点击展开 ▾'}
+    status.textContent=txt;
+  }
+}
+</script>
+
+</body>
+</html>

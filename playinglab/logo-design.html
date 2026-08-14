@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo设计释义 — 玩意儿Lab</title>
+    <meta name="description" content="玩意儿Lab品牌Logo的完整设计释义：色彩系统、视觉元素拆解、核心巧思与设计亮点。">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Logo设计释义 — 玩意儿Lab">
+    <meta property="og:description" content="玩意儿Lab品牌Logo的完整设计释义：色彩系统、视觉元素拆解、核心巧思与设计亮点。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://playinglab.yisan.me/playinglab/logo-design.html">
+    <meta property="og:image" content="https://playinglab.yisan.me/playinglab/og-share.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/playinglab/logo-color.png">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        :root {
+            --bg: #FAF9F6;
+            --bg-card: #FFFFFF;
+            --text: #1A1A2E;
+            --text-secondary: #5A5A6E;
+            --text-light: #9A9AAE;
+            --accent: #FF6B35;
+            --accent-light: #FFF0EB;
+            --green: #5B9D7C;
+            --green-light: #EDF5F0;
+            --deep-blue: #1B2845;
+            --border: #ECEAE4;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-sans);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* ===== 导航栏 ===== */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(250, 249, 246, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .nav-logo img {
+            height: 64px;
+            width: auto;
+            display: block;
+        }
+        .nav-back {
+            font-size: 13px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-back:hover { color: var(--accent); }
+        
+        /* ===== Hero ===== */
+        .hero {
+            text-align: center;
+            padding: 72px 24px 48px;
+        }
+        .hero-logo {
+            max-width: 320px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto 28px;
+            display: block;
+        }
+        .hero-title {
+            font-family: var(--font-serif);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .hero-sub {
+            font-size: 14px;
+            color: var(--text-light);
+            letter-spacing: 2px;
+        }
+        
+        /* ===== 正文 ===== */
+        .content {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+        
+        .chapter {
+            margin-bottom: 56px;
+        }
+        
+        .chapter-num {
+            font-family: var(--font-serif);
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        
+        .chapter-title {
+            font-family: var(--font-serif);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .chapter p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.9;
+        }
+        
+        .chapter p strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+        
+        /* 子章节 */
+        .sub-section {
+            margin-top: 28px;
+            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+        
+        .sub-title {
+            font-family: var(--font-serif);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sub-title-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .sub-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .sub-list li {
+            font-size: 14.5px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.85;
+        }
+        
+        .sub-list li::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 12px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.5;
+        }
+        
+        .sub-list li strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+        
+        /* 色彩卡片 */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 20px;
+        }
+        
+        .color-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        
+        .color-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+        }
+        
+        .color-swatch {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 1px;
+        }
+        
+        .color-info {
+            padding: 14px 16px;
+        }
+        
+        .color-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        
+        .color-use {
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        /* 亮点卡片 */
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin-top: 20px;
+        }
+        
+        .highlight-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .highlight-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--accent);
+        }
+        
+        .highlight-title {
+            font-family: var(--font-serif);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        
+        .highlight-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        
+        /* 场景适配 */
+        .adapt-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .adapt-list li {
+            font-size: 14.5px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            padding-left: 24px;
+            position: relative;
+            line-height: 1.8;
+        }
+        
+        .adapt-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--green);
+            font-weight: 700;
+            font-size: 13px;
+        }
+        
+        /* 文件清单表格 */
+        .file-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13.5px;
+        }
+        
+        .file-table th {
+            text-align: left;
+            padding: 10px 12px;
+            background: var(--bg-card);
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 12px;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .file-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        
+        .file-table td:first-child {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 12.5px;
+            color: var(--accent);
+        }
+        
+        /* 引用块 */
+        .quote-block {
+            background: linear-gradient(135deg, var(--accent-light) 0%, var(--green-light) 100%);
+            border-radius: 14px;
+            padding: 28px 28px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        
+        .quote-block p {
+            font-family: var(--font-serif);
+            font-size: 16px;
+            color: var(--text);
+            line-height: 1.9;
+            margin: 0;
+        }
+        
+        .quote-block .quote-mark {
+            font-size: 48px;
+            color: var(--green);
+            opacity: 0.6;
+            font-family: 'Noto Serif SC', serif;
+            line-height: 1;
+        }
+        .quote-block .quote-mark.open {
+            text-align: left;
+            margin-bottom: -12px;
+        }
+        .quote-block .quote-mark.close {
+            text-align: right;
+            margin-top: -12px;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 13px;
+        }
+        .footer-brand {
+            font-family: var(--font-serif);
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        .footer-beian {
+            margin-top: 10px; font-size: 12px; line-height: 1.8;
+        }
+        .footer-beian a {
+            color: var(--text-light); text-decoration: none;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+        .footer-beian a:hover { color: var(--accent); }
+        .beian-icon { width: 14px; height: 14px; vertical-align: middle; }
+        .footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .hero-logo { max-width: 240px; }
+            .hero-title { font-size: 24px; }
+            .chapter-title { font-size: 19px; }
+            .color-grid { grid-template-columns: 1fr; }
+            .nav-back { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="/playinglab/index.html" class="nav-logo"><img src="/playinglab/logo-nav@2x.png" alt="玩意儿Lab — 用AI造点好玩的"></a>
+        <a href="/playinglab/index.html" class="nav-back">← 返回首页</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <img src="/playinglab/logo-color@2x.png" alt="玩意儿Lab" class="hero-logo">
+    <h1 class="hero-title">Logo 设计释义</h1>
+    <p class="hero-sub">BRAND IDENTITY GUIDE</p>
+</section>
+
+<!-- 正文 -->
+<div class="content">
+
+    <!-- 一、品牌核心定位 -->
+    <div class="chapter">
+        <div class="chapter-num">一</div>
+        <h2 class="chapter-title">品牌核心定位</h2>
+        <p>玩意儿Lab 是一个以“创意实验、趣味探索”为内核的创作品牌，主打<strong>“用AI造点好玩的”</strong>，我们每个人都可以像“手工耿”，用AI工具手搓出引发好奇心，好玩、有趣的玩意儿。这个产品本身也是一场<strong>公开建造Build in public的参与式实验</strong>。Logo 设计围绕<strong>「俏皮玩趣 + 专业实验室」</strong>的双重气质展开，既保留了“玩”的松弛感，又通过细节传递“Lab”的实验探索精神。</p>
+    </div>
+
+    <!-- 二、视觉元素拆解 -->
+    <div class="chapter">
+        <div class="chapter-num">二</div>
+        <h2 class="chapter-title">视觉元素拆解</h2>
+        
+        <!-- 1. 文字主体 -->
+        <div class="sub-section">
+            <div class="sub-title">
+                <span class="sub-title-icon" style="background:var(--accent-light);color:var(--accent);">字</span>
+                文字主体：“玩意儿”
+            </div>
+            <ul class="sub-list">
+                <li><strong>字体选择</strong>：采用圆润的无衬线字体，笔画柔和饱满，没有尖锐棱角，自带“可爱、松弛、不刻板”的气质，贴合“玩意儿”自带的轻松、好玩调性，避免了传统科技品牌的冰冷感。</li>
+                <li><strong>“玩”字 — 珊瑚橙</strong>：成为视觉第一落点，既呼应“玩”的活力、趣味性，也和品牌主色形成呼应，强化记忆点。</li>
+                <li><strong>“意、儿”字 — 深海蓝</strong>：沉稳克制，平衡了“玩”的跳脱感，传递品牌的专业底色，避免整体过于轻浮。</li>
+            </ul>
+        </div>
+        
+        <!-- 2. 核心巧思 -->
+        <div class="sub-section" style="border-color:var(--accent);">
+            <div class="sub-title">
+                <span class="sub-title-icon" style="background:var(--accent);color:#fff;">◇</span>
+                核心巧思：“意”字的创意改造
+            </div>
+            <p style="font-size:14.5px;color:var(--text-secondary);margin-bottom:16px;line-height:1.85;">
+                “意”字下方的“心”部，被简化为对称的弧线，形似两个捏起来的手指，中间嵌入一个<strong>菱形◇</strong>。
+            </p>
+            
+            <div class="quote-block">
+                <div class="quote-mark open">“</div>
+                <p>弧形像两根手指轻轻捏住一颗<span style="white-space:nowrap;">钻石</span>，<br>像在实验室里做一项精细操作。<br><span style="white-space:nowrap;">钻石</span>，则象征着那些有价值或有趣的发现和产出。</p>
+                <div class="quote-mark close">”</div>
+            </div>
+            
+            <ul class="sub-list">
+                <li><strong>语义呼应</strong>：菱形既像实验中的晶体样本、创意灵感的“核心点”，也暗含“Diamond（钻石）”的意象，寓意每一个创意都是打磨出的精品。弧形像两根手指轻轻捏住一颗钻石，像在实验室里做一项精细操作。钻石，则象征着那些有价值或有趣的发现和产出。</li>
+                <li><strong>形态适配</strong>：菱形和弧形“心”部结合，既没有破坏“意”字的识别性，又比普通圆点更具设计感，暗合“在玩中探索创意”的品牌内核。</li>
+                <li><strong>气质平衡</strong>：这个小改造没有过度具象化，既保留了Logo的简约性，又自带“小心思”，和品牌名“玩意儿”呼应，让人一眼记住“有意思”的细节。</li>
+            </ul>
+        </div>
+        
+        <!-- 3. LAB -->
+        <div class="sub-section">
+            <div class="sub-title">
+                <span class="sub-title-icon" style="background:var(--green-light);color:var(--green);">L</span>
+                品牌后缀：“LAB”
+            </div>
+            <ul class="sub-list">
+                <li><strong>形态与位置</strong>：将“LAB”以商标上标的形式，放在“儿”字的右上角，字号约为“儿”字的1/3，既不会抢主视觉的风头，又清晰传递品牌的“实验室”属性，和“玩意儿”形成“主IP+专业后缀”的层级关系。</li>
+                <li><strong>色彩设计</strong>：采用清新嫩绿色，和珊瑚橙、深海蓝形成柔和的三色搭配，自带新鲜、鲜活的气质，既呼应“实验、创造”的活力感，也让Logo整体更轻盈、不沉闷。</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 三、色彩系统 -->
+    <div class="chapter">
+        <div class="chapter-num">三</div>
+        <h2 class="chapter-title">色彩系统</h2>
+        
+        <div class="color-grid">
+            <div class="color-card">
+                <div class="color-swatch" style="background:#FF6B35;">#FF6B35</div>
+                <div class="color-info">
+                    <div class="color-name">珊瑚橙</div>
+                    <div class="color-use">“玩”字主色 · 传递活力、玩趣，品牌主视觉记忆点</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-swatch" style="background:#1B2845;">#1B2845</div>
+                <div class="color-info">
+                    <div class="color-name">深海蓝</div>
+                    <div class="color-use">“意、儿”字主色 · 平衡活泼感，传递专业、沉稳底色</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-swatch" style="background:#5B9D7C;">#5B9D7C</div>
+                <div class="color-info">
+                    <div class="color-name">清新嫩绿</div>
+                    <div class="color-use">“LAB”字主色 · 呼应实验室、新鲜创意，提亮整体视觉</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-swatch" style="background:#FAF9F6;color:#9A9AAE;">#FAF9F6</div>
+                <div class="color-info">
+                    <div class="color-name">暖米白</div>
+                    <div class="color-use">背景色 · 柔和不刺眼，适配多场景，强化松弛感</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 四、整体气质 -->
+    <div class="chapter">
+        <div class="chapter-num">四</div>
+        <h2 class="chapter-title">整体气质与应用适配</h2>
+        <p>整体呈现<strong>「俏皮而不幼稚、专业而不刻板」</strong>的平衡感，一眼能感受到“好玩、有创意”，细看又能发现细节里的巧思，和品牌“用AI造点好玩的”slogan高度契合。</p>
+        
+        <ul class="adapt-list" style="margin-top:16px;">
+            <li>透明底PNG版本，可直接用于头像、海报、周边、包装等场景</li>
+            <li>简约的无复杂装饰设计，保证在小尺寸应用（如头像、水印）中依然清晰识别</li>
+            <li>三色搭配不杂乱，可轻松适配黑白印刷、深色背景等多场景使用</li>
+        </ul>
+    </div>
+
+    <!-- 五、设计核心亮点 -->
+    <div class="chapter">
+        <div class="chapter-num">五</div>
+        <h2 class="chapter-title">设计核心亮点</h2>
+        
+        <div class="highlight-grid">
+            <div class="highlight-card">
+                <div class="highlight-title">记忆点明确</div>
+                <div class="highlight-desc">“玩”字的跳色、“意”字的菱形细节、“LAB”的上标形式，三重设计点让Logo过目不忘。</div>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-title">语义与视觉统一</div>
+                <div class="highlight-desc">每一处改造都紧扣“玩+实验”的品牌内核，没有无效装饰。</div>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-title">平衡感拉满</div>
+                <div class="highlight-desc">活泼的玩趣气质和专业的实验室属性完美平衡，既不幼稚也不冰冷，适配品牌的长期发展。</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 六、文件清单 -->
+    <div class="chapter">
+        <div class="chapter-num">六</div>
+        <h2 class="chapter-title">Logo 文件清单</h2>
+        <table class="file-table">
+            <thead>
+                <tr>
+                    <th>文件名</th>
+                    <th>用途</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>logo-color.png</td>
+                    <td>彩色版（主力）· 暖米白底，三色搭配，网页/头像/海报</td>
+                </tr>
+                <tr>
+                    <td>logo-color@2x.png</td>
+                    <td>彩色版高清 · 原始尺寸，打印/大图展示</td>
+                </tr>
+                <tr>
+                    <td>logo-white.png</td>
+                    <td>反白版（备用）· 深海蓝底白色文字，深色背景/特殊场合</td>
+                </tr>
+                <tr>
+                    <td>logo-white@2x.png</td>
+                    <td>反白版高清 · 原始尺寸，备用</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-brand">玩意儿Lab · 用AI造点好玩的</div>
+    <div>义山 & AI助手一三 · 2026</div>
+    <div class="footer-beian">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京ICP备2026030848号-2</a>
+        <a href="http://www.beian.gov.cn/" target="_blank" rel="noopener"><img src="/playinglab/beian-icon.png" alt="" class="beian-icon">京公网安备11011202101923号</a>
+    </div>
+</footer>
+
+</body>
+</html>

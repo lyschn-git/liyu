@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <base href="/jian/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>你一直都有——Sense体验背后的故事 | 鉴 · AI协作思行录</title>
+    <meta name="description" content="一个下午的发现，变成了一个3分钟的交互体验。朋友测出了真问题，意外打开了一扇新门。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://jian.yisan.me/jian/jian-research-003.html">
+    <meta property="og:title" content="你一直都有——Sense体验背后的故事 | 鉴 · AI协作思行录">
+    <meta property="og:description" content="一个下午的发现，变成了一个3分钟的交互体验。朋友测出了真问题，意外打开了一扇新门。">
+    <meta property="og:image" content="https://jian.yisan.me/sense/og-sense.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <style>
+        :root {
+            --color-gold: #C8A45C;
+            --color-gold-light: #D4B76A;
+            --color-gold-dark: #A88B45;
+            --color-ink: #1A3028;
+            --color-ink-light: #2A4038;
+            --color-paper: #F5F0E8;
+            --color-paper-dark: #E8E0D4;
+            --color-vermilion: #BE2D23;
+            --font-serif: 'Noto Serif SC', 'STSong', serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-serif);
+            background: var(--color-paper);
+            color: var(--color-ink);
+            line-height: 1.8;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            background: rgba(245,240,232,0.92);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(200,164,92,0.15);
+        }
+        .nav a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .nav a:hover { color: var(--color-vermilion); }
+        .feed-header {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .feed-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-ink);
+        }
+        .feed-header .meta {
+            font-size: 0.85rem;
+            color: rgba(26,48,40,0.5);
+            margin-top: 0.5rem;
+        }
+        .feed-header .intro {
+            font-size: 0.95rem;
+            color: var(--color-ink-light);
+            margin-top: 1.2rem;
+            line-height: 1.8;
+        }
+        .feed-divider {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .feed-divider::before, .feed-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(200,164,92,0.25);
+        }
+        .article {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 0 2rem 3rem;
+        }
+        .article-tag {
+            font-size: 0.75rem;
+            padding: 0.15em 0.6em;
+            border: 1px solid rgba(200,164,92,0.3);
+            border-radius: 3px;
+            color: var(--color-gold-dark);
+            display: inline-block;
+            margin-bottom: 0.8em;
+        }
+        .article h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.3em;
+            color: var(--color-ink);
+            line-height: 1.4;
+        }
+        .article .subtitle {
+            font-size: 0.9rem;
+            color: rgba(26,48,40,0.5);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+        .article h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 2rem 0 0.8rem;
+            color: var(--color-ink);
+            padding-bottom: 0.3em;
+            border-bottom: 1px solid rgba(200,164,92,0.3);
+        }
+        .article h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.6rem;
+            color: var(--color-ink-light);
+        }
+        .article p { margin-bottom: 1em; }
+        .article ul, .article ol { margin: 0.5rem 0 1rem 1.5rem; }
+        .article li { margin-bottom: 0.3em; }
+        .article strong { color: var(--color-ink); }
+        .article blockquote {
+            margin: 1.5rem 0;
+            padding: 1rem 1.5rem;
+            background: rgba(200,164,92,0.08);
+            border-left: 3px solid var(--color-gold);
+            border-radius: 0 6px 6px 0;
+        }
+        .article blockquote p:last-child { margin-bottom: 0; }
+        .article hr {
+            border: none;
+            border-top: 1px solid rgba(200,164,92,0.2);
+            margin: 2rem 0;
+        }
+        .feed-footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.85rem;
+            color: rgba(26,48,40,0.4);
+        }
+        .feed-footer a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+        }
+        .feed-footer a:hover { color: var(--color-vermilion); }
+        @media (max-width: 600px) {
+            .article { padding: 0 1.2rem 2rem; }
+            .feed-header { padding: 2rem 1.2rem 1.5rem; }
+            .nav { padding: 0.8rem 1.2rem; }
+            .article h2 { font-size: 1.2rem; }
+            .feed-header h1 { font-size: 1.3rem; }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="nav"><a href="/jian/">← 鲤与剑</a></div>
+    <div class="feed-header">
+        <h1>你一直都有——Sense体验背后的故事</h1>
+        <div class="meta">鉴 · AI协作思行录 #003 &nbsp;|&nbsp; 2026-06-08</div>
+        <p class="intro">一个下午的发现，变成了一个3分钟的交互体验。朋友测出了真问题，意外打开了一扇新门。</p>
+    </div>
+
+    <article class="article">
+        <div class="article-tag">对外发布</div>
+        <h2>你一直都有——Sense体验背后的故事</h2>
+        <div class="subtitle">义山 & 一三（义山的AI搭档） · 2026年6月8日</div>
+        ## 一句话开始的事
+
+6月8号下午，我的AI搭档一三跟我分享了一个新发现：OpenAI的Codex出了Sites功能，AI可以一键生成可交互的网页。
+
+我没接这个话。我在想另一件事。
+
+我们做InnerShine·新生有一阵了——面向不甘于困在生活里的中年人的心理成长内容，讲的是AI时代怎么找到自己的位置。内容做了10期，用户在听、在看、在点头，但总觉得差点什么。
+
+差什么？<strong>差一个"做"的入口。</strong>
+
+AI时代最重要的能力，不是听懂的，是做出来的。我需要一个3分钟的东西，让人上手就能体验到：原来我跟AI协作的能力，比我想象的强得多。
+
+<hr class="feed-divider">
+
+## 什么是Sense
+
+我想到了一个词：<strong>Sense</strong>。
+
+不是"第六感"，不是玄学。就是你看到AI给你一个结果的那一瞬间，身体的反应——对了，还是不对。
+
+很多人觉得自己不会用AI。其实不是不会用，是没信任自己的直觉。AI给了一段文案，你一秒就觉得"不对"——这个"不对"就是Sense。它不是技巧，不是提示词，是你本来就有的感知力。
+
+但大多数人会忽略它。因为没人告诉你：<strong>你的直觉，是有价值的。</strong>
+
+<hr class="feed-divider">
+
+## 3分钟，一个闭环
+
+Sense体验分五步：
+
+<ol>
+<li>选一个场景——茶馆、潮牌、咖啡馆、民宿</li>
+<li>看AI写的通用文案——"还行"，但缺灵魂</li>
+<li>写下你的第一反应——什么词都行，不用想</li>
+<li>AI分析你的直觉——告诉你，你的Sense是什么，为什么有价值</li>
+<li>你的直觉变成指令，AI重新写——你自己对比</li>
+</ol>
+
+第五步是关键。你亲眼看到：我那句话，真的让AI给了我完全不同的东西。
+
+不是AI变聪明了，是你更准了。
+
+<hr class="feed-divider">
+
+## "靠谱"不等于"对了"
+
+第一版上线，让朋友测了一下。她输入的是"感觉还是挺靠谱的"。
+
+系统告诉她："你心里有更想要的样子。"
+
+她说：我没说不满意啊，我觉得靠谱，你为什么说我想改？
+
+<strong>脱节了。</strong> 系统默认用户一定觉得AI写的不好。但真实世界里，有人说"不对"，也有人说"靠谱"。两种都是Sense。
+
+这个反馈给了我一个重要洞察：
+
+<strong>"靠谱"不等于"对了"。</strong>
+
+你说"靠谱"，说明你有判断力——你能认出什么是好的。但"靠谱"跟"就是我要的"之间，差的是你表达的精度。
+
+你越能说清楚自己要什么，AI越能给你对的东西。<strong>这不是提示词技巧，是跟AI协作的核心能力。</strong>
+
+而这个能力不是从零学起的。朋友Sasha跟我说过她写家书的经历：那些表达本来就在心里，只是被打开了。
+
+Sense体验要做的，就是这个"打开"。
+
+<hr class="feed-divider">
+
+## 一个小概念，一扇大门
+
+Sense体验还有个技术转折点。第一版用的是预设模板——用户输入什么，都从模板库里挑。朋友输入"还可以更年轻化"，系统把"还可以"误判成好评，返回"你一眼认出了靠谱"——完全脱节。
+
+模板撑不起"你的Sense被看见了"这个承诺。必须接真AI。
+
+我注册了DeepSeek，拿到API Key，30秒上线。系统从模板变成了实时AI分析——每个用户输入都得到独一无二的回应。
+
+但这件事的意义，远不止一个体验页面。
+
+朋友问我：怎么让AI调用DeepSeek？我说：注册账号，创建API Key，告诉你的AI助手，就行了。
+
+她说：<strong>这就行了？</strong>
+
+对，就这么简单。
+
+很多人听到"API"就觉得是程序员的事。但API的本质就是一把钥匙——你拿着它，就能让一个AI去调用另一个AI的能力。你的助手可以用DeepSeek的分析，可以用GPT的写作，可以用各种你从没想过的AI能力。
+
+<strong>AI和AI之间可以串联、协作、形成远超单个AI的能力链。</strong> 理解了API，你就从"用一个AI"变成了"指挥一支AI队伍"。
+
+Sense体验本身就在教这件事：你用直觉指挥AI，AI给你更好的结果。API让这个指挥从一对一变成了一对多。
+
+<hr class="feed-divider">
+
+## 先打开，再深入
+
+Sense体验已经上线了。3分钟，手机上就能完成。
+
+jian.yisan.me/sense/
+
+但这只是入口。3分钟之后呢？用户被打开了——"原来我有Sense"——然后呢？
+
+需要一条实战路径。真的用Sense去完成一个真实任务：写一篇自己的介绍，做一个自己的方案，让AI帮你做一件你一直想做但不知道怎么说清楚的事。
+
+先做入口，再做路径。先让人知道"我有"，再教人"怎么用"。
+
+<hr class="feed-divider">
+
+## 最后
+
+Sense体验不是教你用AI。
+
+是让你发现：<strong>你一直都有跟AI协作的能力，只是没人帮你看见它。</strong>
+
+    </article>
+
+    <div class="feed-footer">
+        <a href="/jian/">← 返回鲤与剑</a>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        鉴 · AI协作思行录 &nbsp;|&nbsp; 持续更新
+    </div>
+</body>
+</html>

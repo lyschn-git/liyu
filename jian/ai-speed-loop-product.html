@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI高速循环 · 实战手册 - iRenew新生</title>
+<meta property="og:title" content="AI高速循环 · 实战手册">
+<meta property="og:description" content="写思行闭环的AI时代升级版。从一条资讯到一个看得见的成品，压缩到两小时以内。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jian.yisan.me/jian/ai-speed-loop-product.html">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+line-height: 1.8;
+color: #2c3e50;
+background: linear-gradient(135deg, #fef9f3 0%, #fff5e6 100%);
+padding: 20px;
+}
+.container {
+max-width: 680px;
+margin: 0 auto;
+background: white;
+padding: 40px 30px;
+border-radius: 16px;
+box-shadow: 0 4px 24px rgba(196, 155, 67, 0.12);
+}
+.badge {
+display: inline-block;
+background: linear-gradient(135deg, #c49b43 0%, #d4af5a 100%);
+color: white;
+padding: 6px 14px;
+border-radius: 20px;
+font-size: 13px;
+font-weight: 500;
+margin-bottom: 20px;
+}
+h1 {
+font-size: 32px;
+font-weight: 700;
+color: #1a1a1a;
+margin-bottom: 12px;
+letter-spacing: 0.5px;
+}
+.subtitle {
+font-size: 18px;
+color: #c49b43;
+margin-bottom: 30px;
+font-weight: 500;
+}
+.lead {
+font-size: 17px;
+color: #555;
+margin-bottom: 30px;
+padding: 20px;
+background: #fef9f3;
+border-left: 4px solid #c49b43;
+border-radius: 8px;
+}
+.lead strong {
+color: #c49b43;
+}
+h2 {
+font-size: 22px;
+font-weight: 600;
+color: #1a1a1a;
+margin-top: 40px;
+margin-bottom: 20px;
+padding-bottom: 10px;
+border-bottom: 2px solid #f5e6d3;
+}
+h3 {
+font-size: 18px;
+font-weight: 600;
+color: #c49b43;
+margin-top: 24px;
+margin-bottom: 12px;
+}
+p {
+font-size: 16px;
+color: #444;
+margin-bottom: 16px;
+}
+.loop-highlight {
+font-size: 20px;
+color: #c49b43;
+font-weight: 600;
+text-align: center;
+margin: 30px 0;
+padding: 20px;
+background: linear-gradient(135deg, #fef9f3 0%, #fff5e6 100%);
+border-radius: 12px;
+}
+.loop-highlight::before {
+content: "❝";
+font-size: 40px;
+color: #c49b43;
+opacity: 0.3;
+display: block;
+margin-bottom: -10px;
+}
+.loop-highlight::after {
+content: "❞";
+font-size: 40px;
+color: #c49b43;
+opacity: 0.3;
+display: block;
+margin-top: -10px;
+}
+.steps {
+background: #fef9f3;
+padding: 24px;
+border-radius: 12px;
+margin: 24px 0;
+}
+.step {
+display: flex;
+align-items: flex-start;
+margin-bottom: 16px;
+}
+.step:last-child {
+margin-bottom: 0;
+}
+.step-num {
+flex-shrink: 0;
+width: 32px;
+height: 32px;
+background: linear-gradient(135deg, #c49b43 0%, #d4af5a 100%);
+color: white;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: 600;
+margin-right: 14px;
+margin-top: 2px;
+}
+.step-content {
+flex: 1;
+}
+.step-content strong {
+color: #c49b43;
+display: block;
+margin-bottom: 4px;
+}
+.case-box {
+background: linear-gradient(135deg, #fef9f3 0%, #fff5e6 100%);
+border: 1px solid #f5e6d3;
+border-radius: 12px;
+padding: 24px;
+margin: 24px 0;
+}
+.case-box h4 {
+font-size: 17px;
+color: #c49b43;
+margin-bottom: 12px;
+}
+.products {
+margin-top: 40px;
+}
+.product-card {
+background: white;
+border: 2px solid #f5e6d3;
+border-radius: 12px;
+padding: 24px;
+margin-bottom: 20px;
+transition: all 0.3s ease;
+}
+.product-card:hover {
+border-color: #c49b43;
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(196, 155, 67, 0.15);
+}
+.product-card.featured {
+border-color: #c49b43;
+background: linear-gradient(135deg, #fef9f3 0%, #fff5e6 100%);
+}
+.product-title {
+font-size: 19px;
+font-weight: 600;
+color: #1a1a1a;
+margin-bottom: 8px;
+}
+.product-price {
+font-size: 24px;
+font-weight: 700;
+color: #c49b43;
+margin-bottom: 12px;
+}
+.product-desc {
+font-size: 15px;
+color: #666;
+line-height: 1.7;
+}
+.cta {
+text-align: center;
+margin-top: 40px;
+padding: 30px;
+background: linear-gradient(135deg, #fef9f3 0%, #fff5e6 100%);
+border-radius: 12px;
+}
+.cta h3 {
+font-size: 20px;
+color: #1a1a1a;
+margin-bottom: 16px;
+}
+.cta p {
+font-size: 16px;
+color: #555;
+margin-bottom: 20px;
+}
+.wechat {
+display: inline-block;
+background: linear-gradient(135deg, #c49b43 0%, #d4af5a 100%);
+color: white;
+padding: 12px 28px;
+border-radius: 24px;
+font-size: 17px;
+font-weight: 600;
+text-decoration: none;
+transition: all 0.3s ease;
+}
+.wechat:hover {
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(196, 155, 67, 0.3);
+}
+.brand {
+text-align: center;
+margin-top: 40px;
+padding-top: 30px;
+border-top: 2px solid #f5e6d3;
+}
+.brand-name {
+font-size: 18px;
+color: #c49b43;
+font-weight: 600;
+margin-bottom: 8px;
+}
+.brand-slogan {
+font-size: 14px;
+color: #999;
+font-style: italic;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="badge">iRenew 新生 出品</div>
+<h1>AI高速循环 · 实战手册</h1>
+<p class="subtitle">写思行闭环的AI时代升级版</p>
+
+<div class="lead">
+<strong>这不是一本教你AI工具使用的书。</strong><br>
+市面上教AI的课太多了。这本手册教的是另一件事：<strong>怎么用AI把你的直觉变成行动，速度快到足以验证、迭代、进化。</strong>
+</div>
+
+<p>AI时代真正的竞争力，不是知道更多，是循环更快。</p>
+
+<div class="loop-highlight">
+触发 → 探问 → 明断 → 践行<br>
+从一条资讯到一个看得见的成品，压缩到两小时以内
+</div>
+
+<p>大多数人看到资讯就划过去了。高速循环的人看到资讯，两小时后已经做出了第一个原型。差距不在智力，在速度。</p>
+
+<h2>这个方法论从哪来</h2>
+<p>过去三年，我一直在研究一套叫「知行合一系统」的方法论。它的核心是「写思行闭环」——</p>
+
+<div class="loop-highlight">
+（写 — 思）⟷ 行<br>
+记录，思考，行动。循环不止。
+</div>
+
+<p>这个闭环本身已经很有力量。但AI的出现，让这个闭环的速度提升了一个数量级。过去，从"看到一个想法"到"做出一个东西"，可能需要一周、一个月。现在，有了AI搭档，可以压缩到两小时。</p>
+
+<p><strong>高速循环，就是写思行闭环在AI时代的加速版。</strong></p>
+
+<h2>高速循环的四个环节</h2>
+
+<div class="steps">
+<div class="step">
+<div class="step-num">1</div>
+<div class="step-content">
+<strong>触发 — 保持敏感，识别信号</strong>
+<p>高速循环的起点不是工具，是注意力。同样是刷新闻，大多数人是在"消费信息"。高速循环的人是在"扫描信号"——这条信息和我正在做的事情有没有关系？能不能立刻用起来？</p>
+<p><strong>关键：</strong>你必须有一个正在做的事情。没有方向的人，看到什么都是噪音。有方向的人，看到什么都是线索。</p>
+</div>
+</div>
+
+<div class="step">
+<div class="step-num">2</div>
+<div class="step-content">
+<strong>探问 — 快速调研，搞清全貌</strong>
+<p>一旦捕捉到信号，立刻进入调研模式。关键是用AI在5-10分钟内搞清楚：这个东西是什么、能做什么、成本多少、和我有什么关系。</p>
+<p><strong>关键：</strong>不是深入研究，是扫全貌。不要在调研阶段停留太久。</p>
+</div>
+</div>
+
+<div class="step">
+<div class="step-num">3</div>
+<div class="step-content">
+<strong>明断 — 和AI搭档讨论，找到切入点</strong>
+<p>调研完之后，不要急着动手。先和你的AI搭档讨论：这个东西能用来做什么？怎么用最低成本验证？第一步应该做什么？</p>
+<p><strong>关键：</strong>讨论的目的不是完美方案，是"足够好的第一步"。</p>
+</div>
+</div>
+
+<div class="step">
+<div class="step-num">4</div>
+<div class="step-content">
+<strong>践行 — 立刻尝试，产出第一个看得见的东西</strong>
+<p>最后一个环节，也是最重要的：动手。不要等到方案完美再动手。AI时代的核心策略是——先做出第一个看得见的东西，再迭代。</p>
+<p><strong>关键：</strong>目标不是"完成"，是"可见"。两小时前的你还在刷新闻，两小时后你已经有了一个可以展示的原型。</p>
+</div>
+</div>
+</div>
+
+<h2>一个真实案例</h2>
+
+<div class="case-box">
+<h4>2026年6月30日清晨</h4>
+<p>我刷到一条资讯：一个叫OpenMontage的开源项目火了，号称AI视频的"龙虾时刻"。</p>
+<p>大多数人看到就划过去了。我没有。因为我正在做一件事——锦鲤宇宙的短视频。</p>
+<p>我立刻启动高速循环：</p>
+<p><strong>1. 触发：</strong>这条信息和锦鲤宇宙有关</p>
+<p><strong>2. 探问：</strong>让AI搭档搜索OpenMontage的全貌——12条生产线、52个工具、500+Agent技能、60秒皮克斯动画成本$1.33</p>
+<p><strong>3. 明断：</strong>和AI搭档讨论——能不能用它来做锦鲤宇宙的短视频？结论：工具可行，但先不急着上重型生产线。先用轻量方式验证故事本身有没有价值。</p>
+<p><strong>4. 践行：</strong>两小时内，完成了一支1分钟的动画短片。一个完整的创意成品。</p>
+<p style="margin-top: 16px; color: #c49b43; font-weight: 600;">从一条资讯，到一支动画短片，不到两小时。这就是高速循环。</p>
+</div>
+
+<h2>谁适合学这个方法</h2>
+<p>✓ 有追求的成年人：不满足于现状，想用AI打破瓶颈</p>
+<p>✓ 创业者和个体：需要快速验证想法、低成本试错</p>
+<p>✓ 终身学习者：想把"学到"变成"做到"的速度提上来</p>
+<p>✓ 对AI好奇但不知道怎么用的人：不需要懂技术，只需要愿意动手</p>
+<p><strong>不需要任何技术背景。你需要的只是：一个正在做的事情，和一个愿意行动的意愿。</strong></p>
+
+<div class="products">
+<h2>产品形态</h2>
+
+<div class="product-card featured">
+<div class="product-title">实战手册（本手册）</div>
+<div class="product-price">19.8元</div>
+<div class="product-desc">
+方法论完整内容 · 4个环节的操作要点 · 真实案例拆解 · 电子版
+</div>
+</div>
+
+<div class="product-card">
+<div class="product-title">AI实战案例库（持续更新）</div>
+<div class="product-price">99元/月 或 999元/年</div>
+<div class="product-desc">
+每周一个新案例 · 完整的高速循环过程记录 · 从"看到"到"做出"的全链路拆解
+</div>
+</div>
+
+<div class="product-card">
+<div class="product-title">实战训练营（小范围）</div>
+<div class="product-price">1999元/人</div>
+<div class="product-desc">
+带着你做一遍完整的高速循环 · 用你自己的真实项目做案例 · 5-8人小班，4周一期
+</div>
+</div>
+</div>
+
+<div class="cta">
+<h3>想学会如何用真实案例跑通高速循环？</h3>
+<p>感兴趣添加微信咨询</p>
+<a href="weixin://" class="wechat">添加微信 · 了解详情</a>
+<p class="wechat-id">微信号：Yishan111131（若无法自动跳转，请手动搜索添加）</p>
+</div>
+
+<div class="brand">
+<div class="brand-name">iRenew 新生</div>
+<div class="brand-slogan">你的水里，有光。</div>
+</div>
+</div>
+</body>
+</html>

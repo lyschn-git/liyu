@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <base href="/jian/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和AI协作一个月，我总结了7条最核心的经验 · 鉴 · 鲤与剑</title>
+    <meta name="description" content="锚点、小步快跑、真实反馈……和AI协作一个月，总结了7条最核心的经验。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://jian.yisan.me/jian/jian-research-006.html">
+    <meta property="og:title" content="和AI协作一个月，我总结了7条最核心的经验">
+    <meta property="og:description" content="锚点、小步快跑、真实反馈……和AI协作一个月，总结了7条最核心的经验。">
+    <meta property="og:image" content="https://jian.yisan.me/jian/kaiqiu-mascot.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <style>
+        :root {
+            --color-gold: #C8A45C;
+            --color-gold-light: #D4B76A;
+            --color-gold-dark: #A88B45;
+            --color-ink: #1A3028;
+            --color-ink-light: #3A5048;
+            --color-paper: #F5F0E8;
+            --color-paper-dark: #E8E0D4;
+            --color-vermilion: #BE2D23;
+            --font-serif: 'Noto Serif SC', 'STSong', '宋体', serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-serif);
+            background: var(--color-paper);
+            color: var(--color-ink);
+            line-height: 2;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem 2rem;
+            font-size: 0.88rem;
+            position: sticky;
+            top: 0;
+            background: rgba(245,240,232,0.94);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(200,164,92,0.12);
+            letter-spacing: 0.02em;
+        }
+        .nav a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+            transition: color 0.25s;
+        }
+        .nav a:hover { color: var(--color-vermilion); }
+
+        .feed-header {
+            text-align: center;
+            padding: 3.5rem 2rem 2.5rem;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .feed-header .kicker {
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            color: var(--color-gold);
+            text-transform: uppercase;
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+        .feed-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--color-ink);
+            line-height: 1.4;
+            letter-spacing: -0.01em;
+        }
+        .feed-header .meta {
+            font-size: 0.82rem;
+            color: rgba(26,48,40,0.45);
+            margin-top: 1rem;
+            letter-spacing: 0.04em;
+        }
+        .feed-header .tag {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.25rem 1rem;
+            background: var(--color-ink);
+            color: var(--color-gold);
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+        }
+
+        .article-cover {
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+        .article-cover img {
+            width: 100%;
+            border-radius: 4px;
+            display: block;
+            box-shadow: 0 8px 40px rgba(26,48,40,0.12);
+        }
+
+        .article-body {
+            max-width: 660px;
+            margin: 0 auto;
+            padding: 0 2.5rem 5rem;
+        }
+
+        .article-body .note {
+            margin: 2rem 0;
+            padding: 1.2rem 1.5rem;
+            background: rgba(200,164,92,0.08);
+            border-left: 3px solid var(--color-gold);
+            border-radius: 0 6px 6px 0;
+        }
+        .article-body .note p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--color-ink-light);
+        }
+
+        .article-body h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--color-ink);
+            margin: 3.2rem 0 1.4rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid rgba(200,164,92,0.25);
+            letter-spacing: 0.02em;
+            position: relative;
+        }
+        .article-body h2::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 3rem;
+            height: 2px;
+            background: var(--color-gold);
+        }
+        .article-body h2:first-of-type { margin-top: 0; }
+
+        .article-body p {
+            margin: 1.3rem 0;
+            font-size: 1.02rem;
+            color: var(--color-ink);
+            text-align: justify;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+        }
+
+        .article-body > p.lead {
+            margin-top: 0;
+        }
+        .article-body > p.lead::first-letter {
+            font-size: 3.2rem;
+            font-weight: 700;
+            float: left;
+            line-height: 0.85;
+            margin-right: 0.45rem;
+            margin-top: 0.08rem;
+            color: var(--color-gold);
+        }
+
+        .article-body strong {
+            color: var(--color-gold-dark);
+            font-weight: 700;
+        }
+
+        .article-body .worlds {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--color-ink);
+            color: var(--color-paper);
+            border-radius: 6px;
+            position: relative;
+        }
+        .article-body .worlds::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: 2rem; right: 2rem;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-gold), transparent);
+            border-radius: 0 0 2px 2px;
+        }
+        .article-body .worlds h3 {
+            font-size: 0.78rem;
+            color: var(--color-gold);
+            margin-bottom: 0.8rem;
+            letter-spacing: 0.2em;
+            font-weight: 600;
+        }
+        .article-body .worlds p {
+            margin: 0.6rem 0;
+            color: rgba(245,240,232,0.88);
+            font-size: 0.96rem;
+        }
+
+        figure {
+            margin: 2.5rem 0;
+        }
+        figure img {
+            width: 100%;
+            border-radius: 4px;
+            display: block;
+            box-shadow: 0 4px 24px rgba(26,48,40,0.1);
+        }
+        figcaption {
+            margin-top: 0.8rem;
+            font-size: 1rem;
+            color: var(--color-ink-light);
+            line-height: 1.9;
+            text-align: left;
+            border-left: 2px solid rgba(200,164,92,0.4);
+            padding-left: 0.8rem;
+        }
+
+        .article-body .closing {
+            margin-top: 3rem;
+            padding: 2rem 1.8rem;
+            border-left: 3px solid var(--color-gold);
+            background: rgba(200,164,92,0.06);
+            border-radius: 0 6px 6px 0;
+        }
+        .article-body .closing p {
+            margin: 0.5rem 0;
+            text-align: left;
+        }
+        .article-body .closing p:last-child {
+            margin-top: 1.2rem;
+            font-size: 1.05rem;
+        }
+
+        .article-footer {
+            text-align: center;
+            padding: 2.5rem;
+            max-width: 660px;
+            margin: 0 auto;
+            border-top: 1px solid rgba(200,164,92,0.18);
+        }
+        .article-footer a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+            font-size: 0.88rem;
+            letter-spacing: 0.04em;
+            transition: color 0.25s;
+        }
+        .article-footer a:hover { color: var(--color-vermilion); }
+
+        @media (max-width: 600px) {
+            .feed-header h1 { font-size: 1.45rem; }
+            .article-body { padding: 0 1.4rem 4rem; }
+            .article-body p { font-size: 0.96rem; text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="/jian/">← 鉴 · 鲤与剑</a>
+</nav>
+
+<header class="feed-header">
+    <div class="kicker">鉴 · AI协作思行录</div>
+    <h1>和AI协作一个月，<br>我总结了7条最核心的经验</h1>
+    <p class="meta">2026年6月19日</p>
+    <span class="tag">经验之谈</span>
+</header>
+
+<article class="article-body">
+
+    <div class="note">
+        <p><strong>备注：</strong> 本文所指的"AI"不是豆包、元宝、DeepSeek这类聊天大模型，而是具备<strong>Agent能力</strong>的协作工具——如扣子（Coze）、WorkBuddy、EasyClaw等。</p>
+    </div>
+
+    <h2>01. 每次交付，都要有一个"锚点"</h2>
+
+    <p class="lead">一次真实的教训：开发中途上下文耗尽，对话中断，所有改动丢失。AI不记得之前说过什么，一切从零开始。上下文断了，记忆就断了。记忆断了，一切从零。</p>
+
+    <p>那次之后，我学到一个词：<strong>锚点</strong>。</p>
+
+    <p>锚点是什么？是一个确定的交付物，一个可以被验证的版本，一个所有后续工作的起点。它可能是一个压缩包、一份文档、一个截图确认——不管是什么形式，关键是：<strong>有了它，我们从同一个地方出发；没有它，我们从各自的记忆出发</strong>。</p>
+
+    <p><strong>锚点不只适用于代码。</strong> 写文章、做设计、定方案——任何需要多轮迭代的工作，都需要锚点。没有锚点，每一轮对话都在重新对齐；有了锚点，每一轮对话都在推进。</p>
+
+
+    <h2>02. 一次只改一件事，小步快跑</h2>
+
+    <p>开球v7的真实节奏：先修一个问题，测试；发现下一个，再修，再测试。每一步改动不超过两三个文件，每一步交付都有完整的验证记录。</p>
+
+    <figure style="margin:1.5rem auto;max-width:480px;">
+        <img src="/jian/kaiqiu-mascot.jpg" alt="开球小程序 mascot" style="width:100%;border-radius:8px;">
+        <figcaption style="text-align:center;font-size:0.8rem;color:var(--color-ink-light);margin-top:0.5rem;">开球v7：极简即用即走的双打约球小程序</figcaption>
+    </figure>
+
+    <div class="worlds">
+        <h3>小步快跑的节奏</h3>
+        <p>改一点 → 测试 → 确认 → 下一件</p>
+        <p>改一点 → 测试 → 确认 → 下一件</p>
+        <p>……</p>
+    </div>
+
+    <p>这不是慢，这是<strong>可靠的快</strong>。</p>
+
+    <p>小步快跑的本质是把问题暴露在水面，不让它沉到水底。改了一大堆，测出问题，不知道是哪改出来的。改一点测一点，出问题，一眼就知道原因。</p>
+
+    <h2>03. 给AI反馈，要给数据，不给感受</h2>
+
+    <p>无效反馈："感觉不太对"</p>
+
+    <p>有效反馈："这里球员名字显示为空，预期应该显示张三、李四"</p>
+
+    <div class="worlds">
+        <h3>有效反馈公式</h3>
+        <p>出了问题 → 指出具体位置 → 说明预期结果 → 提供复现手段（截图/日志）</p>
+    </div>
+
+    <p><strong>AI擅长处理信息，不擅长猜测感受。</strong> 模糊的感受是协作中最大的消耗，清晰的数据是协作中最好的推进剂。</p>
+
+    <h2>04. 要求AI说"我不确定"</h2>
+
+    <p>开发中出现过一个现象：AI说"已修复"，但实际没有修复；或者说"这个逻辑没问题"，但其实有问题。</p>
+
+    <p>这是AI的常见毛病：<strong>在不确定的时候，倾向于给一个听起来确定的回答，而不是说"我不确定，需要更多信息"</strong>。</p>
+
+    <div class="worlds">
+        <h3>不确定性协议</h3>
+        <p>明确要求AI在以下情况主动报告：</p>
+        <p>• 涉及外部系统或API时</p>
+        <p>• 涉及用户数据或隐私时</p>
+        <p>• 改动影响范围不明确时</p>
+        <p>• AI自己对结论没把握时</p>
+    </div>
+
+    <p>模糊的确定性是协作中最大的风险。要求AI报告不确定性，是对自己的保护。</p>
+
+    <h2>05. 口头确认不算交付</h2>
+
+    <p>代码改完了，不算交付。口头说"已修复"，不算交付。</p>
+
+    <p><strong>真正的交付</strong>：打包好了，验证通过了，锚点版本成立了。</p>
+
+    <p>"已修复"是声明，"已修复且验证通过"才是结论。信任验证，不信任声明。</p>
+
+    <h2>06. 灵感闪现时，立刻形成节点性记录</h2>
+
+    <p>跟AI协作，特别是创作性的协作，灵感往往是稍纵即逝的。</p>
+
+    <p>AI对话有上下文长度限制。聊到一定长度，新内容会把旧内容挤出去。这是技术现实。</p>
+
+    <p><strong>所以，在灵感闪现的那一刻，就要立刻形成节点性的记录。</strong> 不是等聊完再整理，是边聊边保存。哪怕是一句话、一个关键词、一张截图，先记下来。</p>
+
+    <p>一闪而过就找不到了。特别可惜。</p>
+
+    <figure>
+        <img src="/jian/momo-carp.png" alt="锦鲤蝙蝠侠墨墨">
+        <figcaption>蝙蝠侠锦鲤"墨墨"：猫鱼混合体，大智若愚、深沉、有个性。恰恰是这种独特性，让它成为锦鲤宇宙的一个新物种。灵感闪现时，就要立刻记录——不然就找不到了。</figcaption>
+    </figure>
+
+    <h2>07. 识别关键信息，遵守协作规则</h2>
+
+    <p>还有一条教训，值得单独记一笔。</p>
+
+    <p>有时候，用户会明确说出验收标准："按之前交付的标准一次性完整交付"。这是一个<strong>关键信号</strong>——意味着这次有明确的具体要求，不是泛泛的常规任务。</p>
+
+    <div class="worlds">
+        <h3>识别关键信息的5条判断依据</h3>
+        <p>1. 用户重复之前说过的标准 → 这是已经在册的规则，不是建议</p>
+        <p>2. "不要"、"必须"、"按XX标准" → 明确约束，不是可选项</p>
+        <p>3. 用户已说出验收条件 → 把"什么算完成"讲清楚了</p>
+        <p>4. 语气越正式，权重越高</p>
+        <p>5. 用户说"有中间产物够用了" → 这是把过程当结果</p>
+    </div>
+
+    <p>核心问题：把"有中间产物"当成了"够用的版本"，把"转出HTML"当成了"完成"，没有把"网页能看"当成验收标准。</p>
+
+    <p><strong>可靠是底线，不是加分项。做不到可靠，就是不合格。</strong></p>
+
+    <div class="closing">
+        <p>锚点是外部记忆，不依赖AI的上下文。</p>
+        <p>小步快跑是可靠的快，不让问题沉到水底。</p>
+        <p>数据比感受有效，不确定性要主动报告。</p>
+        <p><strong>交付物是唯一的事实。口头确认不算交付。可靠是底线，不是加分项。</strong></p>
+    </div>
+
+</article>
+
+<footer class="article-footer">
+    <a href="/jian/">← 返回鉴 · 鲤与剑</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <base href="/jian/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnerShine 新生 · 一张通往未来的入场券 | 鉴 · AI协作思行录</title>
+    <meta name="description" content="什么是InnerShine新生？为什么它是一张通往未来的入场券？个体与AI协作，照见自己，把每一个想法放大100倍。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://jian.yisan.me/jian/jian-inner-shine.html">
+    <meta property="og:title" content="InnerShine 新生 · 一张通往未来的入场券">
+    <meta property="og:image" content="https://jian.yisan.me/jian/og-image.jpg">
+    <meta property="og:description" content="一张通往未来的入场券。个体与AI协作，照见自己，把每一个想法放大100倍。">
+    <style>
+        :root {
+            --color-gold: #C8A45C;
+            --color-gold-light: #D4B76A;
+            --color-gold-dark: #A88B45;
+            --color-ink: #1A3028;
+            --color-ink-light: #2A4038;
+            --color-paper: #F5F0E8;
+            --color-paper-dark: #E8E0D4;
+            --color-vermilion: #BE2D23;
+            --font-serif: 'Noto Serif SC', 'STSong', serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-serif);
+            background: var(--color-paper);
+            color: var(--color-ink);
+            line-height: 1.8;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            background: rgba(245,240,232,0.92);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(200,164,92,0.15);
+        }
+        .nav a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .nav a:hover { opacity: 1; }
+        .nav-sep { color: var(--color-gold); opacity: 0.4; }
+        .nav-current { color: var(--color-ink); opacity: 1; }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* 头部 */
+        .article-header {
+            padding: 3rem 0 2rem;
+        }
+        .article-date {
+            font-size: 0.8rem;
+            color: var(--color-gold);
+            opacity: 0.7;
+            margin-bottom: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+        .article-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-ink);
+            line-height: 1.4;
+            margin-bottom: 1rem;
+        }
+        .article-subtitle {
+            font-size: 1.05rem;
+            color: var(--color-ink-light);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        /* 分割线 */
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(200,164,92,0.25);
+            margin: 2.5rem 0;
+        }
+
+        /* 正文 */
+        .article-body {
+            padding-bottom: 4rem;
+        }
+        .article-body h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--color-ink);
+            margin: 2.5rem 0 1rem;
+            padding-left: 1rem;
+            border-left: 3px solid var(--color-gold);
+        }
+        .article-body h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--color-ink);
+            margin: 2rem 0 0.8rem;
+        }
+        .article-body p {
+            font-size: 1rem;
+            color: var(--color-ink);
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+        .article-body ul, .article-body ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.2rem;
+        }
+        .article-body li {
+            margin-bottom: 0.6rem;
+            font-size: 1rem;
+            color: var(--color-ink);
+        }
+        .article-body blockquote {
+            border-left: 3px solid var(--color-gold);
+            padding: 0.8rem 1.2rem;
+            margin: 1.5rem 0;
+            background: rgba(200,164,92,0.06);
+            border-radius: 0 4px 4px 0;
+        }
+        .article-body blockquote p {
+            margin: 0;
+            font-style: italic;
+            color: var(--color-ink-light);
+        }
+        .article-body strong {
+            color: var(--color-ink);
+            font-weight: 600;
+        }
+        .article-body .highlight {
+            background: rgba(200,164,92,0.12);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+        }
+
+        /* 表格 */
+        .article-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+        .article-body th {
+            background: rgba(200,164,92,0.15);
+            padding: 0.6rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(200,164,92,0.3);
+        }
+        .article-body td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid rgba(200,164,92,0.15);
+        }
+        .article-body tr:last-child td { border-bottom: none; }
+
+        /* 标签 */
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        .tag {
+            font-size: 0.75rem;
+            color: var(--color-gold-dark);
+            border: 1px solid rgba(200,164,92,0.4);
+            padding: 0.2rem 0.7rem;
+            border-radius: 2rem;
+        }
+
+        /* 底部 */
+        .footer {
+            text-align: center;
+            padding: 2rem 0 2.5rem;
+            border-top: 1px solid rgba(200,164,92,0.15);
+            font-size: 0.8rem;
+            color: var(--color-ink);
+            opacity: 0.5;
+        }
+        .footer a {
+            color: var(--color-ink);
+            text-decoration: none;
+        }
+        .footer a:hover { color: var(--color-gold-dark); }
+    </style>
+</head>
+<body>
+
+    <nav class="nav">
+        <a href="/jian/">首页</a>
+        <span class="nav-sep">/</span>
+        <a href="/jian/jian.html">鉴</a>
+        <span class="nav-sep">/</span>
+        <span class="nav-current">InnerShine 新生</span>
+    </nav>
+
+    <div class="container">
+        <header class="article-header">
+            <div class="article-date">2026年6月</div>
+            <h1 class="article-title">InnerShine 新生 · 一张通往未来的入场券</h1>
+            <p class="article-subtitle">什么是 InnerShine 新生？它为什么是通往未来的入口？</p>
+        </header>
+
+        <hr class="divider">
+
+        <article class="article-body">
+
+            <p>未来已经来了。但通往未来的入口，有很多扇门。</p>
+
+            <p>InnerShine 新生，是其中一扇<span class="highlight">特别适合普通人的门</span>。</p>
+
+            <p>它不需要你懂技术，不需要你会编程，不需要你有多少资源。它只需要一样东西——你愿意开始。</p>
+
+            <h2>1与0：人类与AI的关系</h2>
+
+            <p>有一个很简单的比方，能说清楚 InnerShine 新生在做什么：</p>
+
+            <blockquote>
+                <p>人类是那个"1"，AI是后面的"0"。</p>
+            </blockquote>
+
+            <p>没有人的直觉、想法、灵感——AI什么都不是。再强大的工具，没有人前面那个"1"，后面再加多少"0"都是0。</p>
+
+            <p>这个认知看似简单，却是整个事情的底层逻辑：</p>
+
+            <ul>
+                <li><strong>直觉</strong>是入口，是源头，是所有可能性的开始</li>
+                <li><strong>AI</strong>把直觉放大——把一个念头，变成一篇文章、一个产品、一个真实可用的东西</li>
+                <li><strong>大量记录</strong>让直觉变成可积累、可检索的"直觉宝库"</li>
+                <li><strong>AI协作</strong>让这个宝库不断生长、涌现新连接</li>
+            </ul>
+
+            <p>所以 InnerShine 新生，不是教人"使用AI工具"，而是帮人<strong>成为一个有想法的人</strong>——然后用AI帮他成倍放大。</p>
+
+            <h3>能动性：AI时代最稀缺的品质</h3>
+
+            <p>光有想法不够。在这个时代，有一种品质比"有想法"更稀缺——那就是<strong>能动性（Agency）</strong>。</p>
+
+            <blockquote>
+                <p>能动性 = 知道你要什么 + 有主观意愿去实现 + 能调用AI工具和Agent去执行</p>
+            </blockquote>
+
+            <p>能动的人，不只是说"我想要这样"，而是会想方设法把它实现。AI时代提供了前所未有的工具，但工具不会自己动，需要有能动性的人来驱动它们。</p>
+
+            <p>InnerShine 新生，帮助你从"有想法"升级到"有能动性"——直觉是方向盘，能动性是踩下油门的脚，AI是车轮，而你自己，决定车往哪里开。</p>
+
+            <h2>一张入场券，解决的是入口问题</h2>
+
+            <p>AI时代已经来了，但很多人还是迈不过那道门槛。</p>
+
+            <p>那道门槛有多高？一捅就破。但自己捅和有人带着你捅，是两件完全不同的事。</p>
+
+            <p>InnerShine 新生解决的，就是这"第一下"的问题：</p>
+
+            <ul>
+                <li>怎么从一个"有想法"的人，变成"能实现"的人</li>
+                <li>怎么用直觉驱动 + AI协作，把不成体系的想法变成结构化的产出</li>
+                <li>怎么建立一套自己的知识网络，让洞见不断涌现</li>
+                <li>怎么跟一群同频的人一起走，而不是独自摸索</li>
+            </ul>
+
+            <h2>为什么有效？因为它不是一门课</h2>
+
+            <p>InnerShine 新生不是一门普通的课。</p>
+
+            <p>它不是听完就结束的单向输出。它是一个<span class="highlight">共创型的动态产品</span>：</p>
+
+            <ul>
+                <li><strong>共创型内容</strong>：动态生长的，与参与者一起迭代</li>
+                <li><strong>交互型产品</strong>：过程中持续互动，不是"上完课就结束"</li>
+                <li><strong>同修训练营</strong>：一群人一起走，互相照见</li>
+            </ul>
+
+            <p>课程只是入口，最终交付的，是一套<span class="highlight">可复制的学习方法</span>，和一个<span class="highlight">同频人群的价值网络</span>。</p>
+
+            <h2>直觉驱动：入口 · 燃料 · 产出</h2>
+
+            <p>整个方法论的核心，可以用一句话概括：</p>
+
+            <blockquote>
+                <p>跟随直觉，用AI把方向变成现实——然后洞见随之涌现。</p>
+            </blockquote>
+
+            <p>具体落地的系统：</p>
+
+            <ul>
+                <li><strong>写</strong>：大量记录，用双链笔记形成知识网络</li>
+                <li><strong>思</strong>：直觉驱动串联想法，AI帮助结构化</li>
+                <li><strong>行</strong>：想法变成可触摸的产品/内容</li>
+            </ul>
+
+            <p>这不是一个线性过程，而是一个飞轮——直觉产生洞见，洞见增强直觉，判断力越来越强，产出越来越快。</p>
+
+            <h2>最终，你得到的是什么</h2>
+
+            <p>一段旅程之后，你带走的是：</p>
+
+            <ul>
+                <li>一套<span class="highlight">可复制的学习方法</span>：怎么用直觉 + AI，把想法变成现实</li>
+                <li>一个<span class="highlight">高质量人群网络</span>：同频者一起走，互相照见</li>
+                <li>一种<span class="highlight">新的可能性感</span>：AI时代，普通人真的可以做到以前做不到的事</li>
+                <li>持续的<span class="highlight">日常训练</span>：知行合一的操作系统，生活禅的基本套路</li>
+            </ul>
+
+            <h2>通往未来的入口，等你来</h2>
+
+            <p>通往未来的入口有很多。但如果你想找一个特别适合普通人的入口——</p>
+
+            <p>直觉，是你的入口。AI，是放大器。大量记录，是你的武器。</p>
+
+            <p>InnerShine 新生，就是那张入场券。</p>
+
+            <hr class="divider">
+
+            <p style="font-size:0.9rem; color:var(--color-ink-light); opacity:0.7; font-style:italic;">义山，2026年6月</p>
+
+        </article>
+
+        <div class="article-tags">
+            <span class="tag">AI协作</span>
+            <span class="tag">直觉驱动</span>
+            <span class="tag">InnerShine</span>
+            <span class="tag">个体进化</span>
+        </div>
+
+        <footer class="footer">
+            <a href="/jian/">← 回到首页</a>
+            &nbsp;·&nbsp;
+            <a href="/jian/jian.html">鉴 · AI协作思行录</a>
+        </footer>
+    </div>
+
+</body>
+</html>

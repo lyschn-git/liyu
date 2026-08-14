@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <base href="/jian/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sense体验手记：从一句话到一个产品 | 鉴 · AI协作思行录</title>
+    <meta name="description" content="从OpenAI Codex Sites的发现，到InnerShine交互体验的构想，到朋友测出真问题、迭代上线。一篇关于Sense体验从0到1的完整手记。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://jian.yisan.me/jian/jian-research-002.html">
+    <meta property="og:title" content="Sense体验手记：从一句话到一个产品 | 鉴 · AI协作思行录">
+    <meta property="og:description" content="从OpenAI Codex Sites的发现，到InnerShine交互体验的构想，到朋友测出真问题、迭代上线。一篇关于Sense体验从0到1的完整手记。">
+    <meta property="og:image" content="https://jian.yisan.me/sense/og-sense.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <style>
+        :root {
+            --color-gold: #C8A45C;
+            --color-gold-light: #D4B76A;
+            --color-gold-dark: #A88B45;
+            --color-ink: #1A3028;
+            --color-ink-light: #2A4038;
+            --color-paper: #F5F0E8;
+            --color-paper-dark: #E8E0D4;
+            --color-vermilion: #BE2D23;
+            --font-serif: 'Noto Serif SC', 'STSong', serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-serif);
+            background: var(--color-paper);
+            color: var(--color-ink);
+            line-height: 1.8;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            background: rgba(245,240,232,0.92);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(200,164,92,0.15);
+        }
+        .nav a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .nav a:hover { color: var(--color-vermilion); }
+        .feed-header {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .feed-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-ink);
+        }
+        .feed-header .meta {
+            font-size: 0.85rem;
+            color: rgba(26,48,40,0.5);
+            margin-top: 0.5rem;
+        }
+        .feed-header .intro {
+            font-size: 0.95rem;
+            color: var(--color-ink-light);
+            margin-top: 1.2rem;
+            line-height: 1.8;
+        }
+        .feed-divider {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .feed-divider::before, .feed-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(200,164,92,0.25);
+        }
+        .article {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 0 2rem 3rem;
+        }
+        .article-tag {
+            font-size: 0.75rem;
+            padding: 0.15em 0.6em;
+            border: 1px solid rgba(200,164,92,0.3);
+            border-radius: 3px;
+            color: var(--color-gold-dark);
+            display: inline-block;
+            margin-bottom: 0.8em;
+        }
+        .article h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.3em;
+            color: var(--color-ink);
+            line-height: 1.4;
+        }
+        .article .subtitle {
+            font-size: 0.9rem;
+            color: rgba(26,48,40,0.5);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+        .article h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 2rem 0 0.8rem;
+            color: var(--color-ink);
+            padding-bottom: 0.3em;
+            border-bottom: 1px solid rgba(200,164,92,0.3);
+        }
+        .article h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.6rem;
+            color: var(--color-ink-light);
+        }
+        .article p { margin-bottom: 1em; }
+        .article ul, .article ol { margin: 0.5rem 0 1rem 1.5rem; }
+        .article li { margin-bottom: 0.3em; }
+        .article strong { color: var(--color-ink); }
+        .article blockquote {
+            margin: 1.5rem 0;
+            padding: 1rem 1.5rem;
+            background: rgba(200,164,92,0.08);
+            border-left: 3px solid var(--color-gold);
+            border-radius: 0 6px 6px 0;
+        }
+        .article blockquote p:last-child { margin-bottom: 0; }
+        .article hr {
+            border: none;
+            border-top: 1px solid rgba(200,164,92,0.2);
+            margin: 2rem 0;
+        }
+        .feed-footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.85rem;
+            color: rgba(26,48,40,0.4);
+        }
+        .feed-footer a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+        }
+        .feed-footer a:hover { color: var(--color-vermilion); }
+        @media (max-width: 600px) {
+            .article { padding: 0 1.2rem 2rem; }
+            .feed-header { padding: 2rem 1.2rem 1.5rem; }
+            .nav { padding: 0.8rem 1.2rem; }
+            .article h2 { font-size: 1.2rem; }
+            .feed-header h1 { font-size: 1.3rem; }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="nav"><a href="/jian/">← 鲤与剑</a></div>
+    <div class="feed-header">
+        <h1>Sense体验手记：从一句话到一个产品</h1>
+        <div class="meta">鉴 · AI协作思行录 #002 &nbsp;|&nbsp; 2026-06-08</div>
+        <p class="intro">从OpenAI Codex Sites的发现，到InnerShine交互体验的构想，到朋友测出真问题、迭代上线。一篇关于Sense体验从0到1的完整手记。</p>
+    </div>
+
+    <article class="article">
+        <div class="article-tag">内部分享</div>
+        <h2>Sense体验手记：从一句话到一个产品</h2>
+        <div class="subtitle">义山 & 一三（义山的AI搭档） · 2026年6月8日</div>
+        ## 起点
+
+今天的故事，从一句话开始。
+
+下午，一三给我讲了OpenAI新出的Codex Sites功能——AI能直接生成可交互的网页。我听完没接这个话题，脑子里转的是另一件事：
+
+<strong>InnerShine·新生能不能做一个交互体验？</strong>
+
+InnerShine做了10期内容，讲的是不甘于困在生活里的中年人怎么在AI时代找到自己的位置。但内容是单向的，用户在听、在看、在点头，唯独没有在"做"。
+
+而AI时代最重要的能力，不是听懂的，是做出来的。
+
+<hr class="feed-divider">
+
+## 一句话变成了产品方向
+
+我跟一三说：做一个3分钟的交互体验。用户进来，面对一个场景——比如你开了一家茶馆——AI帮你写了段介绍文案。然后问你：<strong>你的第一反应是什么？</strong>
+
+不用想，不用组织语言，直觉写下来就行。
+
+这个直觉，我叫它<strong>Sense</strong>。
+
+Sense不是技巧，不是提示词工程。它是你看到AI输出的那一瞬间，身体告诉你的——对了，还是不对。大多数人觉得自己不会用AI，其实不是不会用，是没信任自己的直觉。
+
+体验的终点不是"我差得远"，是"我本来就有"。
+
+<hr class="feed-divider">
+
+## 五步，一个闭环
+
+体验分五步：
+
+<ol>
+<li><strong>选场景</strong>：茶馆、潮牌、咖啡馆、民宿——代入一个身份</li>
+<li><strong>看AI写的</strong>：通用文案，"还行"但缺灵魂</li>
+<li><strong>写下直觉</strong>：你的第一反应，什么词都行</li>
+<li><strong>看到Sense被看见</strong>：AI分析你的直觉，告诉你——你的Sense是什么类型，它为什么有价值</li>
+<li><strong>把Sense喂回AI</strong>：你的直觉变成指令，AI重新写一版，你自己对比</li>
+</ol>
+
+第五步是关键。用户亲眼看到：<strong>我的直觉，真的能让AI给我不一样的东西。</strong>
+
+不是AI更聪明了，是你更准了。
+
+<hr class="feed-divider">
+
+## 朋友测出了真问题
+
+晚上让朋友测了第一版。她输入的是"感觉（文案）还是挺靠谱的"。
+
+系统给她返回的Sense分析说："你心里有更想要的样子。"
+
+她说：我没说我不满意啊，我觉得靠谱，你为什么说我想改？这说的什么？
+
+<strong>脱节了。</strong>
+
+系统默认用户一定觉得AI写的不好。但真实世界里，有人说"不对"，也有人说"靠谱"。两种都是Sense，叙事完全不同。
+
+<hr class="feed-divider">
+
+## "靠谱"≠"对了"
+
+这个反馈给了我一个重要的洞察：
+
+<strong>"靠谱"不等于"对了"。</strong>
+
+用户说"靠谱"，说明她有判断力——能认出什么是好的。但"靠谱"和"就是我要的"之间，差的是她表达的精度。
+
+这不是AI的问题，是人的能力：<strong>清晰精准地表达自己。</strong>
+
+你越能说清楚自己要什么，AI越能给你对的东西。这不是提示词技巧，是跟AI协作的核心能力。
+
+而这个能力，不是从零学起的——Sasha跟我说她写家书的经历：那些表达本来就藏在心里，只是被打开了。InnerShine要做的，就是这个"打开"。
+
+我把这个洞察融入了Sense体验的三层叙事：
+<ul>
+<li>你一眼认出了"靠谱"——品质感知</li>
+<li>"靠谱"不等于"对了"——方向感知</li>
+<li>你表达越精准，AI越懂你——本心判断</li>
+</ul>
+
+<hr class="feed-divider">
+
+## 从模板到真AI
+
+但光改叙事不够。第一版用的是本地fallback——预设好的文案模板。用户输入什么，都是从模板库里挑的。
+
+朋友输入"还可以更年轻化，更新锐"，系统误把"还可以"当成正向评价，返回"你一眼认出了靠谱"——完全脱节。
+
+<strong>模板化的体验，撑不起"你的Sense被看见了"这个承诺。</strong>
+
+必须接真AI API。
+
+<hr class="feed-divider">
+
+## API：打开新世界的一把钥匙
+
+注册DeepSeek，拿到API Key，填进后端代码，上线。30秒的事。
+
+但这件事的意义，远不止Sense体验。
+
+我跟朋友聊天，她问我：怎么让AI调用DeepSeek？我说：注册一个账号，创建API Key，告诉扣子，就行了。
+
+她说：<strong>这就行了？</strong>
+
+对，这就行了。
+
+很多人——特别是技术小白——听到"API"三个字母就觉得是程序员的事。但API的本质很简单：<strong>一把钥匙。你拿着它，就能让一个AI去调用另一个AI的能力。</strong>
+
+你的扣子助手，可以调用DeepSeek的分析能力。你的自动化流程，可以调用GPT的写作能力。一个AI写，一个AI审，一个AI排版——机器和机器之间可以串联，可以协作，可以形成远超单个AI的能力链。
+
+<strong>API不是技术概念，是能力概念。</strong> 理解了API，你就从"用一个AI"变成了"指挥一支AI队伍"。
+
+Sense体验本身就是在教这件事：你用直觉指挥AI，AI给你更好的结果。API让这个指挥从一对一变成一对多。
+
+<hr class="feed-divider">
+
+## 状态
+
+Sense体验V5已上线：jian.yisan.me/sense/
+
+<ul>
+<li>✅ DeepSeek API接入，真AI实时分析</li>
+<li>✅ 三档反馈叙事（强正向/弱正向/负向）</li>
+<li>✅ "靠谱≠对了"正向反馈独立路径</li>
+<li>✅ 4场景×5方向覆盖</li>
+<li>✅ 微信分享OG标签+缩略图</li>
+</ul>
+
+这是一个3分钟的入口。接下来要做的是：<strong>3分钟之后怎么办？</strong> 用户被打开之后，需要一条实战路径——真的用Sense去完成一个真实任务。
+
+先做入口，再做路径。先让人知道"我有"，再教人"怎么用"。
+
+<hr class="feed-divider">
+
+## 一句话总结
+
+Sense体验不是教你用AI，是让你发现：<strong>你一直都有跟AI协作的能力，只是没人帮你看见它。</strong>
+
+    </article>
+
+    <div class="feed-footer">
+        <a href="/jian/">← 返回鲤与剑</a>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        鉴 · AI协作思行录 &nbsp;|&nbsp; 持续更新
+    </div>
+</body>
+</html>

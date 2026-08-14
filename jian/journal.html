@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手记更新日志 · 鲤与剑</title>
+    <meta name="description" content="鲤与剑的完整迭代过程。Build in public，每一步都看得见。">
+    <meta name="robots" content="noindex">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jian.yisan.me/jian/journal.html">
+    <meta property="og:title" content="手记更新日志 · 鲤与剑">
+    <meta property="og:description" content="鲤与剑的完整迭代过程。Build in public，每一步都看得见。">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-gold: #C8A45C;
+            --color-gold-dark: #A88B45;
+            --color-ink: #1A3028;
+            --color-ink-light: #2A4038;
+            --color-paper: #F5F0E8;
+            --color-paper-dark: #E8E0D4;
+            --color-vermilion: #BE2D23;
+            --font-serif: 'Noto Serif SC', 'STSong', serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-serif);
+            background: var(--color-paper);
+            color: var(--color-ink);
+            line-height: 1.8;
+            min-height: 100vh;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(200, 164, 92, 0.2);
+        }
+
+        .top-nav a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .top-nav a:hover { opacity: 1; }
+
+        /* 头部 */
+        .header {
+            padding: 3rem 0 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--color-ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            color: var(--color-ink-light);
+            opacity: 0.7;
+        }
+
+        /* 日志列表 */
+        .journal-list {
+            padding: 1rem 0 4rem;
+        }
+
+        .journal-entry {
+            padding: 2rem 0;
+            border-bottom: 1px solid rgba(200, 164, 92, 0.15);
+        }
+
+        .journal-entry:last-child {
+            border-bottom: none;
+        }
+
+        .entry-date {
+            font-size: 0.8rem;
+            color: var(--color-gold-dark);
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .entry-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--color-ink);
+            margin-bottom: 0.8rem;
+        }
+
+        .entry-body {
+            font-size: 0.92rem;
+            color: var(--color-ink-light);
+            line-height: 2;
+        }
+
+        .entry-body p {
+            margin-bottom: 0.6em;
+        }
+
+        .entry-body ul {
+            padding-left: 1.2em;
+            margin-bottom: 0.6em;
+        }
+
+        .entry-body li {
+            margin-bottom: 0.3em;
+        }
+
+        .entry-body strong {
+            color: var(--color-ink);
+            font-weight: 600;
+        }
+
+        .entry-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.15em 0.6em;
+            border-radius: 3px;
+            margin-right: 0.4em;
+            margin-bottom: 0.3em;
+        }
+
+        .tag-new { background: rgba(190, 45, 35, 0.1); color: var(--color-vermilion); }
+        .tag-fix { background: rgba(200, 164, 92, 0.15); color: var(--color-gold-dark); }
+        .tag-design { background: rgba(42, 64, 56, 0.1); color: var(--color-ink-light); }
+        .tag-decision { background: rgba(190, 45, 35, 0.08); color: #8B3A30; }
+
+        /* 底部 */
+        .footer {
+            background: var(--color-ink);
+            color: var(--color-paper);
+            padding: 2rem 0;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--color-paper);
+            text-decoration: none;
+            opacity: 0.6;
+        }
+
+        .footer a:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-nav">
+            <a href="index.html">← 返回鲤与剑</a>
+        </div>
+
+        <div class="header">
+            <h1>手记更新日志</h1>
+            <p>Build in public。每一步都看得见。</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="journal-list">
+
+            <div class="journal-entry">
+                <div class="entry-date">2026-06-16</div>
+                <div class="entry-title">首页V1.1改版 + 微信二维码</div>
+                <div class="entry-body">
+                    <p>
+                        <span class="entry-tag tag-new">里程碑</span>
+                    </p>
+                    <ul>
+                        <li><strong>首页V1.1改版</strong>：鉴板块前移到Hero区域（三篇推荐文章）、新增微信二维码直接显示、删除档案馆板块保留手记日志</li>
+                        <li><strong>微信二维码</strong>：首页底部直接显示义山微信二维码，长按或截图扫码添加</li>
+                        <li><strong>鉴板块顺序调整</strong>：从项目区前移至Hero区，更醒目</li>
+                        <li><strong>进展区筛选</strong>：按项目层级标准重新梳理，删掉调研过程条目，只保留里程碑</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="journal-entry">
+                <div class="entry-date">2026-06-15</div>
+                <div class="entry-title">InnerShine 新生 · 一张通往未来的入场券</div>
+                <div class="entry-body">
+                    <p>
+                        <span class="entry-tag tag-new">新文章</span>
+                    </p>
+                    <ul>
+                        <li><strong>文章发布</strong>：什么是InnerShine新生？它为什么是通往未来的入口？个体与AI协作，照见自己，把每一个想法放大100倍</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="journal-entry">
+                <div class="entry-date">2026-06-14</div>
+                <div class="entry-title">现在开球 · 直觉驱动从灵感到产品</div>
+                <div class="entry-body">
+                    <p>
+                        <span class="entry-tag tag-new">新项目</span>
+                        <span class="entry-tag tag-new">里程碑</span>
+                    </p>
+                    <ul>
+                        <li><strong>"现在开球"小程序</strong>：羽毛球临时赛组织工具，扫码即用，无需注册，4-12人随机配对，自动记分，实时排名</li>
+                        <li><strong>文章《从灵感到产品》</strong>：完整记录直觉驱动从想法到MVP的路径，已发布到 jian.yisan.me</li>
+                        <li><strong>直觉驱动 vs 分析驱动</strong>：先开枪再瞄准，感知→行动→验证→迭代，而非调研→想清楚→做→验证</li>
+                        <li><strong>闪动Flash竞品对比</strong>：类似功能不好用，很复杂，没法临时组赛</li>
+                        <li><strong>虚荣性排名</strong>：赢了想再来，输了想翻盘——对人性而非技巧的理解</li>
+                    </ul>
+                    <p><strong>判断</strong>：代码是AI写的，但做什么、不做什么、做成什么样子，是人的。</p>
+                </div>
+            </div>
+
+            <div class="journal-entry">
+                <div class="entry-date">2026-06-11</div>
+                <div class="entry-title">V2.0智能体上线 + 公众号焕新</div>
+                <div class="entry-body">
+                    <p>
+                        <span class="entry-tag tag-new">里程碑</span>
+                        <span class="entry-tag tag-decision">决策</span>
+                    </p>
+                    <ul>
+                        <li><strong>活出本色V2.0发布到Coze</strong>：三角色（眼睛/大脑/双手）+ Sense三档直觉识别，审核通过，微信订阅号/扣子商店/飞书三渠道上线</li>
+                        <li><strong>公众号绑定Coze</strong>：用户在公众号发消息即可对话，微信成为最自然的入口</li>
+                        <li><strong>系统Prompt两轮迭代</strong>：①不展示推理过程，直接给产物 ②不输出"思考中/回复继续"中间态</li>
+                        <li><strong>Bot头像/分享卡片生成</strong>：国风版+科技v1+科技v2共三套，科技v2（六边形+赛博锦鲤+AI节点）最搭"AI协作节点"</li>
+                        <li><strong>公众号改名</strong>：Renew活力 → InnerShine新生（"新生""新生AI"均被占用）</li>
+                        <li><strong>新生AI使用指南</strong>：三模式说明+实用问法表，配套封面图（无文字纯净版）</li>
+                    </ul>
+                    <p><strong>决策</strong>：深度思考模型换普通模型——用户来这里是"有人帮我干"，不是"有人帮我深想"。要快+直接，不要慢+推理。速度就是信任。</p>
+                </div>
+            </div>
+
+            <div class="journal-entry">
+                <div class="entry-date">2026-06-10</div>
+                <div class="entry-title">OPC商业化定位 + 发刊词定稿</div>
+                <div class="entry-body">
+                    <p>
+                        <span class="entry-tag tag-decision">决策</span>
+                        <span class="entry-tag tag-fix">修复</span>
+                    </p>
+                    <ul>
+                        <li><strong>OPC商业化调研完成</strong>：定位"精力分配架构师"，三大真痛点（决策疲劳/能力缺口/获客困境），定价3k/5k/8k</li>
+                        <li><strong>差异化定位</strong>：不是又一个AI工具课，是"判断力系统"——OPC创始人最痛的是精力透支</li>
+                        <li><strong>发刊词定稿</strong>："涅槃重生"→"浴火重生"，更符合中文语感，已部署上线</li>
+                        <li><strong>鲤遇卦签修复</strong>：阴阳爻等宽问题修复，移动端排版优化</li>
+                        <li><strong>InnerShine发刊词移动端优化</strong>：innershine.html移动端排版适配</li>
+                        <li><strong>公安备案日程清理</strong>：删除过期的备案提醒日历</li>
+                    </ul>
+                    <p><strong>决策</strong>："内容创作者包""个人品牌包"烂大街了，用户自己能借助AI学会，我们价值有限。差异化在精力分配和判断力，不在工具本身。</p>
+                </div>
+            </div>
+
+            <div class="journal-entry">
+                <div class="entry-date">2026-06-05</div>
+                <div class="entry-title">微信分享体验优化 + 档案馆</div>
+                <div class="entry-body">
+                    <p>
+                        <span class="entry-tag tag-new">新功能</span>
+                        <span class="entry-tag tag-fix">修复</span>
+                    </p>
+                    <ul>
+                        <li><strong>OG标签</strong>：InnerShine和鲤与剑主页都加了Open Graph标签，微信分享终于有缩略图和描述了，不再是空白占位符</li>
+                        <li><strong>摸鱼/跃龙门链接</strong>：从 liyu.yisan.run 改为 jian.yisan.me，解决微信安全拦截问题</li>
+                        <li><strong>公安备案图标</strong>：替换为beian.gov.cn官方图标，之前自定义图标加载失败</li>
+                        <li><strong>档案馆｜来时路</strong>：新增板块，大版本更新时存档旧版。暂无存档，等待第一次大迭代</li>
+                        <li><strong>手记更新日志</strong>：就是你现在看的这个页面</li>
+                    </ul>
+                    <p><strong>决策</strong>：liyu.yisan.run域名虽然也能用，但微信对非主流域名拦截风险高，统一用jian.yisan.me更稳。</p>
+                </div>
+            </div>
+
+            <div class="journal-entry">
+                <div class="entry-date">2026-06-04</div>
+                <div class="entry-title">InnerShine价值升维 + 项目断舍离</div>
+                <div class="entry-body">
+                    <p>
+                        <span class="entry-tag tag-decision">决策</span>
+                        <span class="entry-tag tag-design">设计</span>
+                    </p>
+                    <ul>
+                        <li><strong>InnerShine从"恢复型"升维为"生长型"</strong>：副标题改为"搭自己的系统，由内而外新生"；品牌定义改为"创新型内容产品"</li>
+                        <li><strong>10期路径全部重构</strong>：看见→重写→清空→下场→搭建→俯瞰→协作→独特→稳住→新生</li>
+                        <li><strong>中性化</strong>：去掉所有性别指向词，面向35+人群不限于女性</li>
+                        <li><strong>摸鱼断舍离</strong>：AI改了很多遍也不对，耐心在消失，砍掉</li>
+                        <li><strong>鲤冲冲断舍离</strong>：没达标，主动决断舍弃</li>
+                        <li><strong>发刊词网页上线</strong>：/jian/innershine.html</li>
+                        <li><strong>每期时长从30-40分钟改为80-90分钟</strong></li>
+                    </ul>
+                    <p><strong>决策</strong>：断舍离不是失败，是判断力的体现。"不完美也是真实"——这条写进来了。</p>
+                </div>
+            </div>
+
+            <div class="journal-entry">
+                <div class="entry-date">2026-06-03</div>
+                <div class="entry-title">备案完成，正式上线</div>
+                <div class="entry-body">
+                    <p>
+                        <span class="entry-tag tag-new">里程碑</span>
+                    </p>
+                    <ul>
+                        <li><strong>ICP备案 + 公安备案</strong>：全部拿齐，从想法到产品到合规上线</li>
+                        <li><strong>InnerShine·新生通用版10期内容完成</strong>：看见→重写→清空→下场→搭建→俯瞰→协作→独特→稳住→新生</li>
+                        <li><strong>保险人版10期完成</strong>：基于华姐三句话（敢→做→是）</li>
+                        <li><strong>发刊词播客生成</strong>：儒雅逸辰男声</li>
+                    </ul>
+                    <p><strong>决策</strong>：一个人加一个剑灵，完整闭环跑通了。这本身就是一个证明。</p>
+                </div>
+            </div>
+
+            <div class="journal-entry">
+                <div class="entry-date">2026-05-28</div>
+                <div class="entry-title">鲤与剑主页V1上线</div>
+                <div class="entry-body">
+                    <p>
+                        <span class="entry-tag tag-new">里程碑</span>
+                    </p>
+                    <ul>
+                        <li><strong>鲤与剑主页上线</strong>：jian.yisan.me，一个AI和一个人的实验场</li>
+                        <li><strong>项目卡片</strong>：鲤遇·幸运卦签、跃龙门、摸鱼、InnerShine、鲤冲冲</li>
+                        <li><strong>FTP部署方案</strong>：/htdocs/jian/，base tag解决路由问题</li>
+                        <li><strong>阿里云虚拟主机</strong>：SSL配置完成</li>
+                    </ul>
+                    <p><strong>踩坑</strong>：nginx路由下子路径页面404，用base href="/jian/"解决。这个坑后来又踩了好几次。</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <a href="index.html">← 返回鲤与剑</a>
+        </div>
+    </footer>
+
+</body>
+</html>

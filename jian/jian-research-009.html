@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <base href="/jian/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用AI搭建赚钱飞轮：两个扫描器，三把尺子 · 鉴 · 鲤与剑</title>
+    <meta name="description" content="每周自动扫描用户需求和收入机会，用Tim Ferriss、Dan Koe、Naval三框架评估。不是一次性灵感，是持续运转的飞轮系统。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://jian.yisan.me/jian/jian-research-009.html">
+    <meta property="og:title" content="用AI搭建赚钱飞轮：两个扫描器，三把尺子">
+    <meta property="og:description" content="每周自动扫描用户需求和收入机会，用Tim Ferriss、Dan Koe、Naval三框架评估。不是一次性灵感，是持续运转的飞轮系统。">
+    <meta property="og:image" content="https://jian.yisan.me/jian/jian_flywheel_cover.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <style>
+        :root {
+            --color-gold: #C8A45C;
+            --color-gold-light: #D4B76A;
+            --color-gold-dark: #A88B45;
+            --color-ink: #1A3028;
+            --color-ink-light: #3A5048;
+            --color-paper: #F5F0E8;
+            --color-paper-dark: #E8E0D4;
+            --color-vermilion: #BE2D23;
+            --font-serif: 'Noto Serif SC', 'STSong', '宋体', serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-serif);
+            background: var(--color-paper);
+            color: var(--color-ink);
+            line-height: 2;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem 2rem;
+            font-size: 0.88rem;
+            position: sticky;
+            top: 0;
+            background: rgba(245,240,232,0.94);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(200,164,92,0.12);
+            letter-spacing: 0.02em;
+        }
+        .nav a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+            transition: color 0.25s;
+        }
+        .nav a:hover { color: var(--color-vermilion); }
+
+        .feed-header {
+            text-align: center;
+            padding: 3.5rem 2rem 2.5rem;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .feed-header .kicker {
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            color: var(--color-gold);
+            text-transform: uppercase;
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+        .feed-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--color-ink);
+            line-height: 1.4;
+            letter-spacing: -0.01em;
+        }
+        .feed-header .meta {
+            font-size: 0.82rem;
+            color: rgba(26,48,40,0.45);
+            margin-top: 1rem;
+            letter-spacing: 0.04em;
+        }
+        .feed-header .tag {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.25rem 1rem;
+            background: var(--color-ink);
+            color: var(--color-gold);
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+        }
+
+        .article-cover {
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+        .article-cover img {
+            width: 100%;
+            border-radius: 4px;
+            display: block;
+            box-shadow: 0 8px 40px rgba(26,48,40,0.12);
+        }
+
+        .article-body {
+            max-width: 660px;
+            margin: 0 auto;
+            padding: 0 2.5rem 5rem;
+        }
+
+        .article-body .note {
+            margin: 2rem 0;
+            padding: 1.2rem 1.5rem;
+            background: rgba(200,164,92,0.08);
+            border-left: 3px solid var(--color-gold);
+            border-radius: 0 6px 6px 0;
+        }
+        .article-body .note p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--color-ink-light);
+        }
+
+        .article-body h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--color-ink);
+            margin: 3.2rem 0 1.4rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid rgba(200,164,92,0.25);
+            letter-spacing: 0.02em;
+            position: relative;
+        }
+        .article-body h2::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 3rem;
+            height: 2px;
+            background: var(--color-gold);
+        }
+        .article-body h2:first-of-type { margin-top: 0; }
+
+        .article-body p {
+            margin: 1.3rem 0;
+            font-size: 1.02rem;
+            color: var(--color-ink);
+            text-align: justify;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+        }
+
+        .article-body > p.lead {
+            margin-top: 0;
+        }
+        .article-body > p.lead::first-letter {
+            font-size: 3.2rem;
+            font-weight: 700;
+            float: left;
+            line-height: 0.85;
+            margin-right: 0.45rem;
+            margin-top: 0.08rem;
+            color: var(--color-gold);
+        }
+
+        .article-body strong {
+            color: var(--color-gold-dark);
+            font-weight: 700;
+        }
+
+        .article-body .worlds {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--color-ink);
+            color: var(--color-paper);
+            border-radius: 6px;
+            position: relative;
+        }
+        .article-body .worlds::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: 2rem; right: 2rem;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-gold), transparent);
+            border-radius: 0 0 2px 2px;
+        }
+        .article-body .worlds h3 {
+            font-size: 0.78rem;
+            color: var(--color-gold);
+            margin-bottom: 0.8rem;
+            letter-spacing: 0.2em;
+            font-weight: 600;
+        }
+        .article-body .worlds p {
+            margin: 0.6rem 0;
+            color: rgba(245,240,232,0.88);
+            font-size: 0.96rem;
+        }
+
+        figure {
+            margin: 2.5rem 0;
+        }
+        figure img {
+            width: 100%;
+            border-radius: 4px;
+            display: block;
+            box-shadow: 0 4px 24px rgba(26,48,40,0.1);
+        }
+        figcaption {
+            margin-top: 0.8rem;
+            font-size: 1rem;
+            color: var(--color-ink-light);
+            line-height: 1.9;
+            text-align: left;
+            border-left: 2px solid rgba(200,164,92,0.4);
+            padding-left: 0.8rem;
+        }
+
+        .article-body .closing {
+            margin-top: 3rem;
+            padding: 2rem 1.8rem;
+            border-left: 3px solid var(--color-gold);
+            background: rgba(200,164,92,0.06);
+            border-radius: 0 6px 6px 0;
+        }
+        .article-body .closing p {
+            margin: 0.5rem 0;
+            text-align: left;
+        }
+        .article-body .closing p:last-child {
+            margin-top: 1.2rem;
+            font-size: 1.05rem;
+        }
+
+        .article-footer {
+            text-align: center;
+            padding: 2.5rem;
+            max-width: 660px;
+            margin: 0 auto;
+            border-top: 1px solid rgba(200,164,92,0.18);
+        }
+        .article-footer a {
+            color: var(--color-gold-dark);
+            text-decoration: none;
+            font-size: 0.88rem;
+            letter-spacing: 0.04em;
+            transition: color 0.25s;
+        }
+        .article-footer a:hover { color: var(--color-vermilion); }
+
+        @media (max-width: 600px) {
+            .feed-header h1 { font-size: 1.45rem; }
+            .article-body { padding: 0 1.4rem 4rem; }
+            .article-body p { font-size: 0.96rem; text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="/jian/">← 鉴 · 鲤与剑</a>
+</nav>
+
+<header class="feed-header">
+    <div class="kicker">鉴 · AI协作思行录</div>
+    <h1>用AI搭建赚钱飞轮：<br>两个扫描器，三把尺子</h1>
+    <p class="meta">2026年7月18日</p>
+    <span class="tag">赚钱飞轮</span>
+</header>
+
+<div class="article-cover">
+    <img src="/jian/jian_flywheel_cover.jpg" alt="赚钱飞轮：两个金色齿轮咬合转动，锦鲤游弋其中">
+</div>
+
+<article class="article-body">
+
+    <p class="lead">大多数人赚钱的方式是：看到一个机会，追上去。灵感是随机的，追上了是运气，追不上是常态。今天我换了个思路——不让灵感来找我，让系统替我找。</p>
+
+    <p>具体来说，我让AI搭了两个自动扫描器。一个扫"人们需要什么"，一个扫"怎么把这些需求变成钱"。两个扫描器一前一后，每周转一圈。</p>
+
+    <p>这不是一个点子，是一个<strong>飞轮</strong>。</p>
+
+    <h2>问题：赚钱不该靠灵感</h2>
+
+    <p>过去几个月，我做了锦鲤拾光、鲤·遇、趣学周易、开球小程序。每一个都是好产品，但每一个的诞生都依赖一个偶然——某天想到了某个方向，某个瞬间觉得"这个能做"。</p>
+
+    <p>这种方式的问题在于：<strong>它是被动的</strong>。你不知道下一个机会什么时候来，也不知道它来的时候你准备好了没有。</p>
+
+    <p>Tim Ferriss在《每周工作4小时》里说，新贵和打工人的区别不是收入多少，是收入是否与时间解耦。Naval Ravikant说，财富是你睡觉时还能赚钱的资产。Dan Koe说，一人企业的核心是内容→受众→产品的飞轮。</p>
+
+    <p>这三个人说的其实是同一件事：<strong>别用灵感赚钱，用系统赚钱</strong>。</p>
+
+    <h2>扫描器一：人们在抱怨什么？</h2>
+
+    <p>第一个扫描器叫 need_scanner，每周一早上10点自动运行。它做的事情很简单：</p>
+
+    <div class="worlds">
+        <h3>NEED SCANNER · 每周一</h3>
+        <p>搜索小红书、知乎、抖音、微博上近7天的热门抱怨和需求</p>
+        <p>覆盖四个场景：情绪困扰、生活痛点、数字产品不满、正念放松需求</p>
+        <p>AI抽取抱怨事实，聚合为需求候选，评估与我能力的匹配度</p>
+        <p>输出一份带日期的需求报告</p>
+    </div>
+
+    <p>它不是在搜"什么火"，是在搜<strong>"什么烦"</strong>。因为抱怨里藏着真需求，而真需求里藏着钱。</p>
+
+    <p>每个需求候选都会评估与我的匹配度——我是做审美体验型轻产品的人，不是做重型工具的人。匹配度高的才有价值。</p>
+
+    <h2>扫描器二：怎么把需求变成钱？</h2>
+
+    <p>第二个扫描器叫 income_scanner，每周日早上10点运行。它做的事情更有意思：</p>
+
+    <div class="worlds">
+        <h3>INCOME SCANNER · 每周日</h3>
+        <p>读取本周一 need_scanner 扫出的需求报告，作为搜索种子</p>
+        <p>搜索 creator economy、AI变现、数字产品、wellness变现等方向的收入机会</p>
+        <p>每个机会用三框架评估可行性</p>
+        <p>评估与现有资产（锦鲤拾光/鲤·遇/个人品牌）的匹配度</p>
+        <p>输出一份带日期的收入机会报告</p>
+    </div>
+
+    <p>关键设计：<strong>收入端瞄准需求端</strong>。不是漫天扫描"怎么赚钱"，是先看"人们需要什么"，再去找"这些需求怎么变现"。需求在前，收入在后。</p>
+
+    <p>两个扫描器之间有一个数据通道——income_scanner 会读取 need_scanner 最新报告里列出的需求标题和痛点描述，把它们作为搜索种子词。这样，周日扫到的收入机会天然与周一扫到的用户需求对齐。</p>
+
+    <h2>三把尺子：每个机会都要过三道关</h2>
+
+    <p>扫到的机会不是直接给我看，是先过三把尺子。每把尺子代表一个视角：</p>
+
+    <div class="worlds">
+        <h3>TIM FERRISS · 时间杠杆</h3>
+        <p>这件事能不能脱离时间交换？能不能自动化？</p>
+        <p>如果不能，那它只是另一份打工。</p>
+    </div>
+
+    <div class="worlds">
+        <h3>DAN KOE · 飞轮是否成立</h3>
+        <p>内容→受众→产品→收入，这个飞轮转不转得起来？</p>
+        <p>如果转不起来，它就不是一个可持续的模式。</p>
+    </div>
+
+    <div class="worlds">
+        <h3>NAVAL RAVIKANT · 特定知识+杠杆</h3>
+        <p>是不是用我的特定知识？是不是用了代码或媒体的杠杆？</p>
+        <p>如果不是，那它谁都能做，没有护城河。</p>
+    </div>
+
+    <p>三个框架不是并列的，是<strong>递进的</strong>。先过时间杠杆——不脱离时间的不做；再过飞轮——转不起来的不做；最后过特定知识——没有杠杆的不做。三关都过的，才值得认真看。</p>
+
+    <h2>第一性原理阅读：知识到行动没有时间差</h2>
+
+    <p>今晚还做了一件事：把马斯克的读书方法变成了一个可执行的流程。</p>
+
+    <p>马斯克读书的核心是：书当操作手册读，读完即用，不信二手结论，跨域阅读。这不是什么新概念，但大多数人读完一本书和采取行动之间，隔着一个"等我想想"。</p>
+
+    <p>我让AI把这套方法固化了下来。以后每次我分享一篇文章、一个想法，AI默认走五步：</p>
+
+    <div class="worlds">
+        <h3>第一性原理阅读 · 五步</h3>
+        <p>拆解 → 提取第一性原理</p>
+        <p>验证 → 不信二手结论，查实际数据</p>
+        <p>跨域 → 这个原理还能用在哪</p>
+        <p>映射 → 能否映射到当前项目</p>
+        <p>存入 → 知识库记录，贝叶斯更新</p>
+    </div>
+
+    <p>每条原理带验证状态：未验证、部分验证、已验证、已证伪。存了一段时间后回头看——它在实际项目里验证了、修正了还是废弃了。这是知识的复利。</p>
+
+    <p>今晚读过的几篇文章，已经录入了5条原理。比如"AI的价值不只是效率，还有平静"——这条来自WAIC展会的观察，锦鲤拾光的方向被它独立验证了。</p>
+
+    <h2>为什么这是飞轮？</h2>
+
+    <p>单个扫描器不叫飞轮，两个扫描器加三框架也不叫飞轮。<strong>飞轮的关键是：每一圈的输出都是下一圈的输入。</strong></p>
+
+    <p>周一扫出的需求，喂给周日的收入扫描器。周日扫到的机会，反过来验证周一的需求是否有变现空间。三框架的评估结果积累下来，会形成对"什么方向值得做"的越来越准的判断。</p>
+
+    <p>第一性原理阅读也在喂这个飞轮——每次读到的新知识，如果能在扫描器里找到对应的机会或需求，就验证了这条原理；如果找不到，要么原理不对，要么搜索方向需要调整。</p>
+
+    <p>跑一周，看到的是零散的机会。跑一个月，看到的是模式。跑几个月，看到的是<strong>系统</strong>。</p>
+
+    <div class="note">
+        <p><strong>技术说明：</strong> 两个扫描器基于CodeAct脚本框架运行，使用AI搜索+网页抓取+LLM分析的全自动流程。状态库使用SQLite，支持URL级去重和需求/机会指纹去重。首次运行为冷启动基线，后续每周只展示增量。报告输出为Markdown格式，存储在云端工作目录。</p>
+    </div>
+
+    <div class="closing">
+        <p>赚钱不该靠灵感，该靠系统。</p>
+        <p>需求在前，收入在后，三框架过滤。</p>
+        <p>知识到行动没有时间差，每一条都立即验证。</p>
+        <p><strong>跑上几周，飞轮会自己转起来。不是因为它聪明，是因为它持续。</strong></p>
+    </div>
+
+</article>
+
+<footer class="article-footer">
+    <a href="/jian/">← 返回鉴 · 鲤与剑</a>
+</footer>
+
+</body>
+</html>
